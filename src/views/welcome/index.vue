@@ -1,0 +1,359 @@
+<template>
+	<div class="main">
+		<el-row :gutter="30" style="margin-top: 20px;">
+			<el-col :xs="24" :sm="24" :md="12" :lg="6" :xl="6">
+				<el-card>
+					<p class="cardTitle">
+						用户信息
+						<IconifyIconOnline icon="fa-solid:user-alt" :style="cardStyle()"/>
+					</p>
+					
+					<el-row>
+						<el-col :span="12">
+							<el-statistic title="昵称" :value="nickName"/>
+						</el-col>
+						<el-col :span="12">
+							<el-statistic style="color:red;" title="工号" :value="jobNumber"/>
+						</el-col>
+					</el-row>
+				</el-card>
+			</el-col>
+			
+			<el-col :xs="24" :sm="24" :md="12" :lg="6" :xl="6">
+				<el-card style="margin-bottom: 20px">
+					<p class="cardTitle">
+						当前时间
+						<IconifyIconOnline icon="ep:timer" style="color: #41B6FF; float: right; font-size: 24px"/>
+					</p>
+					<el-statistic style="color:red;" :title="formattedTime" :value="currentWeekday"/>
+				</el-card>
+			</el-col>
+			
+			<el-col :xs="24" :sm="24" :md="12" :lg="6" :xl="6" v-for="item in loginViveNumber" style="margin-bottom: 20px">
+				<el-card>
+					<p class="cardTitle">
+						{{ item.projectName }}
+						<IconifyIconOnline icon="fa-solid:users" :style="cardStyle()"/>
+					</p>
+					<el-row>
+						<el-col :span="12">
+							<el-statistic style="color:red;" title="今日登录用户" :value="item.todayLoginNumber"/>
+						</el-col>
+						<el-col :span="12">
+							<el-statistic title="活跃用户" :value="item.activeLoginNumber"/>
+						</el-col>
+					</el-row>
+				</el-card>
+			</el-col>
+		</el-row>
+		
+		
+		<el-row :gutter="30">
+			<el-col :span="18">
+				<el-card>
+					<template #header>
+						<div class="card-header">
+							<span>用户登录次数统计</span>
+						</div>
+					</template>
+					<div id="userLoginChart" style="height: 400px" v-loading="loginRecordStatisticsLoading"></div>
+				</el-card>
+				
+				<el-card style="margin-top: 20px">
+					<template #header>
+						<div class="card-header">
+							<span>接口调用次数</span>
+						</div>
+					</template>
+					<div id="interfaceChart" style="height: 400px" v-loading="interfaceCallStatisticsLoading"></div>
+				</el-card>
+			</el-col>
+			
+			<el-col :span="6">
+				<el-card>
+					<template #header>
+						<div class="card-header">
+							<span>登录记录</span>
+						</div>
+					</template>
+					<el-scrollbar height="400px" v-loading="loginRecordLoading">
+						<el-timeline>
+							<el-timeline-item v-for="(item, index) in loginViveRecord" :key="index" :color="item.color" :hollow="item.hollow" :timestamp="item.loginDate">
+								{{ item.body }}
+							</el-timeline-item>
+						</el-timeline>
+					</el-scrollbar>
+				</el-card>
+				
+				<el-card style="margin-top: 20px">
+					<template #header>
+						<div class="card-header">
+							<span>注意事项</span>
+						</div>
+					</template>
+					
+					<div style="height: 170px" class="bodyExplain">
+						<p>显示器：推荐分辨率1920*1080及以上（建议使用推荐百分百）</p>
+						<p>浏览器：推荐使用谷歌、火狐、Edge等主流浏览器</p>
+						<p>如果您觉得框架不错，打赏一点，开源不易</p>
+					</div>
+				</el-card>
+				
+				<el-card style="margin-top: 20px">
+					<template #header>
+						<div class="card-header">
+							<span>技术支持</span>
+						</div>
+					</template>
+					<div style="height: 108px" class="bodyExplain">
+						<p>作者：李鹏</p>
+						<p>Q Q：920297199</p>
+						<p>邮箱：920297199@qq.com</p>
+					</div>
+				</el-card>
+			</el-col>
+		</el-row>
+	
+	</div>
+</template>
+
+<script setup lang="ts">
+import { onMounted, onUnmounted, ref } from "vue";
+import { postJson } from "@/api/common";
+import { now, queryWeekChinese } from "@/utils/date";
+import { generateRandomColor } from "@/utils/color";
+import { storageLocal } from "@/store/utils";
+import { userKey } from "@/utils/auth";
+import { barChartByGroups, barChartBySingle } from "@/utils/echarts";
+//当前时间
+const formattedTime = ref(now());
+//当前星期
+const currentWeekday = ref<string>(queryWeekChinese(true));
+//日期定时器
+let timer: ReturnType<typeof setInterval> | null = null;
+//登录数量记录
+const loginViveNumber = ref<Array<{ projectName: string, todayLoginNumber: number, activeLoginNumber: number }>>([
+		{
+			projectName: "鉴权系统",
+			todayLoginNumber: 0,
+			activeLoginNumber: 0
+		},
+	{
+		projectName: "周报管理系统[待上线]",
+		todayLoginNumber: 0,
+		activeLoginNumber: 0
+	}
+]);
+const nickName = storageLocal().getItem(userKey).nickName;
+const jobNumber = storageLocal().getItem(userKey).jobNumber;
+//用户登录次数统计等待框
+const loginRecordStatisticsLoading = ref(true);
+//接口调用次数等待框
+const interfaceCallStatisticsLoading = ref(true);
+//登录记录等待框
+const loginRecordLoading = ref(true);
+//登录记录
+const loginViveRecord = ref<Array<any>>([]);
+
+
+onMounted(async () => {
+	loginNumber();
+	loginRecordStatistics();
+	interfaceCallStatistics();
+	loginRecord();
+	
+	// 设置一个定时器，每秒更新时间
+	timer = setInterval(() => {
+		formattedTime.value = now();
+	}, 1000);
+});
+
+onUnmounted(() => {
+	clearInterval(timer);
+	// clearInterval(systemInterval);
+});
+
+/**
+ * 查询登录数量
+ */
+const loginNumber = async () => {
+	//敏捷开发管理系统 BPM工作流管理系统  IM即时通讯系统 自动化部署系统  Jenkins持续集成系统
+	const loginNumber = await postJson("/auth/welcome/login/number", ["authentication", "周报管理系统"]);
+	if (!loginNumber.success) return;
+	loginViveNumber.value = loginNumber.data;
+	
+	loginViveNumber.value.forEach((item: any) => {
+		if (item.todayLoginNumber > 0) {
+			let loginNumber = item.todayLoginNumber;
+			item.todayLoginNumber = 0;
+			let loginNumberInterval = setInterval(() => {
+				item.todayLoginNumber = item.todayLoginNumber += 1;
+				if (item.todayLoginNumber >= loginNumber)
+					clearInterval(loginNumberInterval);
+				
+			}, loginNumber / 200 > 1? loginNumber / 200 : 200 / loginNumber);
+		}
+		
+		
+		if (item.activeLoginNumber > 0) {
+			let activeNumber = item.activeLoginNumber;
+			item.activeLoginNumber = 0;
+			let activeLoginNumberInterval = setInterval(() => {
+				item.activeLoginNumber = item.activeLoginNumber += 1;
+				if (item.activeLoginNumber >= activeNumber)
+					clearInterval(activeLoginNumberInterval);
+				
+			}, activeNumber / 80 > 1? activeNumber / 80 : 80 / activeNumber);
+		}
+		
+	});
+};
+
+/**
+ * 查询用户登录次数统计
+ */
+const loginRecordStatistics = async () => {
+	loginRecordStatisticsLoading.value = true;
+	const loginRecordStatistics = await postJson("/auth/welcome/login/record/statistics", {});
+	if (!loginRecordStatistics.success) return;
+	let xdate: Array<string> = [];
+	let ydate: Array<number> = [];
+	loginRecordStatistics.data.forEach((item: any) => {
+		xdate.push(item.createDate);
+		ydate.push(item.number);
+	});
+	loginRecordStatisticsLoading.value = false;
+	barChartBySingle("userLoginChart", "#62CBFC", "人数", xdate, ydate, 300);
+};
+
+class barChartByGroupsSeries {
+	name: string = null;
+	type: string = "bar";
+	data: any = null;
+	markPoint: any = {
+		data: [
+			{ type: "max", name: "Max" },
+			{ type: "min", name: "Min" }
+		]
+	};
+	markLine: any = {
+		data: [{ type: "average", name: "Avg" }]
+	};
+};
+
+
+/**
+ * 接口调用次数
+ */
+const interfaceCallStatistics = async () => {
+	interfaceCallStatisticsLoading.value = true;
+	const interfaceCallStatistics = await postJson("/auth/welcome/interface/call/statistics", {});
+	if (!interfaceCallStatistics.success) return;
+	let series: any[] = [];
+	let xdata: any[] = [];
+	interfaceCallStatistics.data.forEach((item: any) => {
+		let datas: any = {};
+		Object.assign(datas, new barChartByGroupsSeries());
+		
+		xdata = item.callTime;
+		datas.name = item.projectName;
+		datas.data = item.number;
+		series.push(datas);
+	});
+	const colors = ref(["#62CBFC", "#F5967A", "#26CE83", "#7847E5", "#E09C51"]);
+	interfaceCallStatisticsLoading.value = false;
+	barChartByGroups("interfaceChart", colors.value, "次", xdata, series);
+};
+
+
+/**
+ * 查询登录记录
+ */
+const loginRecord = async () => {
+	loginRecordLoading.value = true;
+	const loginRecord = await postJson("/auth/welcome/login/record", {});
+	if (!loginRecord.success) return;
+	loginViveRecord.value = loginRecord.data;
+	loginViveRecord.value.forEach((item: any) => {
+		item.color = generateRandomColor();
+		item.hollow = true;
+	});
+	loginRecordLoading.value = false;
+};
+
+
+const cardStyle = () => {
+	return {
+		color: generateRandomColor(),
+		"float": "right",
+		"font-size": "24px"
+	};
+};
+</script>
+
+<style lang="scss" scoped>
+.cardTitle {
+	color: #303133;
+	font-size: 20px;
+	font-weight: 540;
+	font-family: "Arial", sans-serif;
+	
+	background: linear-gradient(to bottom, rgb(128, 128, 128), black);
+	-webkit-text-fill-color: transparent;
+	-webkit-background-clip: text;
+	//-webkit-text-stroke: 1px red; //-webkit-text-fill-color: bisque;
+}
+
+.cardBody {
+	text-align: center;
+	margin-top: 5px;
+	font-size: 22px;
+	background: linear-gradient(to bottom, #837E29, #303133);
+	-webkit-text-fill-color: transparent;
+	-webkit-background-clip: text;
+}
+
+.bodyExplain {
+	background: linear-gradient(to bottom, #123133, black);
+	-webkit-text-fill-color: transparent;
+	-webkit-background-clip: text;
+	font-size: 15px;
+	line-height: 30px;
+}
+
+:deep(.el-statistic__head) {
+	font-size: 16px;
+	margin-top: 10px;
+	text-align: center;
+	background: linear-gradient(to bottom, #837E29, #303133);
+	-webkit-text-fill-color: transparent;
+	-webkit-background-clip: text;
+}
+
+
+:deep(.el-statistic__content) {
+	font-size: 20px;
+	margin-top: 10px;
+	text-align: center;
+	background: linear-gradient(to bottom, #837E29, #303133);
+	-webkit-text-fill-color: transparent;
+	-webkit-background-clip: text;
+}
+
+
+.t_detail {
+	:deep(.el-descriptions__label) {
+		width: 160px;
+		float: left;
+	}
+	
+	:deep(.el-descriptions__cell) {
+		word-break: break-all;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		text-align: center;
+		border: none;
+		border-bottom: #EBEEF5 1px solid;
+	}
+}
+</style>

@@ -1,0 +1,34 @@
+import dayjs from "dayjs";
+
+
+/**
+ * 获取当前星期
+ * @param isChinese  是否是中文 true  中文
+ */
+export function queryWeekChinese(isChinese: boolean) {
+    if (isChinese)
+        return translateWeekday(dayjs().format('dddd'));
+    return dayjs().format('dddd');
+}
+
+
+export function now() {
+    return dayjs().format('YYYY-MM-DD HH:mm:ss');
+}
+
+/**
+ * 转换成中文
+ * @param weekday
+ */
+const translateWeekday = (weekday) => {
+    const mapping = {
+        Sunday: '周日',
+        Monday: '周一',
+        Tuesday: '周二',
+        Wednesday: '周三',
+        Thursday: '周四',
+        Friday: '周五',
+        Saturday: '周六'
+    };
+    return mapping[weekday] || weekday;
+}

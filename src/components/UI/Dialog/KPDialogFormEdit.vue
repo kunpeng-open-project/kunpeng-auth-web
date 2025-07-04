@@ -78,11 +78,13 @@ const props = withDefaults(defineProps<{
 	dateStructure: any, //数据结构
 	rules?: any, // 表单验证规则
 	queryParams?: any, // 查询参数  如果有其他查询条件 就传入这个
+	afterSaveOpenEditDialog?: (editParams: any) => any | Promise<any>, // 打开模态框修改功能后修改editParams默认值
 }>(), {
 	width: "50%",
 	isBorder: false,
 	queryParams: () => ({ pageNum: 1, pageSize: 10 }),
-	labelWidth: "100px"
+	labelWidth: "100px",
+	afterSaveOpenEditDialog: (editParams) => editParams // 默认不做修改
 });
 
 // 接收父组件的值 变成普通数据
@@ -129,6 +131,15 @@ const openEditDialog = async (event: { edit: string, row: any }) => {
 		case OperateEnum.add:
 			dialogTitle.value = "新增" + props.title;
 			useType.value = OperateEnum.add;
+			
+			props.afterSaveOpenEditDialog(editParams);
+			// const modifiedParams = props.afterSaveOpenEditDialog(editParams);
+			// alert(modifiedParams)
+			// if (modifiedParams !== editParams) {
+			// 	// 如果返回了新对象，替换原对象
+			// 	Object.assign(editParams, modifiedParams);
+			// }
+			
 			break;
 		case OperateEnum.update:
 			dialogTitle.value = "修改" + props.title;

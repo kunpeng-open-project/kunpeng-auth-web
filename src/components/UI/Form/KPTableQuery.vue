@@ -1,5 +1,5 @@
 <template>
-	<el-card shadow="hover" class="custom-card-single">
+	<el-card v-if="paramsIsShow" shadow="hover" class="custom-card-single">
 		<el-form :model="queryParams" :inline="true" class="demo-form-inline">
 			<el-container class="container-style">
 				<el-main>

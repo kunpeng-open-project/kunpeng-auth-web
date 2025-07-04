@@ -1,9 +1,11 @@
 <template>
-	<el-col :span="span">
+	<el-col :span="span" v-if="type!='hidden'">
 		<el-form-item :label="label" :style="{ width: width }" :prop="prop" :rules="rules">
 			<el-input v-model="localValue" :placeholder="'请输入' + label" clearable :type="type" :rows="rows" @input="handleInput"/>
 		</el-form-item>
 	</el-col>
+	
+	<el-input v-else v-model="localValue" :placeholder="'请输入' + label" clearable :type="type" :rows="rows" @input="handleInput"/>
 </template>
 
 <script lang="ts" setup name="KPInputText">

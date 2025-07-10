@@ -87,6 +87,7 @@ import { UserAccountNumberStatusEnum, UserSexEnum, UserStatusEnum, YesOrNo } fro
 import { getDeptSelect, getPostSelect, getProjectSelect, getRoleSelect } from "@/api/system";
 import { postJson } from "@/api/common";
 import { message, numberMessageBox, selectMessageBox } from "@/utils/message";
+import Avatar from "@/assets/user.png";
 
 let basic: TableDialogColumn = {
 	title: "用户",
@@ -122,7 +123,7 @@ const queryParams = reactive({
  * table 列表 定义显示列
  */
 let tableColumn: TableColumn[] = [
-	{ prop: 'avatar', label: '头像', type: 'avatar' },
+	{ prop: 'avatar', label: '头像', type: 'avatar', avatarIma:Avatar},
 	{ prop: 'userName', label: '账号' },
 	{ prop: 'jobNumber', label: '工号', sort: true },
 	{ prop: 'realName', label: '姓名', sort: true },

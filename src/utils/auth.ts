@@ -3,7 +3,7 @@ import { isIncludeAllChildren, isString, storageLocal } from "@pureadmin/utils";
 
 export const userKey = "user-info";
 
-export const multipleTabsKey = "user-info1111";
+export const multipleTabsKey = "user-info";
 /** 获取`token` */
 export function getToken(): string {
     // 此处与`TokenKey`相同，此写法解决初始化时`Cookies`中不存在`TokenKey`报错

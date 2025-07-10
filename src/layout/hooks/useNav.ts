@@ -1,7 +1,7 @@
 import { storeToRefs } from "pinia"
 import { getConfig } from "@/config"
 import { emitter } from "@/utils/mitt"
-import Avatar from "@/assets/user.jpg"
+import Avatar from "@/assets/user.png"
 import { getTopMenu } from "@/router/utils"
 import { useFullscreen } from "@vueuse/core"
 import type { routeMetaType } from "../types"
@@ -47,9 +47,9 @@ export function useNav() {
 
   /** 昵称（如果昵称为空则显示用户名） */
   const username = computed(() => {
-    return isAllEmpty(useUserStoreHook()?.nickname)
-      ? useUserStoreHook()?.username
-      : useUserStoreHook()?.nickname
+    return isAllEmpty(useUserStoreHook()?.nickName)
+      ? useUserStoreHook()?.realName
+      : useUserStoreHook()?.nickName
   })
 
   const avatarsStyle = computed(() => {
@@ -128,6 +128,10 @@ export function useNav() {
     return new URL("/kunpengIcon.png", import.meta.url).href
   }
 
+  function toAccountSettings() {
+    router.push({ name: "AccountSettings" });
+  }
+
   return {
     route,
     title,
@@ -154,6 +158,7 @@ export function useNav() {
     username,
     userAvatar,
     avatarsStyle,
-    tooltipEffect
+    tooltipEffect,
+    toAccountSettings
   }
 }

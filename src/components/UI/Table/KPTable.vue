@@ -60,7 +60,7 @@
 				<template #default="{ row }">
 					<slot :name="column.prop" :row="row">
 						<template v-if="column.type ==='avatar'">
-							<el-avatar :size="40" :src="row[column.prop]"/>
+							<KPAvatar :size="tableSize" :src="row[column.prop]?row[column.prop]:column.avatarIma" shape="circle"/>
 						</template>
 						<template v-else>
 							<template v-if="column.prefixIcon">
@@ -99,7 +99,7 @@
 		</el-table>
 		
 		<template #footer>
-			<el-pagination class="pagination" v-model:page-size="tableList.size" size="small" layout="total, sizes, prev, pager, next, jumper" :total="tableList.total" :page-sizes="[10, 20, 30, 40, 50, 60, 70, 80, 90, 100]" @current-change="handlePaginationChange" @size-change="handlePaginationSize"/>
+			<el-pagination class="pagination" :page-size="queryParams.pageSize" size="small" layout="total, sizes, prev, pager, next, jumper" :total="tableList.total" :page-sizes="pageSizes" @current-change="handlePaginationChange" @size-change="handlePaginationSize"/>
 		</template>
 	</el-card>
 
@@ -115,8 +115,9 @@ import { Emitter } from 'mitt';
 import { removeEmptyAndNull } from "@/utils/json";
 import { message, numberMessageBox, selectMessageBox } from "@/utils/message";
 import { hasAuth } from "@/router/utils";
+import KPAvatar from "@/components/UI/Input/KPAvatar.vue";
 
-type TableSize = "" | "large" | "default" | "small";
+type TableSize = | "large" | "default" | "small";
 
 //接收父组件的值
 const props = withDefaults(defineProps<{
@@ -173,9 +174,11 @@ const paramsIsShow = ref(true);
 const tableSize = ref<TableSize>("default");
 //多选选择值
 const multiSelectValue = ref<Array<any>>([]);
-
+//分页每页显示条数集合
+const pageSizes = ref([]);
 
 onMounted(() => {
+	setPageSizes();
 	if (!initList) return;
 	queryList(removeEmptyAndNull(queryParams));
 });
@@ -319,6 +322,23 @@ const openDetailsDialog = (row: any) => {
  */
 const getIcon = (row: any, column: TableColumn) => {
 	return row[column.prefixIcon];
+};
+
+/**
+ * 动态设置PageSizes
+ */
+const setPageSizes = () => {
+	// 定义默认页面大小选项
+	const defaultSizes = [10, 20, 30, 40, 50, 60, 70, 80, 90, 100];
+	
+	// 获取当前页大小（确保有默认值）
+	const currentPageSize = queryParams.pageSize;
+	
+	// 过滤掉小于等于currentPageSize的值
+	const filteredSizes = defaultSizes.filter(size => size > currentPageSize);
+	
+	// 组合新的page-sizes：首项为currentPageSize，后续为过滤后的值
+	pageSizes.value = [currentPageSize, ...filteredSizes];
 };
 
 /**

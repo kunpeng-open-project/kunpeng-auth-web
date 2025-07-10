@@ -40,7 +40,7 @@
 		<KPDialogDetails :event-bus="eventBus" v-model="detailsDialogVisible" :title="basic.title + '详情'" :details-api="basic.detailsApi" :table-key="basic.tableKey" :details-column="detailsColumn" label-width="120px"/>
 		
 		<KPDialog v-model="dialogRoleUserVisible" :event-bus="eventBus" title="角色设置用户" top="10vh" @dialogSave="roleUserSave">
-			<KPTableShow ref="tableShowRef" kp-table-query-height="200px" :query-params="tableShowRefQueryParams" list-api="/auth/user/list" :initList="false" actionWidth="75px" :table-column="[
+			<KPTableShow ref="tableShowRef" kp-table-query-height="350px" :query-params="tableShowRefQueryParams" list-api="/auth/user/list" :initList="false" actionWidth="75px" :table-column="[
 					{ prop: 'realName', label: '姓名', sort: true },
 					{ prop: 'nickName', label: '昵称', sort: true },
 					{ prop: 'jobNumber', label: '工号', sort: true },

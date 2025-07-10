@@ -1,11 +1,24 @@
 <template>
 	<el-col :span="span" v-if="type!='hidden'">
 		<el-form-item :label="label" :style="{ width: width }" :prop="prop" :rules="rules">
-			<el-input v-model="localValue" :placeholder="'请输入' + label" clearable :type="type" :rows="rows" @input="handleInput"/>
+			<el-input
+					v-model="localValue"
+					:placeholder="'请输入' + label"
+					:type="type"
+					:rows="rows"
+					clearable
+					:disabled="disabled"
+					@input="handleInput"/>
 		</el-form-item>
 	</el-col>
 	
-	<el-input v-else v-model="localValue" :placeholder="'请输入' + label" clearable :type="type" :rows="rows" @input="handleInput"/>
+	<el-input v-else
+			v-model="localValue"
+			:placeholder="'请输入' + label" clearable
+			:type="type"
+			:rows="rows"
+			:disabled="disabled"
+			@input="handleInput"/>
 </template>
 
 <script lang="ts" setup name="KPInputText">
@@ -21,11 +34,13 @@ const props = withDefaults(defineProps<{
 	prop?: string, // 表单验证的属性
 	span?: number, // 宽度间隔 最大 24
 	rules?: any, // 表单验证规则
+	disabled?: boolean // 新增：是否禁用输入框，默认为 false
 }>(), {
 	width: "100%",
 	type: "text",
 	rows: 2,
-	span: 24
+	span: 24,
+	disabled: false // 设置默认值
 });
 
 

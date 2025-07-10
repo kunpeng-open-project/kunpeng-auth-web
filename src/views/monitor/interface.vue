@@ -10,7 +10,7 @@
 				</div>
 			</template>
 			
-			<KPTableShow ref="tableShowRef" :query-params="queryParams"  list-api="/auth/interface/call/interface/call/list" :initList="false" kp-table-query-height="-49px" :table-column="[
+			<KPTableShow ref="tableShowRef" :query-params="queryParams"  list-api="/auth/interface/call/interface/call/list" :initList="false" kp-table-query-height="181px" :table-column="[
 						{ prop: 'projectName', label: '项目名称' },
 						{ prop: 'name', label: '接口名称' },
 						{ prop: 'uri', label: 'uri' },
@@ -32,11 +32,6 @@
 
 //项目
 import { onMounted, reactive, ref } from "vue";
-import KPSelect from "@/components/UI/Input/KPSelect.vue";
-import { getProjectSelect } from "@/api/system";
-import KPTableShow from "@/components/UI/Table/KPTableShow.vue";
-import { removeEmptyAndNull } from "@/utils/json";
-import mitt from "mitt";
 import { postJson } from "@/api/common";
 
 const queryParams = reactive({

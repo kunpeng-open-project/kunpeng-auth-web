@@ -70,10 +70,12 @@ export interface TableDialogColumn {
 export interface TableColumn {
     prop: string;
     label: string;
+    //是否排序
     sort?: boolean;
     width?: string;
     prefixIcon?: string;
     type?: string; //类型 avatar 表示头像
+    avatarIma?: string; // 头像的默认图片
     // 自定义渲染 翻译数字变成中文  例如 render: { M: "目录", C: "菜单", B: "按钮", I: "接口" }
     render?: {};
 }

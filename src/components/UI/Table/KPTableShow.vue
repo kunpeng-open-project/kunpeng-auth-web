@@ -44,8 +44,8 @@
 		</el-table-column>
 	</el-table>
 	
-	<div v-if="isPage">
-		<el-pagination class="pagination" v-model:page-size="tableList.size" size="small" layout="total, sizes, prev, pager, next, jumper" :total="tableList.total" :page-sizes="[10, 20, 30, 40, 50, 60, 70, 80, 90, 100]" @current-change="handlePaginationChange" @size-change="handlePaginationSize"/>
+	<div v-if="isPage" style="margin-top: 30px;">
+		<el-pagination class="pagination" :page-size="queryParams.pageSize" size="small" layout="total, sizes, prev, pager, next, jumper" :total="tableList.total" :page-sizes="pageSizes" @current-change="handlePaginationChange" @size-change="handlePaginationSize"/>
 	</div>
 
 </template>
@@ -55,7 +55,7 @@ import { useLayout } from "@/layout/hooks/useLayout";
 import { computed, onMounted, ref, toRefs } from "vue";
 import { getTableList } from "@/api/table";
 import { Result, ResultTable } from "@/config/requestType";
-import { TableColumn } from "@/utils/data/systemData";
+import { PageData, TableColumn } from "@/utils/data/systemData";
 import { removeEmptyAndNull } from "@/utils/json";
 
 type TableSize = "" | "large" | "default" | "small";
@@ -74,7 +74,7 @@ const props = withDefaults(defineProps<{
 	checkbox: false,
 	actionWidth: "auto",
 	kpTableQueryHeight: "70px",
-	queryParams: () => Object.freeze({}), // 返回冻结的空对象
+	queryParams: () => new PageData(),
 	initList: true,
 	isControlHeight: true,
 });
@@ -99,9 +99,11 @@ const tableSize = ref<TableSize>("default");
 const multiSelectValue = ref<Array<any>>([]);
 //是否有分页
 const isPage = ref(false);
-
+//分页每页显示条数集合
+const pageSizes = ref([]);
 
 onMounted(() => {
+	setPageSizes();
 	if (!props.initList) return;
 	queryList(removeEmptyAndNull(queryParams));
 });
@@ -172,6 +174,23 @@ const getIcon = (row: any, column: TableColumn) => {
 	return row[column.prefixIcon];
 };
 
+/**
+ * 动态设置PageSizes
+ */
+const setPageSizes = () => {
+	// 定义默认页面大小选项
+	const defaultSizes = [10, 20, 30, 40, 50, 60, 70, 80, 90, 100];
+	
+	// 获取当前页大小（确保有默认值）
+	const currentPageSize = queryParams.pageSize;
+	
+	// 过滤掉小于等于currentPageSize的值
+	const filteredSizes = defaultSizes.filter(size => size > currentPageSize);
+	
+	// 组合新的page-sizes：首项为currentPageSize，后续为过滤后的值
+	pageSizes.value = [currentPageSize, ...filteredSizes];
+};
+
 
 /**
  * 允许父组件看到的数据
@@ -203,11 +222,12 @@ const tableHeaderStyles = computed(() => {
  */
 const tableHeight = computed(() => {
 	if (paramsIsShow.value) {
-		return `calc(100vh - 260px - ${kpTableQueryHeight})`;
+		return `calc(100vh - 30px - ${kpTableQueryHeight})`;
 	} else {
-		return 'calc(100vh - 260px)';
+		return 'calc(100vh- 30px)';
 	}
 });
+
 
 </script>
 

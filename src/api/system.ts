@@ -53,3 +53,9 @@ export const getRoleSelect = () => {
 export const getPostSelect = () => {
     return http.request<Result>("post", serverPath.authentication + "/post/select", { });
 };
+
+
+/** 单文件上传 */
+export const uploadFile = data => {
+    return http.request<Result>("post", serverPath.authentication + "/minio/file/upload", { data }, { headers: { "Content-Type": "multipart/form-data" } });
+};

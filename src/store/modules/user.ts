@@ -37,8 +37,6 @@ export const useUserStore = defineStore({
         // refreshToken: string;
     }),
     actions: {
-
-
         /** 登入 */
         async loginByUsername(data) {
             return new Promise<Result>((resolve, reject) => {

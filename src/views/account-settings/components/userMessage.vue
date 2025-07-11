@@ -2,7 +2,7 @@
 	<div style="margin-left: 10%; width: 70%">
 		<h3 class="my-8">个人信息</h3>
 		<KPForm :form-params="ruleForm" v-loading="loading" ref="ruleFormRef" :rules="rules" :is-border="true">
-			<KPAvatar v-model="ruleForm.avatar" label="头像" :size="100" icon="UserFilled" shape="circle" :src="ruleForm.avatarShow" :uploadable="true"/>
+			<KPAvatar v-model="ruleForm.avatar" label="头像" :size="100" icon="UserFilled" shape="circle" :src="ruleForm.avatarShow" :uploadable="true" :enable-thumbnail="true" :thumbnail-size="400"/>
 			<KPInputText v-model="ruleForm.realName" label="真实姓名" disabled/>
 			<KPInputText v-model="ruleForm.idCard" label="身份证号" disabled/>
 			<KPInputText v-model="ruleForm.jobNumber" label="工号" disabled/>
@@ -77,8 +77,8 @@ const init = async (num) => {
 	const { data } = await postJson("/auth/user/feedback/details", { userId: useUserStoreHook().userId });
 	Object.keys(ruleForm).map(key => delete ruleForm[key]);
 	Object.assign(ruleForm, data);
-	ruleForm.avatarShow = ruleForm.avatar == null ? Avatar : ruleForm.avatarShow;
-
+	ruleForm.avatarShow = ruleForm.avatar == null? Avatar : ruleForm.avatarShow;
+	
 	if (num == 1) {
 		const userInfo = storageLocal().getItem<userType>(userKey);
 		userInfo.nickName = data.nickName;

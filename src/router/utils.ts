@@ -18,7 +18,7 @@ const modulesRoutes = import.meta.glob("/src/views/**/*.{vue,tsx}");
 
 
 function handRank(routeInfo: any) {
-    const {name, path, parentId, meta} = routeInfo;
+    const { name, path, parentId, meta } = routeInfo;
     return isAllEmpty(parentId)
         ? isAllEmpty(meta?.rank) ||
         (meta?.rank === 0 && name !== "Home" && path !== "/")
@@ -110,7 +110,7 @@ function getParentPaths(value: string, routes: RouteRecordRaw[], key = "path") {
 function findRouteByPath(path: string, routes: RouteRecordRaw[]) {
     let res = routes.find((item: { path: string }) => item.path == path);
     if (res) {
-        return isProxy(res) ? toRaw(res) : res;
+        return isProxy(res)? toRaw(res) : res;
     } else {
         for (let i = 0; i < routes.length; i++) {
             if (
@@ -119,7 +119,7 @@ function findRouteByPath(path: string, routes: RouteRecordRaw[]) {
             ) {
                 res = findRouteByPath(path, routes[i].children);
                 if (res) {
-                    return isProxy(res) ? toRaw(res) : res;
+                    return isProxy(res)? toRaw(res) : res;
                 }
             }
         }
@@ -190,7 +190,7 @@ function initRouter() {
             });
         } else {
             return new Promise(resolve => {
-                getAsyncRoutes().then(({data}) => {
+                getAsyncRoutes().then(({ data }) => {
                     alert(222)
                     handleAsyncRoutes(cloneDeep(data));
                     storageLocal().setItem(key, data);
@@ -200,8 +200,8 @@ function initRouter() {
         }
     } else {
         return new Promise(resolve => {
-            getAsyncRoutes().then(({data}) => {
-                handleAsyncRoutes(cloneDeep(data));
+            getAsyncRoutes().then(({ data }) => {
+                if (data) handleAsyncRoutes(cloneDeep(data));
                 resolve(router);
             });
         });
@@ -246,14 +246,14 @@ function formatTwoStageRoutes(routesList: RouteRecordRaw[]) {
                 children: []
             });
         } else {
-            newRoutesList[0]?.children.push({...v});
+            newRoutesList[0]?.children.push({ ...v });
         }
     });
     return newRoutesList;
 }
 
 /** 处理缓存路由（添加、删除、刷新） */
-function handleAliveRoute({name}: ToRouteType, mode?: string) {
+function handleAliveRoute({ name }: ToRouteType, mode?: string) {
     switch (mode) {
         case "add":
             usePermissionStoreHook().cacheOperate({
@@ -353,7 +353,7 @@ function hasAuth(value: string | Array<string>): boolean {
     const isAuths = isString(value)
         ? metaAuths.includes(value)
         : isIncludeAllChildren(value, metaAuths);
-    return isAuths ? true : false;
+    return isAuths? true : false;
 }
 
 function handleTopMenu(route) {

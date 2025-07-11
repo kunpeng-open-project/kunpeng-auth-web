@@ -12,7 +12,7 @@
 					:src-set="srcSet"
 					@error="handleError"
 					@click="handleClick"
-					
+			
 			/>
 			
 			<div v-if="showOverlay" class="avatar-overlay" :class="shape">
@@ -98,10 +98,14 @@ const props = withDefaults(defineProps<{
 	prop?: string, // 表单验证的属性
 	rules?: any, // 表单验证规则
 	uploadable?: boolean, // 是否启用上传功能，默认为 false
+	enableThumbnail?: boolean, // 新增：是否启用缩略图生成
+	thumbnailSize?: number, // 新增：缩略图尺寸（仅enableThumbnail为true时生效）
 }>(), {
 	size: 'default',
 	shape: "square",
-	uploadable: false
+	uploadable: false,
+	enableThumbnail: false, // 默认不启用
+	thumbnailSize: 100, // 默认100px
 });
 // 本地维护的图片地址（替代直接使用 props.src）
 const localSrc = ref(props.src || '');
@@ -166,9 +170,19 @@ const handleClose = () => {
  * 上传图片
  */
 const handleSubmitImage = async () => {
-	const formData = createFormData({
+	let formData = createFormData({
 		files: new File([cropperBlob.value], fileName.value)
 	});
+	
+	if (props.enableThumbnail) {
+		try {
+			const blob = await generateThumbnail(cropperBlob.value, props.thumbnailSize);
+			formData = createFormData({
+				files: new File([blob], fileName.value)
+			});
+		} catch (ex) {
+		}
+	}
 	
 	const body = await uploadFile(formData).then();
 	if (!body.success) {
@@ -179,6 +193,71 @@ const handleSubmitImage = async () => {
 	// 新增：通过 emit 更新 v-model 的值
 	emit('update:modelValue', body.data.filePath); // 或者 filePath，根据您需要存储的格式
 	handleClose();
+};
+
+/**
+ * 生成缩略图
+ * @param originalBlob
+ * @param width
+ */
+const generateThumbnail = async (originalBlob: Blob, width: number): Promise<Blob> => {
+	return new Promise((resolve, reject) => {
+		// 1. 创建Image对象来加载原始图片
+		const img = new Image();
+		
+		// 2. 创建Object URL作为图片源
+		const objectUrl = URL.createObjectURL(originalBlob);
+		
+		img.onload = () => {
+			// 3. 检查原始图片是否已经小于等于目标宽度
+			// if (img.width <= width) {
+			// 	URL.revokeObjectURL(objectUrl);
+			// 	resolve(originalBlob); // 直接返回原图
+			// 	return;
+			// }
+			
+			// 4. 计算等比例高度
+			const height = (img.height / img.width) * width;
+			
+			// 5. 创建Canvas进行绘制
+			const canvas = document.createElement('canvas');
+			canvas.width = width;
+			canvas.height = height;
+			
+			const ctx = canvas.getContext('2d');
+			if (!ctx) {
+				URL.revokeObjectURL(objectUrl);
+				reject(new Error('无法获取Canvas上下文'));
+				return;
+			}
+			
+			// 6. 绘制缩略图
+			ctx.drawImage(img, 0, 0, width, height);
+			
+			// 7. 转换为Blob
+			canvas.toBlob(
+					(blob) => {
+						// 8. 释放Object URL
+						URL.revokeObjectURL(objectUrl);
+						
+						if (blob) {
+							resolve(blob);
+						} else {
+							reject(new Error('生成缩略图失败'));
+						}
+					},
+					'image/jpeg',  // 默认输出JPEG格式
+					0.8           // 默认质量80%
+			);
+		};
+		
+		img.onerror = () => {
+			URL.revokeObjectURL(objectUrl);
+			reject(new Error('图片加载失败'));
+		};
+		
+		img.src = objectUrl;
+	});
 };
 
 

@@ -9,7 +9,7 @@
 			<KPCheckboxGroup v-model="queryParams.options" label="去重" :options='[{ value: "distinct", label: "去重" }]' :noLable="false" border :span="4"/>
 		</KPTableQuery>
 		
-		<KPTable :event-bus="eventBus" :table-key="basic.tableKey" :list-api="basic.listApi" :table-column="tableColumn" :details-button-row="basic.detailsButtonAuth" action-width="70px" />
+		<KPTable :event-bus="eventBus" :table-key="basic.tableKey" :list-api="basic.listApi" :table-column="tableColumn" :details-button-row="basic.detailsButtonAuth" action-width="70px"/>
 		
 		<KPDialogDetails v-model="detailsDialogVisible" :event-bus="eventBus" :table-key="basic.tableKey" :title="basic.title + '详情'" :details-api="basic.detailsApi" :details-column="detailsColumn" width="60%" label-width="130px"/>
 	</div>
@@ -56,6 +56,7 @@ let tableColumn: TableColumn[] = [
 	{ prop: 'loginResult', label: '登录结果', sort: true },
 	{ prop: 'loginType', label: '登录类型', sort: true, render: { 1: "账号登录", 2: "授权登录", 3: "免密登录" } },
 	{ prop: 'loginIp', label: '登录IP', sort: true },
+	{ prop: 'loginIpAddress', label: '登录地址', sort: true },
 	{ prop: 'userPlatForm', label: '代理平台', sort: true },
 	{ prop: 'userAgent', label: '浏览器信息', sort: true },
 	{ prop: 'createDate', label: '登录时间', sort: true }
@@ -72,9 +73,10 @@ let detailsColumn: DetailsColumn[] = [
 	{ prop: 'loginType', label: '登录类型', render: { 1: "账号登录", 2: "授权登录", 3: "免密登录" } },
 	{ prop: 'loginResult', label: '登录结果' },
 	{ prop: 'loginIp', label: '登录IP' },
+	{ prop: 'loginIpAddress', label: '登录地址' },
 	{ prop: 'userPlatForm', label: '用户代理平台' },
+	{ prop: 'userReferer', label: '用户操作来源' },
 	{ prop: 'userAgent', label: '登录浏览器信息', span: 2 },
-	{ prop: 'userReferer', label: '用户操作来源', span: 2 },
 	{ prop: 'createDate', label: '创建时间' },
 	{ prop: 'updateDate', label: '修改时间' },
 	{ prop: 'createUserId', label: '创建用户编号' },

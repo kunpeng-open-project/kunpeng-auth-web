@@ -6,13 +6,13 @@
 			<KPSelect v-model="queryParams.status" label="状态" :span="5" :options="StartAndStopEnum" @change="handleQuery"/>
 		</KPTableQuery>
 		
-		<KPTable :event-bus="eventBus" :table-key="basic.tableKey" :list-api="basic.listApi" :table-column="tableColumn" :add-button="basic.addButtonAuth" :update-button="basic.updateButtonAuth" :del-api="basic.delApi" :del-button="basic.delButtonAuth" :details-button-row="basic.detailsButtonAuth" update-button-row del-button-row checkbox action-width="190px">
+		<KPTable :event-bus="eventBus" :query-params="queryParams" :table-key="basic.tableKey" :list-api="basic.listApi" :table-column="tableColumn" :add-button="basic.addButtonAuth" :update-button="basic.updateButtonAuth" :del-api="basic.delApi" :del-button="basic.delButtonAuth" :details-button-row="basic.detailsButtonAuth" update-button-row del-button-row checkbox action-width="190px">
 			<template #status="{ row }">
 				<el-switch v-model="row.status" inline-prompt :active-value="1" active-text="正常" :inactive-value="0" inactive-text="停用" @click="handleSwitchStatus(row)"/>
 			</template>
 		</KPTable>
 		
-		<KPDialogFormEdit v-model="dialogVisible" :event-bus="eventBus" :table-key="basic.tableKey" :rules="rules" :title="basic.title" :edit-params="editForm" :date-structure="EditData" :save-api="basic.saveApi" :update-api="basic.updateApi" :details-api="basic.detailsApi" label-width="100px">
+		<KPDialogFormEdit v-model="dialogVisible" :event-bus="eventBus" :query-params="queryParams" :table-key="basic.tableKey" :rules="rules" :title="basic.title" :edit-params="editForm" :date-structure="EditData" :save-api="basic.saveApi" :update-api="basic.updateApi" :details-api="basic.detailsApi" label-width="100px">
 			<KPInputText v-model="editForm.postName" label="岗位名称" prop="postName"/>
 			<KPInputText v-model="editForm.postCode" label="岗位编码" prop="postCode"/>
 			<KPRadio v-model="editForm.status" label="岗位状态" prop="status" :options="StartAndStopEnum"/>

@@ -13,7 +13,7 @@
 					<KPSelect v-model="queryParams.status" label="状态" :span="4" :options="UserAccountNumberStatusEnum" @change="handleQuery"/>
 				</KPTableQuery>
 				
-				<KPTable ref="tableTreeRef" :event-bus="eventBus" :list-api="basic.listApi" :table-column="tableColumn" checkbox :add-button="basic.addButtonAuth" :update-button="basic.updateButtonAuth" :del-button="basic.delButtonAuth" :details-button-row="basic.detailsButtonAuth" :table-key="basic.tableKey" :del-api="basic.delApi" action-width="70px">
+				<KPTable ref="tableTreeRef" :query-params="queryParams" :event-bus="eventBus" :list-api="basic.listApi" :table-column="tableColumn" checkbox :add-button="basic.addButtonAuth" :update-button="basic.updateButtonAuth" :del-button="basic.delButtonAuth" :details-button-row="basic.detailsButtonAuth" :table-key="basic.tableKey" :del-api="basic.delApi" action-width="70px">
 					<template #toolbar>
 						<Auth value="auth:user:batch:cancel">
 							<el-button class="operate_button" type="danger" title="注销" circle @click="handleLogout">

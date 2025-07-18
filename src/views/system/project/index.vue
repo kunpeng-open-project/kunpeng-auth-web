@@ -6,7 +6,7 @@
 			<KPSelect v-model="queryParams.status" label="状态" :span="5" :options="StartAndStopEnum" @change="handleQuery"/>
 		</KPTableQuery>
 		
-		<KPTable :event-bus="eventBus" :list-api="basic.listApi" :table-column="tableColumn" checkbox :add-button="basic.addButtonAuth" :update-button="basic.updateButtonAuth" :del-button="basic.delButtonAuth" :details-button-row="basic.detailsButtonAuth" update-button-row del-button-row :table-key="basic.tableKey" :del-api="basic.delApi" action-width="350px">
+		<KPTable :event-bus="eventBus" :query-params="queryParams" :list-api="basic.listApi" :table-column="tableColumn" checkbox :add-button="basic.addButtonAuth" :update-button="basic.updateButtonAuth" :del-button="basic.delButtonAuth" :details-button-row="basic.detailsButtonAuth" update-button-row del-button-row :table-key="basic.tableKey" :del-api="basic.delApi" action-width="350px">
 			<template #status="{ row }">
 				<el-switch v-model="row.status" inline-prompt :active-value="1" active-text="正常" :inactive-value="0" inactive-text="停用" @click="handleSwitchStatus(row)"/>
 			</template>

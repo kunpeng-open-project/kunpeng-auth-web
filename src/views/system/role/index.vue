@@ -7,7 +7,7 @@
 			<KPSelect v-model="queryParams.status" label="状态" :span="5" :options="StartAndStopEnum" @change="handleQuery"/>
 		</KPTableQuery>
 		
-		<KPTable ref="tableTreeRef" :event-bus="eventBus" :list-api="basic.listApi" :table-column="tableColumn" checkbox :add-button="basic.addButtonAuth" :update-button="basic.updateButtonAuth" :del-button="basic.delButtonAuth" :details-button-row="basic.detailsButtonAuth" update-button-row del-button-row :table-key="basic.tableKey" :del-api="basic.delApi" action-width="350px">
+		<KPTable ref="tableTreeRef" :query-params="queryParams" :event-bus="eventBus" :list-api="basic.listApi" :table-column="tableColumn" checkbox :add-button="basic.addButtonAuth" :update-button="basic.updateButtonAuth" :del-button="basic.delButtonAuth" :details-button-row="basic.detailsButtonAuth" update-button-row del-button-row :table-key="basic.tableKey" :del-api="basic.delApi" action-width="350px">
 			<template #toolbar>
 				<Auth value="auth:role:add:user">
 					<el-button class="operate_button" icon="Setting" type="primary" title="设置用户" circle @click="openRoleUserDialog(OperateEnum.setRoleUser)"/>

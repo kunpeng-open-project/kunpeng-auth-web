@@ -6,13 +6,13 @@
 			<KPSelect v-model="queryParams.status" label="状态" :span="5" :options="StartAndStopEnum" @change="handleQuery"/>
 		</KPTableQuery>
 		
-		<KPTableTree :event-bus="eventBus" :table-key="basic.tableKey" :list-api="basic.listApi" :table-column="tableColumn" :query-params="queryParams" :add-button="basic.addButtonAuth" :update-button="basic.updateButtonAuth" :del-api="basic.delApi" :del-button="basic.delButtonAuth" :details-button-row="basic.detailsButtonAuth" :sort-api="basic.sortApi" update-button-row del-button-row checkbox @open-edit-dialog="openEditDialog" action-width="190px">
+		<KPTableTree :event-bus="eventBus" :query-params="queryParams" :table-key="basic.tableKey" :list-api="basic.listApi" :table-column="tableColumn" :add-button="basic.addButtonAuth" :update-button="basic.updateButtonAuth" :del-api="basic.delApi" :del-button="basic.delButtonAuth" :details-button-row="basic.detailsButtonAuth" :sort-api="basic.sortApi" update-button-row del-button-row checkbox @open-edit-dialog="openEditDialog" action-width="190px">
 			<template #status="{ row }">
 				<el-switch v-model="row.status" inline-prompt :active-value="1" active-text="正常" :inactive-value="0" inactive-text="停用" @click="handleSwitchStatus(row)"/>
 			</template>
 		</KPTableTree>
 		
-		<KPDialogFormEdit v-model="dialogVisible" :event-bus="eventBus" :table-key="basic.tableKey" :rules="rules" :title="basic.title" :query-params="queryParams" :edit-params="editForm" :date-structure="EditData" :save-api="basic.saveApi" :update-api="basic.updateApi" :details-api="basic.detailsApi" label-width="100px">
+		<KPDialogFormEdit v-model="dialogVisible" :query-params="queryParams" :event-bus="eventBus" :table-key="basic.tableKey" :rules="rules" :title="basic.title" :edit-params="editForm" :date-structure="EditData" :save-api="basic.saveApi" :update-api="basic.updateApi" :details-api="basic.detailsApi" label-width="100px">
 			<KPTreeSelect v-model="editForm.parentId" :options="deptSelectValue" label="上级部门" prop="parentId"/>
 			<KPInputText v-model="editForm.deptName" label="部门名称" prop="deptName"/>
 			<KPRadio v-model="editForm.status" label="部门状态" prop="status" :options="StartAndStopEnum"/>

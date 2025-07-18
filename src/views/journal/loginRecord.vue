@@ -9,7 +9,7 @@
 			<KPCheckboxGroup v-model="queryParams.options" label="去重" :options='[{ value: "distinct", label: "去重" }]' :noLable="false" border :span="4"/>
 		</KPTableQuery>
 		
-		<KPTable :event-bus="eventBus" :table-key="basic.tableKey" :list-api="basic.listApi" :table-column="tableColumn" :details-button-row="basic.detailsButtonAuth" action-width="70px"/>
+		<KPTable :event-bus="eventBus" :query-params="queryParams" :table-key="basic.tableKey" :list-api="basic.listApi" :table-column="tableColumn" :details-button-row="basic.detailsButtonAuth" action-width="70px"/>
 		
 		<KPDialogDetails v-model="detailsDialogVisible" :event-bus="eventBus" :table-key="basic.tableKey" :title="basic.title + '详情'" :details-api="basic.detailsApi" :details-column="detailsColumn" width="60%" label-width="130px"/>
 	</div>

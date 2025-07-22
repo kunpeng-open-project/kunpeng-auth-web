@@ -12,18 +12,6 @@
 					<el-button icon="Refresh" :loading="loading" round @click="resetQuery">重 置</el-button>
 				</el-aside>
 			</el-container>
-			<template>
-				<div class="form-left">
-					<el-row :gutter="20" style="height: 50px;">
-						<slot :queryParams="queryParams"></slot>
-					</el-row>
-				</div>
-				<div class="form-right">
-					<el-button icon="Search" :loading="loading" type="primary" round @click="handleQuery">查 询</el-button>
-					<el-button icon="Refresh" :loading="loading" round @click="resetQuery">重 置</el-button>
-					<el-button icon="Refresh" :loading="loading" round @click="resetQuery">更多</el-button>
-				</div>
-			</template>
 		</el-form>
 	</el-card>
 </template>
@@ -55,6 +43,7 @@ const loading = ref<boolean>(false);
  */
 const handleQuery = () => {
 	loading.value = true
+	queryParams.pageNum = 1;
 	eventBus.emit('queryList', removeEmptyAndNull(queryParams));
 };
 

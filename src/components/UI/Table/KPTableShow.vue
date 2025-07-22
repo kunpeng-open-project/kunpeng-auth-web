@@ -45,7 +45,7 @@
 	</el-table>
 	
 	<div v-if="isPage" style="margin-top: 30px;">
-		<el-pagination class="pagination" :page-size="queryParams.pageSize" size="small" layout="total, sizes, prev, pager, next, jumper" :total="tableList.total" :page-sizes="pageSizes" @current-change="handlePaginationChange" @size-change="handlePaginationSize"/>
+		<el-pagination class="pagination" :current-page="queryParams.pageNum" :page-size="queryParams.pageSize" size="small" layout="total, sizes, prev, pager, next, jumper" :total="tableList.total" :page-sizes="pageSizes" @current-change="handlePaginationChange" @size-change="handlePaginationSize"/>
 	</div>
 
 </template>
@@ -66,7 +66,7 @@ const props = withDefaults(defineProps<{
 	checkbox?: boolean, // 是否有复选框
 	tableColumn: Array<TableColumn>, // 表格列的定义
 	actionWidth?: string, // 操作列的宽度，默认为 'auto'
-	queryParams?: any, // 查询参数
+	queryParams?: PageData, // 查询参数
 	kpTableQueryHeight?: string, // 表格高度，默认值
 	initList?: boolean, // 是否初始化列表数据
 	isControlHeight?: boolean, // 是否控制高度
@@ -236,6 +236,7 @@ const tableHeight = computed(() => {
 	--el-table-border-color: #ffffff;
 	--el-table-border: 1px solid #ebeef5;
 }
+
 :deep(.el-table__header th) {
 	background-color: var(--header-bg-color);
 	color: var(--header-text-color);

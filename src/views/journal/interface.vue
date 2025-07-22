@@ -1,9 +1,9 @@
 <template>
 	<div class="main">
 		<KPTableQueryMany :event-bus="eventBus" :query-params="queryParams" exclude="level,projectName" query-height="231px">
-			<KPSelect v-model="queryParams.level" label="日志级别" :span="4" :options="JournalStatusEnum" @change="handleQuery"/>
-			<KPSelect v-model="queryParams.projectName" label="项目名称" :span="4" :options="projectNameSelectValue" @change="handleQuery"/>
-			<KPSelect v-model="queryParams.name" label="接口名称" :span="4" :options="nameSelectValue" @change="handleQuery"/>
+			<KPSelect v-model="queryParams.level" label="日志级别" :span="4" :options="JournalStatusEnum" @change="kpSelectChange(eventBus, queryParams)"/>
+			<KPSelect v-model="queryParams.projectName" label="项目名称" :span="4" :options="projectNameSelectValue" @change="kpSelectChange(eventBus, queryParams)"/>
+			<KPSelect v-model="queryParams.name" label="接口名称" :span="4" :options="nameSelectValue" @change="kpSelectChange(eventBus, queryParams)" />
 			<KPInputText v-model="queryParams.uri" label="url" :span="4"/>
 			<KPInputText v-model="queryParams.parameters" label="入参" :span="4"/>
 			<KPInputText v-model="queryParams.result" label="出参" :span="4"/>
@@ -30,13 +30,14 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, ref, onMounted } from "vue";
+import { onMounted, reactive, ref } from "vue";
 import mitt from "mitt";
 import { removeEmptyAndNull } from "@/utils/json";
 import { DetailsColumn, SelectColumn, TableColumn, TableDialogColumn } from "@/utils/data/systemData";
 import { JournalStatusEnum } from "@/utils/data/serviceData";
 import { postJson } from "@/api/common";
 import { message } from "@/utils/message";
+import { kpSelectChange } from "@/utils/list";
 
 let basic: TableDialogColumn = {
 	title: "接口调用记录",
@@ -138,13 +139,6 @@ const querySelect = async () => {
 	
 	const { data } = await postJson("/auth/interface/log/name", { "projectName": queryParams.projectName });
 	nameSelectValue.value = data;
-};
-
-/**
- * 下拉框修改
- */
-const handleQuery = async () => {
-	eventBus.emit('queryList', removeEmptyAndNull(queryParams));
 };
 
 

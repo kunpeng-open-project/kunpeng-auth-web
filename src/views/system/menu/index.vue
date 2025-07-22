@@ -2,11 +2,11 @@
 	<div class="main">
 		
 		<KPTableQuery :event-bus="eventBus" :query-params="queryParams" exclude="projectId,orderBy,isTree">
-			<KPSelect v-model="queryParams.projectId" label="项目名称" :span="4" :options="projectSelectValue" @change="handleQuery"/>
+			<KPSelect v-model="queryParams.projectId" label="项目名称" :span="4" :options="projectSelectValue" @change="kpSelectChange(eventBus, queryParams)"/>
 			<KPInputText v-model="queryParams.menuName" label="菜单名称" :span="4"/>
 			<KPInputText v-model="queryParams.perms" label="权限标识" :span="4"/>
-			<KPSelect v-model="queryParams.visible" label="是否显示" :span="4" :options="VisibleEnum" @change="handleQuery"/>
-			<KPSelect v-model="queryParams.isEnable" label="是否启用" :span="4" :options="StartAndStopEnum" @change="handleQuery"/>
+			<KPSelect v-model="queryParams.visible" label="是否显示" :span="4" :options="VisibleEnum" @change="kpSelectChange(eventBus, queryParams)"/>
+			<KPSelect v-model="queryParams.isEnable" label="是否启用" :span="4" :options="StartAndStopEnum" @change="kpSelectChange(eventBus, queryParams)"/>
 		</KPTableQuery>
 		
 		<KPTableTree ref="tableTreeRef" :event-bus="eventBus" :query-params="queryParams" :init-list="false" :list-api="basic.listApi" :table-column="tableColumn" checkbox :add-button="basic.addButtonAuth" :update-button="basic.updateButtonAuth" :del-button="basic.delButtonAuth" :details-button-row="basic.detailsButtonAuth" update-button-row del-button-row :table-key="basic.tableKey" :sort-api="basic.sortApi" :del-api="basic.delApi" @open-edit-dialog="openEditDialog" action-width="190px">
@@ -80,11 +80,12 @@
 import { onMounted, reactive, ref } from "vue";
 import mitt from "mitt";
 import { removeEmptyAndNull } from "@/utils/json";
-import { DetailsColumn, SelectColumn, TableColumn, TableDialogColumn } from "@/utils/data/systemData";
+import { DetailsColumn, PageData, SelectColumn, TableColumn, TableDialogColumn } from "@/utils/data/systemData";
 import { FrameStatus, MenuEnum, StartAndStopEnum, VisibleEnum, YesOrNo } from "@/utils/data/serviceData";
 import { getMenuSelect, getProjectSelect } from "@/api/system";
 import { postJson } from "@/api/common";
 import { message, numberMessageBox } from "@/utils/message";
+import { kpSelectChange } from "@/utils/list";
 
 let basic: TableDialogColumn = {
 	title: "菜单",
@@ -105,13 +106,14 @@ let basic: TableDialogColumn = {
  * 搜索内容
  */
 const queryParams = reactive({
+	...new PageData(),
 	projectId: null as string | null,
 	menuName: null as string | null,
 	perms: null as string | null,
 	visible: null as number | null,
 	isEnable: null as number | null,
-	orderBy: "sort asc",
 	isTree: 1,
+	orderBy: "sort asc",
 });
 
 /**
@@ -222,12 +224,7 @@ const querySelect = async () => {
 	queryParams.projectId = projectSelectValue.value[0].value;
 	eventBus.emit('init', removeEmptyAndNull(queryParams));
 };
-/**
- * 下拉框修改
- */
-const handleQuery = async () => {
-	eventBus.emit('queryList', removeEmptyAndNull(queryParams));
-};
+
 
 /**
  * 路由地址监控

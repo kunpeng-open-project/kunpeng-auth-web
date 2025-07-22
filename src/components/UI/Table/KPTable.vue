@@ -99,7 +99,7 @@
 		</el-table>
 		
 		<template #footer>
-			<el-pagination class="pagination" :page-size="queryParams.pageSize" size="small" layout="total, sizes, prev, pager, next, jumper" :total="tableList.total" :page-sizes="pageSizes" @current-change="handlePaginationChange" @size-change="handlePaginationSize"/>
+			<el-pagination class="pagination" :current-page="queryParams.pageNum" :page-size="queryParams.pageSize" size="small" layout="total, sizes, prev, pager, next, jumper" :total="tableList.total" :page-sizes="pageSizes" @current-change="handlePaginationChange" @size-change="handlePaginationSize"/>
 		</template>
 	</el-card>
 
@@ -134,7 +134,7 @@ const props = withDefaults(defineProps<{
 	updateButtonRow?: boolean, // 是否显示行内修改按钮
 	delButtonRow?: boolean, // 是否显示行内删除按钮
 	actionWidth?: string, // 操作列的宽度，默认为 'auto'
-	queryParams?: any, // 查询参数
+	queryParams?: PageData, // 查询参数
 	kpTableQueryHeight?: string, // 表格高度，默认值
 	initList?: boolean, // 是否初始化列表数据
 }>(), {

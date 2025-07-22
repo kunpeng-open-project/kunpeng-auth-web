@@ -17,13 +17,6 @@
 						{ prop: 'method', label: '请求方式' },
 						{ prop: 'num', label: '调用次数' },
 				]" />
-<!--			<el-table v-loading="interfaceCallListLoading" :data="interfaceCallListValue" :header-cell-style="{'text-align':'center'}" :cell-style="{'text-align':'center'}">-->
-<!--				<el-table-column prop="projectName" label="项目名称" width="150" />-->
-<!--				<el-table-column prop="name" label="接口名称" />-->
-<!--				<el-table-column prop="url" label="url" />-->
-<!--				<el-table-column prop="method" label="请求方式" width="100" />-->
-<!--				<el-table-column prop="num" label="调用次数" width="100" />-->
-<!--			</el-table>-->
 		</el-card>
 	</div>
 </template>

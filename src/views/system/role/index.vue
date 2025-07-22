@@ -1,10 +1,10 @@
 <template>
 	<div class="main">
 		<KPTableQuery :event-bus="eventBus" :query-params="queryParams">
-			<KPSelect v-model="queryParams.projectId" label="项目名称" :span="5" :options="projectSelectValue" @change="handleQuery"/>
+			<KPSelect v-model="queryParams.projectId" label="项目名称" :span="5" :options="projectSelectValue" @change="kpSelectChange(eventBus, queryParams)"/>
 			<KPInputText v-model="queryParams.roleName" label="角色名称" :span="5"/>
 			<KPInputText v-model="queryParams.roleCode" label="角色编号" :span="5"/>
-			<KPSelect v-model="queryParams.status" label="状态" :span="5" :options="StartAndStopEnum" @change="handleQuery"/>
+			<KPSelect v-model="queryParams.status" label="状态" :span="5" :options="StartAndStopEnum" @change="kpSelectChange(eventBus, queryParams)"/>
 		</KPTableQuery>
 		
 		<KPTable ref="tableTreeRef" :query-params="queryParams" :event-bus="eventBus" :list-api="basic.listApi" :table-column="tableColumn" checkbox :add-button="basic.addButtonAuth" :update-button="basic.updateButtonAuth" :del-button="basic.delButtonAuth" :details-button-row="basic.detailsButtonAuth" update-button-row del-button-row :table-key="basic.tableKey" :del-api="basic.delApi" action-width="350px">
@@ -117,12 +117,14 @@
 import { nextTick, onMounted, reactive, ref } from "vue";
 import mitt from "mitt";
 import { removeEmptyAndNull } from "@/utils/json";
-import { DetailsColumn, OperateEnum, SelectColumn, TableColumn, TableDialogColumn } from "@/utils/data/systemData";
+import { DetailsColumn, OperateEnum, PageData, SelectColumn, TableColumn, TableDialogColumn } from "@/utils/data/systemData";
 import { DataAuthorityTypeEnum, StartAndStopEnum } from "@/utils/data/serviceData";
 import { getDeptSelect, getProjectSelect } from "@/api/system";
 import { postJson } from "@/api/common";
 import { hasAuth } from "@/router/utils";
 import { message, numberMessageBox } from "@/utils/message";
+import { kpSelectChange } from "@/utils/list";
+import { TreeKey } from "element-plus/es/components/tree/src/tree.type";
 
 
 let basic: TableDialogColumn = {
@@ -144,13 +146,11 @@ let basic: TableDialogColumn = {
  * 搜索内容
  */
 const queryParams = reactive({
+	...new PageData(),
 	projectId: null as string | null,
 	roleName: null as string | null,
 	roleCode: null as string | null,
 	status: null as number | null,
-	pageNum: 1,
-	pageSize: 10,
-	orderBy: null as string | null
 });
 
 
@@ -275,13 +275,6 @@ const querySelect = async () => {
 	if (!deltBody.success) return;
 	deptSelectValue.value = deltBody.data;
 	defaultdeptSelectValue.value = [deptSelectValue.value[0].value];
-};
-
-/**
- * 下拉框修改
- */
-const handleQuery = async () => {
-	eventBus.emit('queryList', removeEmptyAndNull(queryParams));
 };
 
 /**

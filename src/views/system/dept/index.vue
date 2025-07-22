@@ -1,10 +1,10 @@
 <template>
 	<div class="main">
 		
-		<KPTableQuery :event-bus="eventBus" :query-params="queryParams" :date-structure="QueryData" exclude="orderBy,isTree">
+		<KPTableQuery :event-bus="eventBus" :query-params="queryParams" exclude="orderBy,isTree">
 			<KPInputText v-model="queryParams.deptName" label="部门名称" :span="5"/>
 			<KPInputText v-model="queryParams.source" label="数据来源" :span="5"/>
-			<KPSelect v-model="queryParams.status" label="状态" :span="5" :options="StartAndStopEnum" @change="handleQuery"/>
+			<KPSelect v-model="queryParams.status" label="状态" :span="5" :options="StartAndStopEnum" @change="kpSelectChange(eventBus, queryParams)"/>
 		</KPTableQuery>
 		
 		<KPTableTree :event-bus="eventBus" :query-params="queryParams" :list-api="basic.listApi" :table-column="tableColumn" checkbox :add-button="basic.addButtonAuth" :update-button="basic.updateButtonAuth" :del-button="basic.delButtonAuth" :details-button-row="basic.detailsButtonAuth" update-button-row del-button-row :table-key="basic.tableKey" :sort-api="basic.sortApi" :del-api="basic.delApi" @open-edit-dialog="openEditDialog" isExpand action-width="190px">
@@ -28,10 +28,11 @@
 import { reactive, ref } from "vue";
 import mitt from "mitt";
 import { removeEmptyAndNull } from "@/utils/json";
-import { DetailsColumn, SelectColumn, TableColumn, TableDialogColumn } from "@/utils/data/systemData";
+import { DetailsColumn, PageData, SelectColumn, TableColumn, TableDialogColumn } from "@/utils/data/systemData";
 import { StartAndStopEnum } from "@/utils/data/serviceData";
 import { getDeptSelect } from "@/api/system";
 import { postJson } from "@/api/common";
+import { kpSelectChange } from "@/utils/list";
 
 let basic: TableDialogColumn = {
 	title: "部门",
@@ -48,21 +49,18 @@ let basic: TableDialogColumn = {
 	sortApi: "/auth/dept/do/set/sort"
 }
 
-/**
- * 搜索内容对象内容定义
- */
-class QueryData {
-	deptName: string = null;
-	source: string = null;
-	status: string = null;
-	orderBy: string = "sort asc";
-	isTree: number = 1
-};
 
 /**
  * 搜索内容
  */
-const queryParams = reactive<QueryData>(new QueryData());
+const queryParams = reactive({
+	...new PageData(),
+	deptName: null as string | null,
+	source:null as string | null,
+	status: null as string | null,
+	isTree: 1,
+	orderBy: "sort asc",
+});
 
 /**
  * table 列表 定义显示列
@@ -131,14 +129,6 @@ const detailsDialogVisible = ref<boolean>(false)
 //部门下拉框
 const deptSelectValue = ref<Array<SelectColumn>>();
 
-
-/**
- * 下拉框修改
- */
-const handleQuery = async () => {
-	eventBus.emit('queryList', removeEmptyAndNull(queryParams));
-};
-
 /**
  * 设置项目状态
  * @param val
@@ -148,6 +138,11 @@ const handleSwitchStatus = async (val) => {
 	eventBus.emit('queryList', removeEmptyAndNull(queryParams));
 };
 
+/**
+ * 打开编辑框
+ * @param edit
+ * @param row
+ */
 const openEditDialog = async (edit: string, row: any) => {
 	const body = await getDeptSelect({ isTree: 1 });
 	if (!body.success) return;

@@ -3,7 +3,7 @@
 		<KPTableQuery :event-bus="eventBus" :query-params="queryParams">
 			<KPInputText v-model="queryParams.projectName" label="项目名称" :span="5"/>
 			<KPInputText v-model="queryParams.projectCode" label="项目编号" :span="5"/>
-			<KPSelect v-model="queryParams.status" label="状态" :span="5" :options="StartAndStopEnum" @change="handleQuery"/>
+			<KPSelect v-model="queryParams.status" label="状态" :span="5" :options="StartAndStopEnum" @change="kpSelectChange(eventBus, queryParams)"/>
 		</KPTableQuery>
 		
 		<KPTable :event-bus="eventBus" :query-params="queryParams" :list-api="basic.listApi" :table-column="tableColumn" checkbox :add-button="basic.addButtonAuth" :update-button="basic.updateButtonAuth" :del-button="basic.delButtonAuth" :details-button-row="basic.detailsButtonAuth" update-button-row del-button-row :table-key="basic.tableKey" :del-api="basic.delApi" action-width="350px">
@@ -58,11 +58,12 @@ import mitt from "mitt";
 import { ManageEnum, StartAndStopEnum } from "@/utils/data/serviceData";
 import { removeEmptyAndNull } from "@/utils/json";
 import { TreeKey } from "element-plus/es/components/tree/src/tree.type";
-import { DetailsColumn, SelectColumn, TableColumn, TableDialogColumn } from "@/utils/data/systemData";
+import { DetailsColumn, PageData, SelectColumn, TableColumn, TableDialogColumn } from "@/utils/data/systemData";
 import { postJson } from "@/api/common";
 import { hasAuth } from "@/router/utils";
 import { getMenuSelect, getProjectSelect } from "@/api/system";
 import { message } from "@/utils/message";
+import { kpSelectChange } from "@/utils/list";
 
 
 let basic: TableDialogColumn = {
@@ -84,12 +85,10 @@ let basic: TableDialogColumn = {
  * 搜索内容
  */
 const queryParams = reactive({
+	...new PageData(),
 	projectCode: null as string | null,
 	projectName: null as string | null,
 	status: null as number | null,
-	pageNum: 1,
-	pageSize: 10,
-	orderBy: null as string | null
 });
 
 
@@ -183,12 +182,6 @@ const defaultCheckedMenuSelectValue = ref<Array<string>>([]);
 //KPTree的 菜单ref
 const treeMenuRef = ref(null);
 
-/**
- * 下拉框修改
- */
-const handleQuery = async () => {
-	eventBus.emit('queryList', removeEmptyAndNull(queryParams));
-};
 
 /**
  * 设置项目状态

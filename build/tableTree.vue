@@ -1,25 +1,26 @@
 <template>
 	<div class="main">
-		<KPTableQuery :event-bus="eventBus" :query-params="queryParams" :date-structure="QueryData" exclude="orderBy,isTree">
+		
+		<KPTableQuery :event-bus="eventBus" :query-params="queryParams" exclude="orderBy,isTree">
 			<KPInputText v-model="queryParams.deptName" label="部门名称" :span="5"/>
 			<KPInputText v-model="queryParams.source" label="数据来源" :span="5"/>
-			<KPSelect v-model="queryParams.status" label="状态" :span="5" :options="StartAndStopEnum" @change="handleQuery"/>
+			<KPSelect v-model="queryParams.status" label="状态" :span="5" :options="StartAndStopEnum" @change="kpSelectChange(eventBus, queryParams)"/>
 		</KPTableQuery>
 		
-		<KPTableTree :event-bus="eventBus" :query-params="queryParams" :table-key="basic.tableKey" :list-api="basic.listApi" :table-column="tableColumn" :add-button="basic.addButtonAuth" :update-button="basic.updateButtonAuth" :del-api="basic.delApi" :del-button="basic.delButtonAuth" :details-button-row="basic.detailsButtonAuth" :sort-api="basic.sortApi" update-button-row del-button-row checkbox @open-edit-dialog="openEditDialog" action-width="190px">
+		<KPTableTree :event-bus="eventBus" :query-params="queryParams" :list-api="basic.listApi" :table-column="tableColumn" checkbox :add-button="basic.addButtonAuth" :update-button="basic.updateButtonAuth" :del-button="basic.delButtonAuth" :details-button-row="basic.detailsButtonAuth" update-button-row del-button-row :table-key="basic.tableKey" :sort-api="basic.sortApi" :del-api="basic.delApi" @open-edit-dialog="openEditDialog" isExpand action-width="190px">
 			<template #status="{ row }">
 				<el-switch v-model="row.status" inline-prompt :active-value="1" active-text="正常" :inactive-value="0" inactive-text="停用" @click="handleSwitchStatus(row)"/>
 			</template>
 		</KPTableTree>
 		
-		<KPDialogFormEdit v-model="dialogVisible" :query-params="queryParams" :event-bus="eventBus" :table-key="basic.tableKey" :rules="rules" :title="basic.title" :edit-params="editForm" :date-structure="EditData" :save-api="basic.saveApi" :update-api="basic.updateApi" :details-api="basic.detailsApi" label-width="100px">
+		<KPDialogFormEdit :event-bus="eventBus" v-model="dialogVisible" :query-params="queryParams" :rules="rules" :title="basic.title" :edit-params="editForm" :date-structure="EditData" :save-api="basic.saveApi" :details-api="basic.detailsApi" :table-key="basic.tableKey" :update-api="basic.updateApi" label-width="100px">
 			<KPTreeSelect v-model="editForm.parentId" :options="deptSelectValue" label="上级部门" prop="parentId"/>
 			<KPInputText v-model="editForm.deptName" label="部门名称" prop="deptName"/>
 			<KPRadio v-model="editForm.status" label="部门状态" prop="status" :options="StartAndStopEnum"/>
 			<KPInputText v-model="editForm.remark" label="备注" type="textarea" rows="4"/>
 		</KPDialogFormEdit>
 		
-		<KPDialogDetails v-model="detailsDialogVisible" :event-bus="eventBus" :table-key="basic.tableKey" :title="basic.title + '详情'" :details-api="basic.detailsApi" :details-column="detailsColumn" label-width="120px"/>
+		<KPDialogDetails :event-bus="eventBus" v-model="detailsDialogVisible" :title="basic.title + '详情'" :details-api="basic.detailsApi" :table-key="basic.tableKey" :details-column="detailsColumn" label-width="120px"/>
 	</div>
 </template>
 
@@ -27,10 +28,11 @@
 import { reactive, ref } from "vue";
 import mitt from "mitt";
 import { removeEmptyAndNull } from "@/utils/json";
-import { DetailsColumn, SelectColumn, TableColumn, TableDialogColumn } from "@/utils/data/systemData";
+import { DetailsColumn, PageData, SelectColumn, TableColumn, TableDialogColumn } from "@/utils/data/systemData";
 import { StartAndStopEnum } from "@/utils/data/serviceData";
 import { getDeptSelect } from "@/api/system";
 import { postJson } from "@/api/common";
+import { kpSelectChange } from "@/utils/list";
 
 let basic: TableDialogColumn = {
 	title: "部门",
@@ -47,21 +49,18 @@ let basic: TableDialogColumn = {
 	sortApi: "/auth/dept/do/set/sort"
 }
 
-/**
- * 搜索内容对象内容定义
- */
-class QueryData {
-	deptName: string = null;
-	source: string = null;
-	status: string = null;
-	orderBy: string = "sort asc";
-	isTree: number = 1
-};
 
 /**
  * 搜索内容
  */
-const queryParams = reactive<QueryData>(new QueryData());
+const queryParams = reactive({
+	...new PageData(),
+	deptName: null as string | null,
+	source:null as string | null,
+	status: null as string | null,
+	isTree: 1,
+	orderBy: "sort asc",
+});
 
 /**
  * table 列表 定义显示列
@@ -130,14 +129,6 @@ const detailsDialogVisible = ref<boolean>(false)
 //部门下拉框
 const deptSelectValue = ref<Array<SelectColumn>>();
 
-
-/**
- * 下拉框修改
- */
-const handleQuery = async () => {
-	eventBus.emit('queryList', removeEmptyAndNull(queryParams));
-};
-
 /**
  * 设置项目状态
  * @param val
@@ -147,6 +138,11 @@ const handleSwitchStatus = async (val) => {
 	eventBus.emit('queryList', removeEmptyAndNull(queryParams));
 };
 
+/**
+ * 打开编辑框
+ * @param edit
+ * @param row
+ */
 const openEditDialog = async (edit: string, row: any) => {
 	const body = await getDeptSelect({ isTree: 1 });
 	if (!body.success) return;

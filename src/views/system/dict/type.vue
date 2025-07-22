@@ -3,7 +3,7 @@
 		<KPTableQuery :event-bus="eventBus" :query-params="queryParams">
 			<KPInputText v-model="queryParams.dictName" label="字典名称" :span="5"/>
 			<KPInputText v-model="queryParams.dictType" label="字典类型" :span="5"/>
-			<KPSelect v-model="queryParams.status" label="状态" :span="5" :options="StartAndStopEnum" @change="handleQuery"/>
+			<KPSelect v-model="queryParams.status" label="状态" :span="5" :options="StartAndStopEnum" @change="kpSelectChange(eventBus, queryParams)"/>
 		</KPTableQuery>
 		
 		<KPTable :event-bus="eventBus" :query-params="queryParams" :table-key="basic.tableKey" :list-api="basic.listApi" :table-column="tableColumn" :add-button="basic.addButtonAuth" :update-button="basic.updateButtonAuth" :del-api="basic.delApi" :del-button="basic.delButtonAuth" :details-button-row="basic.detailsButtonAuth" update-button-row del-button-row checkbox action-width="270px">
@@ -34,10 +34,11 @@
 import { reactive, ref } from "vue";
 import mitt from "mitt";
 import { removeEmptyAndNull } from "@/utils/json";
-import { DetailsColumn, TableColumn, TableDialogColumn } from "@/utils/data/systemData";
+import { DetailsColumn, PageData, TableColumn, TableDialogColumn } from "@/utils/data/systemData";
 import { StartAndStopEnum } from "@/utils/data/serviceData";
 import { postJson } from "@/api/common";
 import { routeUtil } from "@/utils/routeUtil";
+import { kpSelectChange } from "@/utils/list";
 
 let basic: TableDialogColumn = {
 	title: "字典类型",
@@ -57,12 +58,10 @@ let basic: TableDialogColumn = {
  * 搜索内容
  */
 const queryParams = reactive({
+	...new PageData(),
 	dictName: null as string | null,
 	dictType: null as string | null,
 	status: null as number | null,
-	pageNum: 1,
-	pageSize: 10,
-	orderBy: null as string | null
 });
 
 
@@ -128,13 +127,6 @@ const dialogVisible = ref<boolean>(false)
 const detailsDialogVisible = ref<boolean>(false)
 //字典数据页面
 const { toPage } = routeUtil("字典数据管理", "SystemDictData", "/system/dict/data");
-
-/**
- * 下拉框修改
- */
-const handleQuery = async () => {
-	eventBus.emit('queryList', removeEmptyAndNull(queryParams));
-};
 
 /**
  * 设置项目状态

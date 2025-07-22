@@ -1,8 +1,8 @@
 <template>
 	<div class="main">
 		<KPTableQuery :event-bus="eventBus" :query-params="queryParams">
-			<KPSelect v-model="queryParams.projectId" label="项目名称" :span="4" :options="projectSelectValue" @change="handleQuery"/>
-			<KPSelect v-model="queryParams.loginType" label="登录类型" :span="4" :options="LoginTypeEnum" @change="handleQuery"/>
+			<KPSelect v-model="queryParams.projectId" label="项目名称" :span="4" :options="projectSelectValue" @change="kpSelectChange(eventBus, queryParams)"/>
+			<KPSelect v-model="queryParams.loginType" label="登录类型" :span="4" :options="LoginTypeEnum" @change="kpSelectChange(eventBus, queryParams)"/>
 			<KPInputText v-model="queryParams.userName" label="用户账号" :span="4"/>
 			<KPInputText v-model="queryParams.loginIp" label="登录IP" :span="4"/>
 			<KPDatePicker v-model="queryParams.loginDate" label="访问时间" :span="4"/>
@@ -16,12 +16,12 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, ref, onMounted } from "vue";
+import { onMounted, reactive, ref } from "vue";
 import mitt from "mitt";
-import { removeEmptyAndNull } from "@/utils/json";
 import { DetailsColumn, SelectColumn, TableColumn, TableDialogColumn } from "@/utils/data/systemData";
 import { LoginTypeEnum } from "@/utils/data/serviceData";
 import { getProjectSelect } from "@/api/system";
+import { kpSelectChange } from "@/utils/list";
 
 let basic: TableDialogColumn = {
 	title: "登录日志",
@@ -102,12 +102,6 @@ const querySelect = async () => {
 	// queryParams.projectId = projectSelectValue.value[0].value;
 };
 
-/**
- * 下拉框修改
- */
-const handleQuery = async () => {
-	eventBus.emit('queryList', removeEmptyAndNull(queryParams));
-};
 </script>
 
 <style lang="scss" scoped></style>

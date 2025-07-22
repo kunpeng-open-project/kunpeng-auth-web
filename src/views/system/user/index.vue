@@ -9,8 +9,8 @@
 					<KPInputText v-model="queryParams.name" label="姓名或昵称" :span="5"/>
 					<KPInputText v-model="queryParams.phoneNumber" label="手机号" :span="5"/>
 					<KPInputText v-model="queryParams.jobNumber" label="工号" :span="5"/>
-					<KPSelect v-model="queryParams.sex" label="性别" :span="4" :options="UserSexEnum" @change="handleQuery"/>
-					<KPSelect v-model="queryParams.status" label="状态" :span="4" :options="UserAccountNumberStatusEnum" @change="handleQuery"/>
+					<KPSelect v-model="queryParams.sex" label="性别" :span="4" :options="UserSexEnum" @change="kpSelectChange(eventBus, queryParams)"/>
+					<KPSelect v-model="queryParams.status" label="状态" :span="4" :options="UserAccountNumberStatusEnum" @change="kpSelectChange(eventBus, queryParams)"/>
 				</KPTableQuery>
 				
 				<KPTable ref="tableTreeRef" :query-params="queryParams" :event-bus="eventBus" :list-api="basic.listApi" :table-column="tableColumn" checkbox :add-button="basic.addButtonAuth" :update-button="basic.updateButtonAuth" :del-button="basic.delButtonAuth" :details-button-row="basic.detailsButtonAuth" :table-key="basic.tableKey" :del-api="basic.delApi" action-width="70px">
@@ -82,12 +82,13 @@
 import { onMounted, reactive, ref } from "vue";
 import mitt from "mitt";
 import { removeEmptyAndNull } from "@/utils/json";
-import { DetailsColumn, SelectColumn, TableColumn, TableDialogColumn } from "@/utils/data/systemData";
+import { DetailsColumn, PageData, SelectColumn, TableColumn, TableDialogColumn } from "@/utils/data/systemData";
 import { UserAccountNumberStatusEnum, UserSexEnum, UserStatusEnum, YesOrNo } from "@/utils/data/serviceData";
 import { getDeptSelect, getPostSelect, getProjectSelect, getRoleSelect } from "@/api/system";
 import { postJson } from "@/api/common";
 import { message, numberMessageBox, selectMessageBox } from "@/utils/message";
 import Avatar from "@/assets/user.png";
+import { kpSelectChange } from "@/utils/list";
 
 let basic: TableDialogColumn = {
 	title: "用户",
@@ -107,14 +108,13 @@ let basic: TableDialogColumn = {
  * 搜索内容
  */
 const queryParams = reactive({
+	...new PageData(),
 	name: null as string | null,
 	phoneNumber: null as string | null,
 	jobNumber: null as string | null,
 	status: null as number | null,
 	deptId: null as string | null,
 	sex: null as number | null,
-	pageNum: 1,
-	pageSize: 10,
 	orderBy: "create_date desc"
 });
 
@@ -268,13 +268,7 @@ const queryDeptSelect = async () => {
 	defaultDeptSelectValue.value = [deptSelectValue.value[0].value];
 };
 
-/**
- * 下拉框修改
- * @param value
- */
-const handleQuery = async () => {
-	eventBus.emit('queryList', removeEmptyAndNull(queryParams));
-};
+
 
 /**
  * 设置项目状态
@@ -282,7 +276,7 @@ const handleQuery = async () => {
  */
 const handleSwitchStatus = async (val) => {
 	await postJson("/auth/user/forbidden", { userId: val.userId });
-	await handleQuery();
+	eventBus.emit('queryList', removeEmptyAndNull(queryParams));
 };
 
 /**
@@ -312,7 +306,7 @@ const delUserDept = (index) => {
  */
 const handleTreeClick = async (node) => {
 	queryParams.deptId = node.value;
-	await handleQuery();
+	eventBus.emit('queryList', removeEmptyAndNull(queryParams));
 };
 
 
@@ -332,7 +326,7 @@ const handleLogout = async () => {
 		const body = await postJson("/auth/user/batch/cancel", values);
 		if (!body.success) return;
 		
-		await handleQuery();
+		eventBus.emit('queryList', removeEmptyAndNull(queryParams));
 		message(body.success? body.data : body.message, { type: body.success? "success" : "error" });
 	});
 };
@@ -347,7 +341,7 @@ const handleUnlock = async () => {
 	selectMessageBox("是否解锁该用户").then(async () => {
 		const body = await postJson("/auth/user/unlock", { userId: tableTreeRef.value.multiSelectValue[0].userId });
 		if (!body.success) return;
-		await handleQuery();
+		eventBus.emit('queryList', removeEmptyAndNull(queryParams));
 		message(body.success? body.data : body.message, { type: body.success? "success" : "error" });
 	});
 };
@@ -361,7 +355,7 @@ const handleResetPassword = async () => {
 	selectMessageBox("是否把该用户密码重置为初始密码").then(async () => {
 		const body = await postJson("/auth/user/reset", { userId: tableTreeRef.value.multiSelectValue[0].userId });
 		if (!body.success) return;
-		await handleQuery();
+		eventBus.emit('queryList', removeEmptyAndNull(queryParams));
 		message("重置密码成功", { type: "success" });
 	});
 };

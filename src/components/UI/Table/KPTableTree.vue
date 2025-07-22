@@ -143,7 +143,7 @@ const props = withDefaults(defineProps<{
 	updateButtonRow?: boolean, // 是否显示行内修改按钮
 	delButtonRow?: boolean, // 是否显示行内删除按钮
 	actionWidth?: string, // 操作列的宽度，默认为 'auto'
-	queryParams?: any, // 查询参数
+	queryParams?: PageData, // 查询参数
 	kpTableQueryHeight?: string, // 表格高度，默认值
 	rowKey?: string, //树型结构的主键key
 	sortApi?: string, // 排序的api

@@ -8,7 +8,7 @@ import type { FormInstance } from "element-plus"
 import { useLayout } from "@/layout/hooks/useLayout"
 import { useUserStoreHook } from "@/store/modules/user"
 import { getTopMenu, initRouter } from "@/router/utils"
-import { avatar, bg, illustration } from "./utils/static"
+import { bg, illustration } from "./utils/static"
 import { useRenderIcon } from "@/components/ReIcon/src/hooks"
 import { onBeforeUnmount, onMounted, reactive, ref, toRaw } from "vue"
 import { useDataThemeChange } from "@/layout/hooks/useDataThemeChange"
@@ -35,7 +35,7 @@ const { title } = useNav()
 
 const ruleForm = reactive({
   userName: "admin1",
-  password: "admin1admin1"
+  password: "admin123"
 })
 
 const onLogin = async (formEl: FormInstance | undefined) => {

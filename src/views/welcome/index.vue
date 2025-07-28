@@ -148,7 +148,7 @@ const loginViveNumber = ref<Array<{ projectName: string, todayLoginNumber: numbe
 		activeLoginNumber: 0
 	},
 	{
-		projectName: "周报管理系统[待上线]",
+		projectName: "周汇通",
 		todayLoginNumber: 0,
 		activeLoginNumber: 0
 	}
@@ -187,7 +187,7 @@ onUnmounted(() => {
  * 查询登录数量
  */
 const loginNumber = async () => {
-	const loginNumber = await postJson("/auth/welcome/login/number", ["authentication", "周报管理系统"]);
+	const loginNumber = await postJson("/auth/welcome/login/number", ["authentication", "weekFlow"]);
 	if (!loginNumber.success) return;
 	loginViveNumber.value = loginNumber.data;
 	

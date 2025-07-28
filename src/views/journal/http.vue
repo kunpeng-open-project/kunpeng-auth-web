@@ -60,7 +60,7 @@ const queryParams = reactive({
 	serial: null as string | null,
 	phone: null as string | null,
 	uri: null as string | null,
-	clinetIp: null as string | null,
+	clinetIp: null as Date | null,
 	status: null as number | null,
 	message: null as number | null,
 	result: null as number | null,
@@ -133,6 +133,11 @@ const querySelect = async () => {
 	projectNameSelectValue.value = body.data;
 	try {
 		queryParams.projectName = projectNameSelectValue.value[0].value;
+		projectNameSelectValue.value.forEach((item) => {
+			if (item.value === "鉴权项目") {
+				queryParams.projectName = item.value;
+			}
+		})
 	} catch (ex) {
 	}
 	eventBus.emit('queryList', removeEmptyAndNull(queryParams));

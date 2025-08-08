@@ -12,10 +12,32 @@ export function queryWeekChinese(isChinese: boolean) {
 }
 
 
-export function now() {
-    return dayjs().format('YYYY-MM-DD HH:mm:ss');
+/**
+ * 获取当前时间
+ * @param format 格式化
+ */
+export function now(format?: string) {
+    if (format) {
+        return dayjs().format(format);
+    } else {
+        return dayjs().format('YYYY-MM-DD HH:mm:ss');
+    }
 }
 
+
+/**
+ * 获取当前月的月初日期
+ */
+export function monthStart() {
+    return dayjs().startOf('month').format('YYYY-MM-DD');
+}
+
+/**
+ * 获取当前月的月末日期
+ */
+export function monthEnd() {
+    return dayjs().endOf('month').format('YYYY-MM-DD');
+}
 /**
  * 转换成中文
  * @param weekday

@@ -5,11 +5,12 @@ import { serverPath } from "@/utils/serverPath";
 
 /**
  * 获取表格数据
- * @param url
+ * @param microService 微服务请求路径 http://xxx
+ * @param url 请求地址
  * @param data
  */
-export const getTableList = (url: string, data?: object) => {
-    return http.request<ResultTable>("post", serverPath.authentication + url, { data });
+export const getTableList = (microService: string, url: string, data?: object) => {
+    return http.request<ResultTable>("post", microService + url, { data });
 };
 
 
@@ -18,8 +19,8 @@ export const getTableList = (url: string, data?: object) => {
  * @param url
  * @param data
  */
-export const addTableData = (url: string, data?: object) => {
-    return http.request<Result>("post", serverPath.authentication + url, { data });
+export const addTableData = (microService: string, url: string, data?: object) => {
+    return http.request<Result>("post", microService + url, { data });
 };
 
 
@@ -28,8 +29,8 @@ export const addTableData = (url: string, data?: object) => {
  * @param url
  * @param data
  */
-export const updateTableData = (url: string, data?: object) => {
-    return http.request<Result>("post", serverPath.authentication + url, { data });
+export const updateTableData = (microService: string, url: string, data?: object) => {
+    return http.request<Result>("post", microService + url, { data });
 };
 
 
@@ -38,8 +39,8 @@ export const updateTableData = (url: string, data?: object) => {
  * @param url
  * @param data
  */
-export const queryTableDetails = (url: string, data?: object) => {
-    return http.request<Result>("post", serverPath.authentication + url, { data });
+export const queryTableDetails = (microService: string, url: string, data?: object) => {
+    return http.request<Result>("post", microService + url, { data });
 };
 
 
@@ -48,8 +49,8 @@ export const queryTableDetails = (url: string, data?: object) => {
  * @param url
  * @param data
  */
-export const delTableData = (url: string, data?: object) => {
-    return http.request<Result>("post", serverPath.authentication + url, { data });
+export const delTableData = (microService: string, url: string, data?: object) => {
+    return http.request<Result>("post", microService + url, { data });
 };
 
 
@@ -58,6 +59,6 @@ export const delTableData = (url: string, data?: object) => {
  * @param url
  * @param data
  */
-export const updateSort = (url: string, data?: object) => {
-    return http.request<Result>("post", serverPath.authentication + url, { data });
+export const updateSort = (microService: string, url: string, data?: object) => {
+    return http.request<Result>("post", microService + url, { data });
 };

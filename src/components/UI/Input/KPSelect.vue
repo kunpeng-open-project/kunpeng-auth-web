@@ -1,7 +1,17 @@
 <template>
 	<el-col :span="span">
 		<el-form-item :label="label" :style="{ width: width }" :prop="prop" :rules="rules">
-			<el-select v-model="localValue" :placeholder="'请选择' + label" @change="handleChange" clearable :multiple="multiple" :disabled="disabled" :empty-values="[null, undefined]" :value-on-clear="null">
+			<el-select
+					v-model="localValue"
+					:placeholder="'请选择' + label"
+					@change="handleChange"
+					clearable
+					:multiple="multiple"
+					:disabled="disabled"
+					:empty-values="[null, undefined]"
+					:value-on-clear="null"
+					filterable
+			>
 				<el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value"/>
 			</el-select>
 		</el-form-item>

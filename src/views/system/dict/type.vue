@@ -1,6 +1,7 @@
 <template>
 	<div class="main">
 		<KPTableQuery :event-bus="eventBus" :query-params="queryParams">
+			<KPSelectApi v-model="queryParams.projectId" label="所属项目" api="/project/select" :api-params="{manageType: 1}" :span="5" @change="kpSelectChange(eventBus, queryParams)"/>
 			<KPInputText v-model="queryParams.dictName" label="字典名称" :span="5"/>
 			<KPInputText v-model="queryParams.dictType" label="字典类型" :span="5"/>
 			<KPSelect v-model="queryParams.status" label="状态" :span="5" :options="StartAndStopEnum" @change="kpSelectChange(eventBus, queryParams)"/>
@@ -20,6 +21,7 @@
 		</KPTable>
 		
 		<KPDialogFormEdit v-model="dialogVisible" :event-bus="eventBus" :table-key="basic.tableKey" :rules="rules" :title="basic.title" :edit-params="editForm" :date-structure="EditData" :save-api="basic.saveApi" :update-api="basic.updateApi" :details-api="basic.detailsApi" label-width="100px">
+			<KPSelectApi v-model="editForm.projectIds" label="所属项目" prop="projectIds" api="/project/select" :api-params="{manageType: 1}" multiple/>
 			<KPInputText v-model="editForm.dictName" label="字典名称" prop="dictName"/>
 			<KPInputText v-model="editForm.dictType" label="字典类型" prop="dictType"/>
 			<KPRadio v-model="editForm.status" label="状态" prop="status" :options="StartAndStopEnum"/>
@@ -39,6 +41,7 @@ import { StartAndStopEnum } from "@/utils/data/serviceData";
 import { postJson } from "@/api/common";
 import { routeUtil } from "@/utils/routeUtil";
 import { kpSelectChange } from "@/utils/list";
+import KPSelectApi from "@/components/UI/Input/KPSelectApi.vue";
 
 let basic: TableDialogColumn = {
 	title: "字典类型",
@@ -59,6 +62,7 @@ let basic: TableDialogColumn = {
  */
 const queryParams = reactive({
 	...new PageData(),
+	projectId: null as string | null,
 	dictName: null as string | null,
 	dictType: null as string | null,
 	status: null as number | null,
@@ -71,12 +75,12 @@ const queryParams = reactive({
 let tableColumn: TableColumn[] = [
 	{ prop: 'dictName', label: '字典名称', sort: true },
 	{ prop: 'dictType', label: '字典类型', sort: true },
+	{ prop: 'projectNames', label: '所属项目', sort: true },
 	{ prop: 'status', label: '岗位状态', sort: true },
 	{ prop: 'remark', label: '备注' },
 	{ prop: 'createDate', label: '创建时间', sort: true },
 	{ prop: 'createUserName', label: '创建用户', sort: true },
-	{ prop: 'updateDate', label: '修改时间', sort: true },
-	{ prop: 'updateUserName', label: '修改用户', sort: true }
+	{ prop: 'updateDate', label: '修改时间', sort: true }
 ];
 
 /**
@@ -87,6 +91,8 @@ let detailsColumn: DetailsColumn[] = [
 	{ prop: 'dictName', label: '字典名称' },
 	{ prop: 'dictType', label: '字典类型' },
 	{ prop: 'status', label: '字典状态', render: { 0: "停用", 1: "正常" } },
+	{ prop: 'projectIds', label: '项目id集合', span: 2 },
+	{ prop: 'projectNames', label: '项目名称集合', span: 2 },
 	{ prop: 'createDate', label: '创建时间' },
 	{ prop: 'updateDate', label: '修改时间' },
 	{ prop: 'createUserId', label: '创建用户编号' },
@@ -100,6 +106,7 @@ let detailsColumn: DetailsColumn[] = [
  * 新增 修改的表单校验对象
  */
 const rules = reactive({
+	projectIds: [{ required: true, message: "请选择所属项目", trigger: "blur" }],
 	dictName: [{ required: true, message: "请输入字典名称", trigger: "blur" }],
 	dictType: [{ required: true, message: "请输入字典类型", trigger: "blur" }],
 	status: [{ required: true, message: "请选择字典状态", trigger: "blur" }]
@@ -110,6 +117,7 @@ const rules = reactive({
  * 需要编辑的对象内容定义
  */
 class EditData {
+	projectIds: Array<string> = [];
 	dictTypeId: string = null;
 	dictName: string = null;
 	dictType: string = null;

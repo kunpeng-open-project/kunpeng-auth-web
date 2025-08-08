@@ -125,6 +125,7 @@ import { message, messageNum, numberMessageBox, selectMessageBox } from "@/utils
 import { hasAuth } from "@/router/utils";
 import Sortable, { MoveEvent } from "sortablejs";
 import { treeToList, treeToListNumber } from "@/utils/tree";
+import { serverPath } from "@/utils/serverPath";
 
 type TableSize = "" | "large" | "default" | "small";
 
@@ -149,6 +150,7 @@ const props = withDefaults(defineProps<{
 	sortApi?: string, // 排序的api
 	initList?: boolean, // 是否初始化列表数据
 	isExpand?: boolean, // 是否展开
+	apiPath?: string, // 请求的api地址
 }>(), {
 	detailsButtonRow: false,
 	checkbox: false,
@@ -163,6 +165,7 @@ const props = withDefaults(defineProps<{
 	rowKey: (props) => props.tableKey, // 设置 rowKey 的默认值为 tableKey
 	initList: true,
 	isExpand: false,
+	apiPath: serverPath.authentication
 });
 // 接收父组件的值 变成响应式 数据  tableColumn table列的定义说明
 const { tableColumn } = toRefs(props);
@@ -220,7 +223,7 @@ const init = (queryParams: any) => {
 const queryList = async (queryParams: any) => {
 	eventBus.emit('tableQueryList');
 	loading.value = true;
-	const { data } = await getTableList(listApi, queryParams);
+	const { data } = await getTableList(props.apiPath, listApi, queryParams);
 	tableList.value = data.list ?? tableList.value;
 	loading.value = false;
 	eventBus.emit('queryListSuccess');
@@ -253,7 +256,7 @@ const handleDelete = (row: any) => {
 	
 	
 	selectMessageBox("是否确认删除 " + ids.length + " 条数据").then(async () => {
-		const body = await delTableData(delApi, ids);
+		const body = await delTableData(props.apiPath, delApi, ids);
 		if (!body.success) return;
 		
 		await queryList(queryParams);
@@ -404,7 +407,7 @@ const initSort = async () => {
 				parameter.push({ [tableKey]: item[tableKey], sort: num++ });
 			});
 			
-			const { success } = await updateSort(sortApi, parameter);
+			const { success } = await updateSort(props.apiPath, sortApi, parameter);
 			if (!success) {
 				loading.value = false;
 				refresh();

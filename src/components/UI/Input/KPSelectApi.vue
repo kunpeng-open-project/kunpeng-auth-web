@@ -1,7 +1,17 @@
 <template>
 	<el-col :span="span">
-		<el-form-item :label="label" :style="{ width: width }" :prop="prop" :rules="rules">
-			<el-select v-model="localValue" :placeholder="'请选择' + label" @change="handleChange" clearable :multiple="multiple" :disabled="disabled" :empty-values="[null, undefined]" :value-on-clear="null">
+		<el-form-item :label="label" :style="{ width: width }" :prop="prop" :rules="rules" v-loading="loading">
+			<el-select
+					v-model="localValue"
+					:placeholder="'请选择' + label"
+					@change="handleChange"
+					clearable
+					:multiple="multiple"
+					:disabled="disabled"
+					:empty-values="[null, undefined]"
+					:value-on-clear="null"
+					filterable
+			>
 				<el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value"/>
 			</el-select>
 		</el-form-item>
@@ -11,6 +21,7 @@
 <script lang="ts" setup name="KPSelectApi">
 import { computed, onMounted, ref } from 'vue';
 import { postJson } from "@/api/common";
+import { serverPath } from "@/utils/serverPath";
 
 // 接收父组件的值
 const props = withDefaults(defineProps<{
@@ -27,20 +38,26 @@ const props = withDefaults(defineProps<{
 	defaultValue?: string | number  // 设置默认值
 	defaultLabel?: string | number  // 设置默认值lable
 	defaultNumber?: number, //设置地几个为默认值 从 1 开始
+	apiPath?: string, // 请求的api地址
 }>(), {
 	width: "100%",
 	disabled: false,
 	span: 24,
-	apiParams: () => {
-	}
+	apiParams: () => {},
+	apiPath: serverPath.authentication
 });
 
 //下拉选项
 const options = ref<{ value: string | number; label: string }[]>([]);
+//等待框
+const loading = ref(false);
+
 
 onMounted(() => {
-	postJson(props.api, props.apiParams).then(body => {
+	loading.value = true;
+	postJson(props.api, props.apiParams, props.apiPath).then(body => {
 		options.value = body.data;
+		loading.value = false;
 		
 		if (props.defaultNumber) {
 			localValue.value = options.value[props.defaultNumber - 1].value;
@@ -62,6 +79,8 @@ onMounted(() => {
 				}
 			})
 		}
+	}).catch(error => {
+		loading.value = false;
 	})
 });
 

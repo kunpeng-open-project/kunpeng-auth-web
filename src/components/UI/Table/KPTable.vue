@@ -116,6 +116,7 @@ import { removeEmptyAndNull } from "@/utils/json";
 import { message, numberMessageBox, selectMessageBox } from "@/utils/message";
 import { hasAuth } from "@/router/utils";
 import KPAvatar from "@/components/UI/Input/KPAvatar.vue";
+import { serverPath } from "@/utils/serverPath";
 
 type TableSize = | "large" | "default" | "small";
 
@@ -137,6 +138,7 @@ const props = withDefaults(defineProps<{
 	queryParams?: PageData, // 查询参数
 	kpTableQueryHeight?: string, // 表格高度，默认值
 	initList?: boolean, // 是否初始化列表数据
+	apiPath?: string, // 请求的api地址
 }>(), {
 	detailsButtonRow: false,
 	checkbox: false,
@@ -149,6 +151,7 @@ const props = withDefaults(defineProps<{
 	kpTableQueryHeight: "70px",
 	queryParams: () => new PageData(),
 	initList: true,
+	apiPath: serverPath.authentication
 });
 
 // 接收父组件的值 变成响应式 数据  tableColumn table列的定义说明
@@ -191,7 +194,7 @@ onMounted(() => {
 const queryList = async (queryParams: any) => {
 	eventBus.emit('tableQueryList');
 	loading.value = true;
-	const { data } = await getTableList(listApi, queryParams);
+	const { data } = await getTableList(props.apiPath, listApi, queryParams);
 	tableList.value = data ?? tableList.value;
 	loading.value = false;
 	eventBus.emit('queryListSuccess');
@@ -224,7 +227,7 @@ const handleDelete = (row: any) => {
 	
 	
 	selectMessageBox("是否确认删除 " + ids.length + " 条数据").then(async () => {
-		const body = await delTableData(delApi, ids);
+		const body = await delTableData(props.apiPath, delApi, ids);
 		if (!body.success) return;
 		
 		await queryList(queryParams);

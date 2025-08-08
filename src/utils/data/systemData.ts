@@ -39,6 +39,8 @@ export interface TableDialogColumn {
     title: string;
     // 表单主键
     tableKey: string;
+    //请求地址路径 不传默认都是鉴权系统
+    apiPath: string;
     // 列表接口地址
     listApi: string;
     // 新增接口地址

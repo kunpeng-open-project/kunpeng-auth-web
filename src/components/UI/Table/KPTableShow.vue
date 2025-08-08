@@ -57,6 +57,7 @@ import { getTableList } from "@/api/table";
 import { Result, ResultTable } from "@/config/requestType";
 import { PageData, TableColumn } from "@/utils/data/systemData";
 import { removeEmptyAndNull } from "@/utils/json";
+import { serverPath } from "@/utils/serverPath";
 
 type TableSize = "" | "large" | "default" | "small";
 
@@ -70,6 +71,7 @@ const props = withDefaults(defineProps<{
 	kpTableQueryHeight?: string, // 表格高度，默认值
 	initList?: boolean, // 是否初始化列表数据
 	isControlHeight?: boolean, // 是否控制高度
+	apiPath?: string, // 请求的api地址
 }>(), {
 	checkbox: false,
 	actionWidth: "auto",
@@ -77,6 +79,7 @@ const props = withDefaults(defineProps<{
 	queryParams: () => new PageData(),
 	initList: true,
 	isControlHeight: true,
+	apiPath: serverPath.authentication
 });
 
 // 接收父组件的值 变成响应式 数据  tableColumn table列的定义说明
@@ -115,7 +118,7 @@ onMounted(() => {
  */
 const queryList = async (queryParams: any) => {
 	loading.value = true;
-	const { data } = await getTableList(listApi, queryParams);
+	const { data } = await getTableList(props.apiPath, listApi, queryParams);
 	if (data.list) {
 		tableList.value = data ?? tableList.value;
 		isPage.value = true;

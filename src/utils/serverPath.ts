@@ -8,5 +8,6 @@ export const projectCode = config.VITE_PROJECT_CODE;
 export const minioUrl = config.VITE_MINIO;
 //请求地址
 export const serverPath = {
-    authentication: config.VITE_AUTHENTICATION
+    authentication: config.VITE_AUTHENTICATION,
+    weekFlow: config.VITE_WEEK_FLOW,
 }

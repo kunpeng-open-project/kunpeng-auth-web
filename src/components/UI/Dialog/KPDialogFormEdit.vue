@@ -61,6 +61,7 @@ import { message, numberMessageBox } from "@/utils/message";
 import { Emitter } from "mitt";
 import { removeEmptyAndNull } from "@/utils/json";
 import { OperateEnum } from "@/utils/data/systemData";
+import { serverPath } from "@/utils/serverPath";
 
 // 接收父组件的值
 const props = withDefaults(defineProps<{
@@ -79,12 +80,14 @@ const props = withDefaults(defineProps<{
 	rules?: any, // 表单验证规则
 	queryParams?: any, // 查询参数  如果有其他查询条件 就传入这个
 	afterSaveOpenEditDialog?: (editParams: any) => any | Promise<any>, // 打开模态框修改功能后修改editParams默认值
+	apiPath?: string, // 请求的api地址
 }>(), {
 	width: "50%",
 	isBorder: false,
 	queryParams: () => ({ pageNum: 1, pageSize: 10 }),
 	labelWidth: "100px",
-	afterSaveOpenEditDialog: (editParams) => editParams // 默认不做修改
+	afterSaveOpenEditDialog: (editParams) => editParams, // 默认不做修改
+	apiPath: serverPath.authentication,
 });
 
 // 接收父组件的值 变成普通数据
@@ -178,7 +181,7 @@ const handleSave = async (editRef) => {
 				return;
 			}
 			
-			const addBody = await addTableData(saveApi, removeEmptyAndNull(editParams));
+			const addBody = await addTableData(props.apiPath, saveApi, removeEmptyAndNull(editParams));
 			if (addBody.success) {
 				dialogVisible.value = false;
 				eventBus.emit('queryList', removeEmptyAndNull(props.queryParams));
@@ -191,7 +194,7 @@ const handleSave = async (editRef) => {
 				dialogLoading.value = false;
 				return;
 			}
-			const updateBody = await updateTableData(updateApi, removeEmptyAndNull(editParams));
+			const updateBody = await updateTableData(props.apiPath, updateApi, removeEmptyAndNull(editParams));
 			if (updateBody.success) {
 				dialogVisible.value = false;
 				eventBus.emit('queryList', removeEmptyAndNull(props.queryParams));
@@ -237,7 +240,7 @@ watch(() => props.modelValue, async (newValue) => {
 		
 		dialogLoading.value = true;
 		
-		const body = await queryTableDetails(detailsApi, { [tableKey]: ketValue });
+		const body = await queryTableDetails(props.apiPath, detailsApi, { [tableKey]: ketValue });
 		// if (body.success) Object.assign(editParams, body.data);
 		if (body.success) for (let key in editParams) editParams[key] = body.data[key];
 		dialogLoading.value = false;

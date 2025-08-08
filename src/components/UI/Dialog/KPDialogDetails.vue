@@ -76,6 +76,7 @@ import { queryTableDetails } from "@/api/table";
 import { Emitter } from "mitt";
 import { DetailsColumn } from "@/utils/data/systemData";
 import { message } from "@/utils/message";
+import { serverPath } from "@/utils/serverPath";
 
 
 // 接收父组件的值
@@ -91,12 +92,14 @@ const props = withDefaults(defineProps<{
 	column?: number, //详情数据列的列数
 	border?: boolean, //详情数据列的边框
 	top?: string // top 对话框距离顶部的距离
+	apiPath?: string, // 请求的api地址
 }>(), {
 	border: true,
 	column: 2,
 	labelWidth: "100px",
 	width: "50%",
 	top: "15vh",
+	apiPath: serverPath.authentication,
 });
 
 // 接收父组件的值 变成普通数据
@@ -187,8 +190,8 @@ eventBus.on('openDetailsDialog', async (row: any) => {
 	dialogVisible.value = true;
 	dialogLoading.value = true;
 	Object.keys(detailsMessage.value).map(key => delete detailsMessage.value[key]);
-	
-	const body = await queryTableDetails(detailsApi, { [tableKey]: row[tableKey] });
+
+	const body = await queryTableDetails(props.apiPath, detailsApi, { [tableKey]: row[tableKey] });
 	if (body.success) detailsMessage.value = body.data;
 	
 	props.detailsColumn.forEach(item => {

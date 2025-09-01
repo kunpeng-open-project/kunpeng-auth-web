@@ -65,7 +65,7 @@ const resetQuery = () => {
 			}
 		}
 	}
-	
+
 	Object.assign(queryParams, resetValue);
 	eventBus.emit('queryList', queryParams);
 };

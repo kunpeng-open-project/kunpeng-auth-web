@@ -52,8 +52,8 @@ The core role of Kunpeng frontend custom components lies in **building a low-cod
 
 ### Backend Framework
 
-- [Kunpeng Microservice Framework](http://www.kunpengtool.cn/kunPengBack/001_%E4%BB%8B%E7%BB%8D.html): A full-stack microservice solution based on the SpringCloud ecosystem
-- Backend Documentation: [Kunpeng Framework Documentation Center](http://kunpengtool.cn)
+- [Kunpeng Microservice Framework](http://kpopen.cn/kunPengBack/001_%E4%BB%8B%E7%BB%8D.html): A full-stack microservice solution based on the SpringCloud ecosystem
+- Backend Documentation: [Kunpeng Framework Documentation Center](http://kpopen.cn)
 
 ### Official Resources
 

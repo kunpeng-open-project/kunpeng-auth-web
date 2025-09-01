@@ -1,72 +1,70 @@
-import App from "./App.vue";
-import router from "./router";
-import { setupStore } from "@/store";
-import { getPlatformConfig } from "./config";
-import { MotionPlugin } from "@vueuse/motion";
+import App from "./App.vue"
+import router from "./router"
+import { setupStore } from "@/store"
+import { getPlatformConfig } from "./config"
+import { MotionPlugin } from "@vueuse/motion"
 // import { useEcharts } from "@/plugins/echarts";
-import { createApp, type Directive } from "vue";
-import { useElementPlus } from "@/plugins/elementPlus";
-import { injectResponsiveStorage } from "@/utils/responsive";
+import { createApp, type Directive } from "vue"
+import { useElementPlus } from "@/plugins/elementPlus"
+import { injectResponsiveStorage } from "@/utils/responsive"
 
-import Table from "@pureadmin/table";
+import Table from "@pureadmin/table"
 // import PureDescriptions from "@pureadmin/descriptions";
-import * as ElementPlusIconsVue from '@element-plus/icons-vue'
+import * as ElementPlusIconsVue from "@element-plus/icons-vue"
 
 // 引入重置样式
-import "./style/reset.scss";
+import "./style/reset.scss"
 // 导入公共样式
-import "./style/index.scss";
+import "./style/index.scss"
 // 一定要在main.ts中导入tailwind.css，防止vite每次hmr都会请求src/style/index.scss整体css文件导致热更新慢的问题
-import "./style/tailwind.css";
-import "element-plus/dist/index.css";
+import "./style/tailwind.css"
+import "element-plus/dist/index.css"
 // 导入字体图标
-import "./assets/iconfont/iconfont.js";
-import "./assets/iconfont/iconfont.css";
+import "./assets/iconfont/iconfont.js"
+import "./assets/iconfont/iconfont.css"
 
 import "./assets/styles/ global.scss" // 引入全局样式
+// 自定义指令
+import * as directives from "@/directives"
+// 全局注册@iconify/vue图标库
+import { FontIcon, IconifyIconOffline, IconifyIconOnline } from "./components/ReIcon"
+// 全局注册按钮级别权限组件
+import { Auth } from "@/components/ReAuth"
+import { Perms } from "@/components/RePerms"
+// 全局注册vue-tippy
+import "tippy.js/dist/tippy.css"
+import "tippy.js/themes/light.css"
+import VueTippy from "vue-tippy"
 
-const app = createApp(App);
+const app = createApp(App)
 
 //图标
 for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
   app.component(key, component)
 }
 
-
-// 自定义指令
-import * as directives from "@/directives";
 Object.keys(directives).forEach(key => {
-  app.directive(key, (directives as { [key: string]: Directive })[key]);
-});
+  app.directive(key, (directives as { [key: string]: Directive })[key])
+})
 
-// 全局注册@iconify/vue图标库
-import {
-  IconifyIconOffline,
-  IconifyIconOnline,
-  FontIcon
-} from "./components/ReIcon";
-app.component("IconifyIconOffline", IconifyIconOffline);
-app.component("IconifyIconOnline", IconifyIconOnline);
-app.component("FontIcon", FontIcon);
+app.component("IconifyIconOffline", IconifyIconOffline)
+app.component("IconifyIconOnline", IconifyIconOnline)
+app.component("FontIcon", FontIcon)
 
-// 全局注册按钮级别权限组件
-import { Auth } from "@/components/ReAuth";
-import { Perms } from "@/components/RePerms";
-app.component("Auth", Auth);
-app.component("Perms", Perms);
+app.component("Auth", Auth)
+app.component("Perms", Perms)
 
-// 全局注册vue-tippy
-import "tippy.js/dist/tippy.css";
-import "tippy.js/themes/light.css";
-import VueTippy from "vue-tippy";
-app.use(VueTippy);
+app.use(VueTippy)
 
 // 异步导入所有组件
-const componentModules = import.meta.glob('@/components/UI/**/*.vue');
+const componentModules = import.meta.glob("@/components/UI/**/*.vue")
 Object.entries(componentModules).map(async ([path, loadModule]) => {
-  const componentName = path.split('/').pop().replace(/\.\w+$/, '');
-  const component = await loadModule();
-  app.component(componentName, component.default);
+  const componentName = path
+    .split("/")
+    .pop()
+    .replace(/\.\w+$/, "")
+  const component = await loadModule()
+  app.component(componentName, component.default)
 })
 
 //导入自定义ui
@@ -115,27 +113,61 @@ app.config.warnHandler = (msg, instance, trace) => {
   // 检查警告信息是否包含特定的错误信息
   if (msg.includes('Invalid prop: type check failed for prop "modelValue"')) {
     // 忽略该警告
-    return;
+    return
   }
   if (msg.includes('Invalid prop: type check failed for prop "closeOnPressEscape"')) {
     // 忽略该警告
-    return;
+    return
   }
-
-
   // 其他警告信息，按照默认方式处理（例如输出到控制台）
-  console.warn(msg, instance, trace);
-};
-
-
+  console.warn(msg, instance, trace)
+}
 
 getPlatformConfig(app).then(async config => {
-  setupStore(app);
-  app.use(router);
-  await router.isReady();
-  injectResponsiveStorage(app, config);
-  app.use(MotionPlugin).use(useElementPlus).use(Table);
+  setupStore(app)
+  app.use(router)
+  await router.isReady()
+  injectResponsiveStorage(app, config)
+  app.use(MotionPlugin).use(useElementPlus).use(Table)
   // .use(PureDescriptions)
   // .use(useEcharts);
-  app.mount("#app");
-});
+  app.mount("#app")
+})
+
+// 解决element-plus的警告
+;(function () {
+  // 保存原始的console.warn方法
+  const originalWarn = console.warn
+
+  // 要过滤的目标警告关键词
+  const TARGET_KEYWORD = "Comparing to render-header"
+
+  // 重写console.warn，安全处理各种类型的参数
+  console.warn = function (...args: any[]) {
+    // 检查是否包含目标警告（安全处理各种类型）
+    const hasTargetWarning = args.some(arg => {
+      if (typeof arg === "string") {
+        return arg.includes(TARGET_KEYWORD)
+      }
+      // 处理Error对象
+      if (arg instanceof Error) {
+        return arg.message.includes(TARGET_KEYWORD)
+      }
+      // 处理其他对象类型
+      try {
+        const str = JSON.stringify(arg)
+        return str.includes(TARGET_KEYWORD)
+      } catch {
+        return false
+      }
+    })
+
+    // 仅过滤目标警告
+    if (hasTargetWarning) {
+      return
+    }
+
+    // 调用原始方法输出其他警告
+    originalWarn.apply(console, args)
+  }
+})()

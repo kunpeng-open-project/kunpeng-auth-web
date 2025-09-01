@@ -14,7 +14,9 @@ export default {
   // 虽然 bracketSpacing 已经有此效果，但明确写出可增强可读性
   // 这里主要是强调对对象解构格式的要求
   semi: false, // 可以根据需要决定是否使用分号结尾
-  printWidth: 80, // 每行代码的最大宽度
+  printWidth: 10000, // 每行代码的最大宽度
   tabWidth: 2, // 缩进的空格数
   useTabs: false, // 使用空格而不是制表符进行缩进
+  htmlWhitespaceSensitivity: "ignore",
+  singleAttributePerLine: false
 };

@@ -26,7 +26,7 @@
 			</el-row>
 		</template>
 		
-		<el-scrollbar :max-height="dialogFulls?'calc(100vh - 130px)':'70vh'">
+		<el-scrollbar :max-height="dialogFulls?'calc(100vh - 110px)':'70vh'">
 			<div style="margin-top: 12px" v-loading="dialogLoading">
 				<slot/>
 			</div>
@@ -44,11 +44,9 @@
 
 <script lang="ts" setup name="KPDialog">
 import { computed, ref } from "vue";
-import { Emitter } from "mitt";
 
 // 接收父组件的值
 const props = withDefaults(defineProps<{
-	eventBus: Emitter<any>, // 事件总线实例
 	modelValue: boolean, // 通过 v-model 传递的值
 	title: string, // 对话框标题
 	width?: string, // 对话框宽度
@@ -57,11 +55,6 @@ const props = withDefaults(defineProps<{
 	width: "50%",
 	top: "15vh",
 });
-
-// 接收父组件的值 变成普通数据
-let {
-	eventBus
-} = props;
 
 // 定义 emits
 const emit = defineEmits<{
@@ -85,6 +78,7 @@ const handleSave = async () => {
 	await new Promise<void>((resolve) => {
 		emit('dialogSave', props.title, resolve);
 	});
+	
 	
 	dialogLoading.value = false;
 };

@@ -1,53 +1,61 @@
 <template>
-	<div class="main">
-		<el-card style="margin-top: 20px">
-			<template #header>
-				<div class="card-header">
-					<el-row :gutter="20" style=" margin-bottom: -20px">
-						<el-col :span="20"><span>接口调用次数列表</span></el-col>
-						<el-col :span="4"><KPSelect v-model="queryParams.projectName" label="项目名称" :options="projectSelectValue" @change="handleQuery"></KPSelect></el-col>
-					</el-row>
-				</div>
-			</template>
-			
-			<KPTableShow ref="tableShowRef" :query-params="queryParams"  list-api="/auth/interface/call/interface/call/list" :initList="false" kp-table-query-height="181px" :table-column="[
-						{ prop: 'projectName', label: '项目名称' },
-						{ prop: 'name', label: '接口名称' },
-						{ prop: 'uri', label: 'uri' },
-						{ prop: 'method', label: '请求方式' },
-						{ prop: 'num', label: '调用次数' },
-				]" />
-		</el-card>
-	</div>
+  <div class="main">
+    <el-card style="margin-top: 20px">
+      <template #header>
+        <div class="card-header">
+          <el-row :gutter="20" style="margin-bottom: -20px">
+            <el-col :span="20"><span>接口调用次数列表</span></el-col>
+            <el-col :span="4">
+              <KPSelect v-model="queryParams.projectName" label="项目名称" :options="projectSelectValue" @change="handleQuery" />
+            </el-col>
+          </el-row>
+        </div>
+      </template>
+
+      <KPTableShow
+        ref="tableShowRef"
+        :query-params="queryParams"
+        list-api="/auth/interface/call/interface/call/list"
+        :initList="false"
+        kp-table-query-height="181px"
+        :table-column="[
+          { prop: 'projectName', label: '项目名称' },
+          { prop: 'name', label: '接口名称' },
+          { prop: 'uri', label: 'uri' },
+          { prop: 'method', label: '请求方式' },
+          { prop: 'num', label: '调用次数' }
+        ]"
+      />
+    </el-card>
+  </div>
 </template>
 
 <script setup lang="ts">
-
 //项目
-import { onMounted, reactive, ref } from "vue";
-import { postJson } from "@/api/common";
+import { onMounted, reactive, ref } from "vue"
+import { postJson } from "@/api/common"
 
 const queryParams = reactive({
-	projectName: null as string | null
-});
+  projectName: null as string | null
+})
 //项目下拉框
-const projectSelectValue = ref<Array<any>>([]);
+const projectSelectValue = ref<Array<any>>([])
 // tableref
-const tableShowRef = ref(null);
+const tableShowRef = ref(null)
 
 onMounted(() => {
-	querySelect();
-});
+  querySelect()
+})
 const querySelect = async () => {
-	const body = await postJson("/auth/interface/call/project/name",{ });
-	if (!body.success) return;
-	projectSelectValue.value = body.data;
-	queryParams.projectName = projectSelectValue.value[0].value;
-	await tableShowRef.value.queryList(queryParams);
-};
+  const body = await postJson("/auth/interface/call/project/name", {})
+  if (!body.success) return
+  projectSelectValue.value = body.data
+  queryParams.projectName = projectSelectValue.value[0].value
+  await tableShowRef.value.queryList(queryParams)
+}
 const handleQuery = async () => {
-	await tableShowRef.value.queryList(queryParams);
-};
+  await tableShowRef.value.queryList(queryParams)
+}
 </script>
 
 <style lang="scss" scoped></style>

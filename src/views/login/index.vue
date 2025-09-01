@@ -102,7 +102,7 @@ onBeforeUnmount(() => {
       <div class="login-box">
         <div class="login-form">
           <!--					<avatar class="avatar"/>-->
-          <img src="/kunpengIcon.png" width="120px" />
+          <img src="/kpIcon.png" width="120px" />
           <Motion>
             <h2 class="outline-none">{{ title }}</h2>
           </Motion>

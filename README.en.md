@@ -1,23 +1,23 @@
-# Kunpeng Frontend Management System
+# yipeng Frontend Management System
 
 An enterprise-level management system frontend framework developed based on Vue-Pure-Admin lightweight version, deeply integrated with backend microservice architecture to provide efficient and stable frontend solutions.
 
 ## Framework Introduction
 
-This frontend project is built based on the [vue-pure-admin lightweight version](https://github.com/pure-admin/vue-pure-admin). While retaining core functions, it undergoes deep optimization for the Kunpeng microservice framework to achieve front-end and back-end integrated solutions. Framework features:
+This frontend project is built based on the [vue-pure-admin lightweight version](https://github.com/pure-admin/vue-pure-admin). While retaining core functions, it undergoes deep optimization for the yipeng microservice framework to achieve front-end and back-end integrated solutions. Framework features:
 
 - Lightweight architecture: Package size is less than 2.3MB when globally introducing Element-Plus
 - High-performance experience: Loading size is less than 350KB after enabling brotli compression and CDN mode
-- Deep integration: Seamless docking with the Kunpeng microservice framework, supporting unified authentication and permission control
+- Deep integration: Seamless docking with the yipeng microservice framework, supporting unified authentication and permission control
 - Continuous synchronization: Permanently synchronizes the core code of the vue-pure-admin full version to ensure functional iteration
 
 ## Component Overview
 
-The Kunpeng frontend management system develops a series of custom UI components for enterprise-level application scenarios based on the Vue-Pure-Admin lightweight version. These components are located in the `src/components/UI/` directory, mainly including data display, form operations, business processes, etc., aiming to improve development efficiency and unify the frontend interaction experience.
+The yipeng frontend management system develops a series of custom UI components for enterprise-level application scenarios based on the Vue-Pure-Admin lightweight version. These components are located in the `src/components/UI/` directory, mainly including data display, form operations, business processes, etc., aiming to improve development efficiency and unify the frontend interaction experience.
 
 ### Core Value of Components
 
-The core role of Kunpeng frontend custom components lies in **building a low-code development system**, which achieves an efficient mode of **"configuration is development"** by encapsulating frequently used page modules and interaction logic in enterprise-level applications into standardized components. Specific advantages are as follows:
+The core role of yipeng frontend custom components lies in **building a low-code development system**, which achieves an efficient mode of **"configuration is development"** by encapsulating frequently used page modules and interaction logic in enterprise-level applications into standardized components. Specific advantages are as follows:
 
 #### 🌟 **Zero-Code Rapid Development**
 
@@ -52,8 +52,8 @@ The core role of Kunpeng frontend custom components lies in **building a low-cod
 
 ### Backend Framework
 
-- [Kunpeng Microservice Framework](http://kpopen.cn/kunPengBack/001_%E4%BB%8B%E7%BB%8D.html): A full-stack microservice solution based on the SpringCloud ecosystem
-- Backend Documentation: [Kunpeng Framework Documentation Center](http://kpopen.cn)
+- [yipeng Microservice Framework](http://kpopen.cn/yipengBack/001_%E4%BB%8B%E7%BB%8D.html): A full-stack microservice solution based on the SpringCloud ecosystem
+- Backend Documentation: [yipeng Framework Documentation Center](http://kpopen.cn)
 
 ### Official Resources
 

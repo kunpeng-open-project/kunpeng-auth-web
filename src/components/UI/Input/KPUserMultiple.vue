@@ -26,7 +26,7 @@
 
               <el-table ref="table" v-loading="loadingLeft" :data="dataListLeft.list" header-cell-class-name="el-table-header-cell" highlight-current-row @selection-change="multiSelectLeft" fit allow-drag-last-column show-overflow-tooltip>
                 <el-table-column type="selection" width="30" align="center" />
-                <el-table-column type="index" width="60" label="头像" align="center">
+                <el-table-column type="index" width="70" label="头像" align="center">
                   <template #default="{ row }">
                     <KPAvatar size="default" :src="row.avatar ? row.avatar : Avatar" shape="circle" />
                   </template>
@@ -62,7 +62,7 @@
 
               <el-table ref="table" :data="dataListRight" v-loading="loadingRight" header-cell-class-name="el-table-header-cell" highlight-current-row @selection-change="multiSelectRight" fit allow-drag-last-column show-overflow-tooltip>
                 <el-table-column type="selection" width="30" align="center" />
-                <el-table-column type="index" width="60" label="头像" align="center">
+                <el-table-column type="index" width="70" label="头像" align="center">
                   <template #default="{ row }">
                     <KPAvatar size="default" :src="row.avatar ? row.avatar : Avatar" shape="circle" />
                   </template>

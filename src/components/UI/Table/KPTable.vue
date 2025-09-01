@@ -21,7 +21,7 @@
           <slot name="toolbar" />
         </el-col>
         <el-col :span="12" style="text-align: right">
-          <el-button size="large" title="刷新" link circle @click="handleQuery" :loading="loading">
+          <el-button size="large" title="刷新" link circle :loading="loading" @click="handleQuery">
             <IconifyIconOnline icon="ep:refresh" />
           </el-button>
           <el-dropdown trigger="click">
@@ -43,7 +43,7 @@
       </el-row>
     </template>
 
-    <el-table v-loading="loading" ref="tableRef" :data="tableList.list" :style="tableHeaderStyles" :size="tableSize" :height="tableHeight" @sort-change="sortChangeOrderBy" @selection-change="multiSelect" fit>
+    <el-table ref="tableRef" v-loading="loading" :data="tableList.list" :style="tableHeaderStyles" :size="tableSize" :height="tableHeight" fit @sort-change="sortChangeOrderBy" @selection-change="multiSelect">
       <template v-if="checkbox">
         <el-table-column type="selection" width="30" align="center" />
       </template>
@@ -84,7 +84,7 @@
         </template>
       </el-table-column>
 
-      <el-table-column label="操作" align="center" v-if="isActionColumnShow" :width="actionWidth" fixed="right">
+      <el-table-column v-if="isActionColumnShow" label="操作" align="center" :width="actionWidth" fixed="right">
         <template #default="{ row }">
           <div class="action-buttons">
             <el-button v-if="detailsButtonRow && hasAuth(detailsButtonAuth)" type="primary" icon="View" size="small" title="详情" link @click="openDetailsDialog(row)">详情</el-button>
@@ -121,7 +121,6 @@ import KPAvatar from "@/components/UI/Input/KPAvatar.vue"
 import { serverPath } from "@/utils/serverPath"
 import { postJson } from "@/api/common"
 import type { TableSize } from "@/utils/data/systemType"
-import Table from "@pureadmin/table"
 
 //接收父组件的值
 const props = withDefaults(
@@ -184,7 +183,7 @@ const pageSizes = ref([])
 // 动态操作区域宽度
 const actionWidth = ref("100px")
 // 定义表格实例的 ref
-const tableRef = ref<InstanceType<typeof Table> | null>(null)
+const tableRef = ref()
 
 onMounted(async () => {
   setPageSizes()
@@ -602,13 +601,13 @@ const reCalculateHeaderWidth = async () => {
 
 <style lang="scss" scoped>
 .el-table {
-  --el-table-border-color: #ffffff;
+  --el-table-border-color: #fff;
   --el-table-border: 1px solid #ebeef5;
 }
 
 :deep(.el-table__header .el-table__cell.is-leaf, .el-table__fixed-right .el-table__header .el-table__cell.is-leaf) {
-  background-color: var(--header-bg-color) !important;
   color: var(--header-text-color) !important;
+  background-color: var(--header-bg-color) !important;
 }
 
 .switchStatus {
@@ -620,16 +619,17 @@ const reCalculateHeaderWidth = async () => {
   /*	display: flex;
     flex-wrap: nowrap; // 防止换行
     white-space: nowrap; // 防止内容换行
-    overflow: visible; // 确保内容不被隐藏*/
+    overflow: visible; // 确保内容不被隐藏 */
 
   display: flex;
   flex-wrap: nowrap; // 禁止换行
-  white-space: nowrap; // 禁止文字换行
-  gap: 0px; // 按钮间距（可调整）
-  /*padding: 4px 8px;         // 上下内边距*/
-  overflow: visible !important; // 关键：即使超出容器也显示所有按钮
+  gap: 0; // 按钮间距（可调整）
   width: fit-content !important; // 容器宽度=按钮总宽度（核心！）
   min-width: unset !important; // 取消最小宽度限制，避免干扰计算
+
+  /* padding: 4px 8px;         // 上下内边距 */
+  overflow: visible !important; // 关键：即使超出容器也显示所有按钮
+  white-space: nowrap; // 禁止文字换行
 }
 
 .pagination {

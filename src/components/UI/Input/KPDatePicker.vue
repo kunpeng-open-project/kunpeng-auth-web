@@ -8,10 +8,9 @@
 
 <script lang="ts" setup name="KPDatePicker">
 import { computed } from "vue"
+import type { DateValue } from "@/utils/data/systemType"
 
 type typeEnum = "year" | "years" | "month" | "months" | "date" | "dates" | "datetime" | "week" | "datetimerange" | "daterange" | "monthrange" | "yearrange"
-// 根据类型确定值的类型
-type DateValue = string | number | Date | [Date, Date] | [string, string]
 
 // 接收父组件的值
 const props = withDefaults(

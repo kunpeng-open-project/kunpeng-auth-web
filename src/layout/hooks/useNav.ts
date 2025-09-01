@@ -125,7 +125,7 @@ export function useNav() {
 
   /** 获取`logo` */
   function getLogo() {
-    return new URL("/kunpengIcon.png", import.meta.url).href
+    return new URL("/kpIcon.png", import.meta.url).href
   }
 
   function toAccountSettings() {

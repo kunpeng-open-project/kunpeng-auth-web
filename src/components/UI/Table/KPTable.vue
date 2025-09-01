@@ -43,15 +43,16 @@
       </el-row>
     </template>
 
-    <el-table v-loading="loading" :data="tableList.list" :style="tableHeaderStyles" :size="tableSize" :height="tableHeight" @sort-change="sortChangeOrderBy" @selection-change="multiSelect" fit>
+    <el-table v-loading="loading" ref="tableRef" :data="tableList.list" :style="tableHeaderStyles" :size="tableSize" :height="tableHeight" @sort-change="sortChangeOrderBy" @selection-change="multiSelect" fit>
       <template v-if="checkbox">
         <el-table-column type="selection" width="30" align="center" />
       </template>
-      <el-table-column v-for="column in tableColumn" :key="column.prop" :prop="column.prop" :label="column.label" :width="column.width" align="center" :show-overflow-tooltip="column.type === 'avatar' ? false : true" :sortable="column.sort === undefined ? false : 'custom'" :sort-orders="['ascending', 'descending']" :render-header="renderHeader">
+      <!--      :render-header="renderHeader" 替换成监听器 -->
+      <el-table-column v-for="column in tableColumn" :key="column.prop" :prop="column.prop" :label="column.label" :min-width="column.width" align="center" :show-overflow-tooltip="column.type === 'avatar' ? false : true" :sortable="column.sort === undefined ? false : 'custom'" :sort-orders="['ascending', 'descending']">
         <template #default="{ row }">
           <slot :name="column.prop" :row="row">
             <template v-if="column.type === 'avatar'">
-              <KPAvatar :size="tableSize" :src="row[column.prop] ? row[column.prop] : column.avatarIma" shape="circle" />
+              <KPAvatar :size="tableSize" w :src="row[column.prop] ? row[column.prop] : column.avatarIma" shape="circle" />
             </template>
             <template v-else>
               <el-tag v-if="column.tag" :type="column.tag[row[column.prop]]" :round="column.tagRound === undefined ? true : column.tagRound" :effect="column.tagEffect ? column.tagEffect : 'dark'">
@@ -108,7 +109,7 @@
 
 <script lang="ts" setup name="KPTable">
 import { useLayout } from "@/layout/hooks/useLayout"
-import { computed, h, nextTick, onMounted, ref, toRefs, useSlots } from "vue"
+import { computed, h, nextTick, onMounted, ref, toRefs, useSlots, watch } from "vue"
 import { delTableData, getTableList } from "@/api/table"
 import { ResultTable } from "@/config/requestType"
 import { OperateEnum, PageData, TableColumn, TableSizeEnum } from "@/utils/data/systemData"
@@ -120,6 +121,7 @@ import KPAvatar from "@/components/UI/Input/KPAvatar.vue"
 import { serverPath } from "@/utils/serverPath"
 import { postJson } from "@/api/common"
 import type { TableSize } from "@/utils/data/systemType"
+import Table from "@pureadmin/table"
 
 //接收父组件的值
 const props = withDefaults(
@@ -181,6 +183,8 @@ const multiSelectValue = ref<Array<any>>([])
 const pageSizes = ref([])
 // 动态操作区域宽度
 const actionWidth = ref("100px")
+// 定义表格实例的 ref
+const tableRef = ref<InstanceType<typeof Table> | null>(null)
 
 onMounted(async () => {
   setPageSizes()
@@ -530,6 +534,70 @@ const tableHeight = computed(() => {
     return "calc(100vh - 260px)"
   }
 })
+
+/**
+ * 监听表格密度变化，重新计算表头宽度
+ */
+watch(
+  tableSize,
+  async newSize => {
+    // 等待表格DOM更新（密度切换后表格会重新渲染，需等待DOM稳定）
+    await nextTick()
+    // 重新执行所有列的 render-header 逻辑
+    await reCalculateHeaderWidth()
+  },
+  { immediate: true }
+)
+
+/**
+ * 重新计算所有表头的最小宽度（适配密度变化）
+ */
+const reCalculateHeaderWidth = async () => {
+  await nextTick()
+  if (!tableRef.value) return
+
+  const columns = tableRef.value.columns
+  if (!columns.length) return
+
+  const dynamicWidth = tableSize.value === "large" ? 35 : tableSize.value === "small" ? -25 : 0
+
+  columns.forEach(column => {
+    // 创建临时 span 计算文字宽度
+    const tempSpan = document.createElement("span")
+    // 根据当前 tableSize 设置字体大小（匹配 Element Plus 样式）
+    const fontSizeMap = { large: "16px", small: "12px", default: "14px" }
+    tempSpan.style.fontSize = fontSizeMap[tableSize.value] || fontSizeMap.default
+
+    tempSpan.style.fontWeight = "500"
+    tempSpan.innerText = column.label // 使用真实列的 label
+    document.body.appendChild(tempSpan)
+
+    // 计算 minWidth（基于真实列的 sortable 属性）
+    const textWidth = tempSpan.getBoundingClientRect().width
+
+    //如果用户自己设置了宽度 就用设置的 不进行自动分配
+    const width = props.tableColumn.find(item => item.prop === column.property)?.width ?? 0
+    if (width != 0) {
+      column.minWidth = width + dynamicWidth
+    } else {
+      //自动分配宽度
+      if (column.sortable === true || column.sortable === "custom") {
+        column.minWidth = textWidth + dynamicWidth + 55 // 有排序功能，加额外宽度
+      } else {
+        column.minWidth = textWidth + dynamicWidth + 25 // 无排序功能，基础宽度
+      }
+    }
+
+    document.body.removeChild(tempSpan)
+  })
+
+  // 强制表格重新渲染列（通过更新 key）
+  const tableEl = tableRef.value.$el
+  if (tableEl) {
+    const oldKey = tableEl.getAttribute("data-key") || "1"
+    tableEl.setAttribute("data-key", oldKey === "1" ? "2" : "1")
+  }
+}
 </script>
 
 <style lang="scss" scoped>

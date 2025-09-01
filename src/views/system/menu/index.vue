@@ -110,7 +110,7 @@ const queryParams = reactive({
  * table 列表 定义显示列
  */
 let tableColumn: TableColumn[] = [
-  { prop: "menuName", label: "菜单名称", sort: true, width: "200px", prefixIcon: "icon" },
+  { prop: "menuName", label: "菜单名称", sort: true, width: 200, prefixIcon: "icon" },
   { prop: "sort", label: "顺序" },
   { prop: "perms", label: "权限标识", sort: true },
   { prop: "menuType", label: "菜单类型", sort: true, render: { M: "目录", C: "菜单", B: "按钮", I: "接口" }, tag: { M: "primary", C: "success", B: "warning", I: "danger" }, tagEffect: "light", tagRound: false },

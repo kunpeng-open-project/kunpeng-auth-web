@@ -67,7 +67,7 @@ const queryParams = reactive({
  * table 列表 定义显示列
  */
 let tableColumn: TableColumn[] = [
-	{ prop: "deptName", label: "部门名称", sort: true, width: "200px" },
+	{ prop: "deptName", label: "部门名称", sort: true, width: 200 },
 	{ prop: "hierarchy", label: "层级", sort: true },
 	{ prop: "source", label: "数据来源", sort: true },
 	{ prop: "status", label: "部门状态", sort: true },

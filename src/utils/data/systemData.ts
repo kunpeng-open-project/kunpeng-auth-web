@@ -74,7 +74,7 @@ export interface TableColumn {
   prop: string
   label: string
   sort?: boolean //是否排序
-  width?: string
+  width?: number // 宽度 单位 px
   prefixIcon?: string
   type?: string //类型 avatar 表示头像
   avatarIma?: string // 头像的默认图片

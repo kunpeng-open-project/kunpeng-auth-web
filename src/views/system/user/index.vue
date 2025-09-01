@@ -124,8 +124,8 @@ const queryParams = reactive({
  * table 列表 定义显示列
  */
 let tableColumn: TableColumn[] = [
-  { prop: "avatar", label: "头像", type: "avatar", avatarIma: Avatar },
-  { prop: "userName", label: "账号", width: "100px" },
+  { prop: "avatar", label: "头像", type: "avatar", avatarIma: Avatar},
+  { prop: "userName", label: "账号", width: 100 },
   { prop: "jobNumber", label: "工号", sort: true },
   { prop: "realName", label: "姓名", sort: true },
   { prop: "nickName", label: "昵称", sort: true },

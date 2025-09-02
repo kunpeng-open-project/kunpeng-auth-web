@@ -52,7 +52,7 @@
 
 ### 后端框架
 
-- [易鹏微服务框架](http://kpopen.cn/kunPengBack/001_%E4%BB%8B%E7%BB%8D.html)：基于 SpringCloud 生态的全栈微服务解决方案
+- [易鹏微服务框架](http://kpopen.cn/kpBack/001_%E4%BB%8B%E7%BB%8D.html)：基于 SpringCloud 生态的全栈微服务解决方案
 - 后端文档：[易鹏框架文档中心](http://kpopen.cn)
 
 ### 官方资源

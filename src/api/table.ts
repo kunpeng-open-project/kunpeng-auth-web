@@ -1,7 +1,5 @@
-import { http } from "@/utils/http";
-import { Result, ResultTable } from "@/config/requestType";
-import { serverPath } from "@/utils/serverPath";
-
+import { http } from "@/utils/http"
+import { Result, ResultTable } from "@/config/requestType"
 
 /**
  * 获取表格数据
@@ -10,9 +8,8 @@ import { serverPath } from "@/utils/serverPath";
  * @param data
  */
 export const getTableList = (microService: string, url: string, data?: object) => {
-    return http.request<ResultTable>("post", microService + url, { data });
-};
-
+  return http.request<ResultTable>("post", microService + url, { data })
+}
 
 /**
  * 添加表格数据
@@ -20,9 +17,8 @@ export const getTableList = (microService: string, url: string, data?: object) =
  * @param data
  */
 export const addTableData = (microService: string, url: string, data?: object) => {
-    return http.request<Result>("post", microService + url, { data });
-};
-
+  return http.request<Result>("post", microService + url, { data })
+}
 
 /**
  * 修改表格数据
@@ -30,9 +26,8 @@ export const addTableData = (microService: string, url: string, data?: object) =
  * @param data
  */
 export const updateTableData = (microService: string, url: string, data?: object) => {
-    return http.request<Result>("post", microService + url, { data });
-};
-
+  return http.request<Result>("post", microService + url, { data })
+}
 
 /**
  * 查询详情数据
@@ -40,9 +35,8 @@ export const updateTableData = (microService: string, url: string, data?: object
  * @param data
  */
 export const queryTableDetails = (microService: string, url: string, data?: object) => {
-    return http.request<Result>("post", microService + url, { data });
-};
-
+  return http.request<Result>("post", microService + url, { data })
+}
 
 /**
  * 删除表格数据
@@ -50,9 +44,8 @@ export const queryTableDetails = (microService: string, url: string, data?: obje
  * @param data
  */
 export const delTableData = (microService: string, url: string, data?: object) => {
-    return http.request<Result>("post", microService + url, { data });
-};
-
+  return http.request<Result>("post", microService + url, { data })
+}
 
 /**
  * 修改表格顺序
@@ -60,5 +53,15 @@ export const delTableData = (microService: string, url: string, data?: object) =
  * @param data
  */
 export const updateSort = (microService: string, url: string, data?: object) => {
-    return http.request<Result>("post", microService + url, { data });
-};
+  return http.request<Result>("post", microService + url, { data })
+}
+
+
+/**
+ * 审核数据
+ * @param url
+ * @param data
+ */
+export const reviewTableData = (microService: string, url: string, data?: object) => {
+  return http.request<Result>("post", microService + url, { data })
+}

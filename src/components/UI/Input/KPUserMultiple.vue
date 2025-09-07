@@ -279,6 +279,7 @@ const handlePaginationSize = async (pageSize: number) => {
  * 点击选择用户
  */
 const handleClick = async (value: string | number) => {
+  if (props.disabled) return
   dialogVisible.value = true
 
   // 如果外层选择的 和里面右边选择的不一致 进行校对

@@ -1,7 +1,7 @@
 <template>
   <el-col :span="span">
     <el-form-item :label="label" :style="{ width: width }" :prop="prop" :rules="rules">
-      <el-radio-group v-model="localValue">
+      <el-radio-group v-model="localValue" :disabled="disabled">
         <el-radio v-for="item in options" :key="item.value" :value="item.value">{{ item.label }}</el-radio>
       </el-radio-group>
     </el-form-item>
@@ -21,10 +21,12 @@ const props = withDefaults(
     prop?: string // 表单验证的属性
     span?: number // 宽度间隔 最大 24
     rules?: any // 表单验证规则
+    disabled?: boolean // 新增：是否禁用输入框，默认为 false
   }>(),
   {
     width: "100%",
-    span: 24
+    span: 24,
+    disabled: false // 设置默认值
   }
 )
 

@@ -1,7 +1,7 @@
 <template>
   <el-col :span="span">
     <el-form-item :label="label" :style="{ width: width }" :prop="prop" :rules="rules">
-      <el-tree-select v-loading="loading" v-model="localValue" :data="options" :check-strictly="checkStrictly" filterable :render-after-expand="false" :show-checkbox="showCheckbox" :props="defaultProps" :placeholder="'请选择' + label" clearable :multiple="multiple" @change="handleChange" />
+      <el-tree-select v-loading="loading" v-model="localValue" :data="options" :disabled="disabled" :check-strictly="checkStrictly" filterable :render-after-expand="false" :show-checkbox="showCheckbox" :props="defaultProps" :placeholder="'请选择' + label" clearable :multiple="multiple" @change="handleChange" />
     </el-form-item>
   </el-col>
 </template>
@@ -27,6 +27,7 @@ const props = withDefaults(
     api: string // 查询下拉框值的api请求地址
     apiParams?: any
     apiPath?: string // 请求的api地址
+    disabled?: boolean // 新增：是否禁用输入框，默认为 false
   }>(),
   {
     width: "100%",
@@ -39,7 +40,8 @@ const props = withDefaults(
     showCheckbox: false,
     span: 24,
     apiParams: () => {},
-    apiPath: serverPath.authentication
+    apiPath: serverPath.authentication,
+    disabled: false // 设置默认值
   }
 )
 

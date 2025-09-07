@@ -1,7 +1,7 @@
 <template>
   <el-col :span="span">
     <el-form-item :label="label" :style="{ width: width }" :prop="prop" :rules="rules">
-      <el-date-picker v-model="localValue" :type="type" :placeholder="'请选择' + label" :style="{ width: '100%' }" :value-format="valueFormat" :range-separator="rangeSeparator" :start-placeholder="startPlaceholder" :end-placeholder="endPlaceholder" @change="handleChange" />
+      <el-date-picker v-model="localValue" :type="type" :placeholder="'请选择' + label" :style="{ width: '100%' }" :value-format="valueFormat" :disabled="disabled" :range-separator="rangeSeparator" :start-placeholder="startPlaceholder" :end-placeholder="endPlaceholder" @change="handleChange" />
     </el-form-item>
   </el-col>
 </template>
@@ -26,6 +26,7 @@ const props = withDefaults(
     rangeSeparator?: string // 范围分隔符 选择范围时的分隔符
     startPlaceholder?: string // 范围选择时开始日期的占位内容
     endPlaceholder?: string // 范围选择时结束日期的占位内容
+    disabled?: boolean // 新增：是否禁用输入框，默认为 false
   }>(),
   {
     width: "100%",
@@ -34,7 +35,8 @@ const props = withDefaults(
     valueFormat: "YYYY-MM-DD",
     rangeSeparator: "-",
     startPlaceholder: "开始日期",
-    endPlaceholder: "结束日期"
+    endPlaceholder: "结束日期",
+    disabled: false // 设置默认值
   }
 )
 

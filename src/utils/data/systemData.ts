@@ -16,7 +16,9 @@ export const OperateEnum = {
   query: "查询",
   add: "新增",
   update: "修改",
+  review: "审批",
   updateRow: "行内修改",
+  reviewRow: "行内审批",
   reset: "重置",
   setMenuAuthority: "设置菜单权限",
   setDataAuthority: "设置数据权限",
@@ -60,9 +62,12 @@ export interface TableDialogColumn {
   detailsApi?: string
   // 详情按钮权限
   detailsButtonAuth?: string
+  // 审批接口地址
+  reviewApi?: string
+  // 审批按钮权限
+  reviewButtonAuth?: string
   //  排序接口地址
   sortApi?: string
-
   // 扩展内容
   [key: string]: any
 }

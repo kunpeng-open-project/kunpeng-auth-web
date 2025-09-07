@@ -34,7 +34,9 @@
 
     <template #footer>
       <div :class="dialogFulls ? 'dialog-footer-full' : 'dialog-footer'">
-        <el-button type="primary" :loading="dialogLoading" @click="handleSave(editRef)">保 存</el-button>
+        <el-button v-if="useType === OperateEnum.add || useType === OperateEnum.update || useType === OperateEnum.updateRow" type="primary" :loading="dialogLoading" @click="handleSave(editRef, null)">保 存</el-button>
+        <el-button v-if="useType === OperateEnum.review" type="success" :loading="dialogLoading" @click="handleSave(editRef, 1)">同 意</el-button>
+        <el-button v-if="useType === OperateEnum.review" type="warning" :loading="dialogLoading" @click="handleSave(editRef, 0)">拒 绝</el-button>
         <el-button @click="dialogVisible = false">关 闭</el-button>
       </div>
     </template>
@@ -44,7 +46,7 @@
 <script lang="ts" setup name="KPDialogFormEdit">
 import { computed, ref, watch } from "vue"
 import { toReactive } from "@vueuse/core"
-import { addTableData, queryTableDetails, updateTableData } from "@/api/table"
+import { addTableData, queryTableDetails, reviewTableData, updateTableData } from "@/api/table"
 import { message, numberMessageBox } from "@/utils/message"
 import { Emitter } from "mitt"
 import { removeEmptyAndNull } from "@/utils/json"
@@ -62,6 +64,7 @@ const props = withDefaults(
     saveApi?: string //保存接口地址
     updateApi?: string //修改接口地址
     detailsApi?: string //详情接口地址
+    reviewApi?: string //审批接口地址
     width?: string // 对话框宽度
     labelWidth?: string //文本框说明文字宽度
     isBorder?: boolean //是否加边框
@@ -82,7 +85,7 @@ const props = withDefaults(
 )
 
 // 接收父组件的值 变成普通数据
-let { eventBus, saveApi, updateApi, detailsApi, tableKey } = props
+let { eventBus, saveApi, updateApi, detailsApi, reviewApi, tableKey } = props
 // 接收父组件的值 变成 reactive 对象
 const { editParams } = toReactive(props)
 //接收父组件的值 变成 ref数据
@@ -139,6 +142,17 @@ const openEditDialog = async (event: { edit: string; row: any }) => {
       ketValue = row[tableKey]
       useType.value = OperateEnum.update
       break
+    case OperateEnum.reviewRow:
+      dialogTitle.value = "审批" + props.title
+      ketValue = row[tableKey]
+      useType.value = OperateEnum.review
+      break
+    case OperateEnum.review:
+      dialogTitle.value = "审批" + props.title
+      if (numberMessageBox(multiSelectValue.length, 1)) return
+      ketValue = multiSelectValue[0][tableKey]
+      useType.value = OperateEnum.review
+      break
   }
   dialogVisible.value = true
 }
@@ -146,7 +160,7 @@ const openEditDialog = async (event: { edit: string; row: any }) => {
 /**
  * 保存数据
  */
-const handleSave = async editRef => {
+const handleSave = async (editRef, status: number) => {
   const isValid = await new Promise(resolve => {
     editRef.validate((valid, fields) => {
       resolve(valid)
@@ -184,6 +198,24 @@ const handleSave = async editRef => {
         message("操作成功", { type: "success" })
       }
       break
+    case OperateEnum.review:
+      if (!reviewApi) {
+        message("请在 KPDialogFormEdit 标签中配置reviewApi或review-api属性", { type: "error" })
+        dialogLoading.value = false
+        return
+      }
+      // let id = editParams[tableKey]
+      // delete editParams[tableKey]
+      editParams.ids = [editParams[tableKey]]
+      editParams.status = status
+
+      const reviewBody = await reviewTableData(props.apiPath, reviewApi, removeEmptyAndNull(editParams))
+      if (reviewBody.success) {
+        dialogVisible.value = false
+        eventBus.emit("queryList", removeEmptyAndNull(props.queryParams))
+        message("操作成功", { type: "success" })
+      }
+      break
   }
   dialogLoading.value = false
 }
@@ -207,7 +239,7 @@ watch(
   async newValue => {
     if (!newValue) return
 
-    if (useType.value === OperateEnum.update) {
+    if (useType.value === OperateEnum.update || useType.value === OperateEnum.review) {
       if (!detailsApi) {
         message("请在 KPDialogFormEdit 标签中配置detailsApi或details-api属性", { type: "error" })
         dialogLoading.value = false

@@ -74,17 +74,17 @@ const queryParams = reactive({
  * table 列表 定义显示列
  */
 let tableColumn: TableColumn[] = [
-  { prop: "projectName", label: "项目名称" },
-  { prop: "name", label: "接口名称", sort: true },
+  { prop: "projectName", label: "项目名称", width: 110 },
+  { prop: "name", label: "接口名称", sort: true, width: 200 },
   { prop: "method", label: "请求方式" },
-  { prop: "parameters", label: "入参" },
-  { prop: "result", label: "出参" },
+  { prop: "parameters", label: "入参", width: 260 },
+  { prop: "result", label: "出参", width: 260 },
   { prop: "identificationName", label: "姓名|项目名称", sort: true },
   { prop: "serial", label: "操作人工号", sort: true },
   { prop: "phone", label: "操作人手机号", sort: true },
   { prop: "disposeTime", label: "用时/毫秒", sort: true },
-  { prop: "callTime", label: "调用时间", sort: true },
-  { prop: "clinetIp", label: "客户端IP", sort: true }
+  { prop: "callTime", label: "调用时间", sort: true, width: 160 },
+  { prop: "clinetIp", label: "客户端IP", sort: true, width: 130 }
 ]
 
 /**

@@ -18,6 +18,11 @@
           </Auth>
           <el-button v-else-if="!delButtonAuth && delBatchButton" class="operate_button" icon="Delete" type="danger" size="small" title="删除" circle @click="handleDelete(null)" />
 
+          <Auth v-if="reviewButtonAuth" :value="reviewButtonAuth">
+            <el-button class="operate_button" icon="SetUp" type="success" size="small" title="审批" circle @click="openEditDialog(OperateEnum.review, null)" />
+          </Auth>
+          <el-button v-else-if="!reviewButtonAuth && reviewBatchButton" class="operate_button" icon="SetUp" type="success" size="small" title="审批" circle @click="openEditDialog(OperateEnum.reviewRow, null)" />
+
           <slot name="toolbar" />
         </el-col>
         <el-col :span="12" style="text-align: right">
@@ -95,6 +100,9 @@
 
             <el-button v-if="delButtonRow && hasAuth(delButtonAuth)" type="danger" icon="Delete" size="small" title="删除" link @click="handleDelete(row)">删除</el-button>
             <el-button v-else-if="delButtonRow && !delButtonAuth" type="danger" icon="Delete" size="small" title="删除" link @click="handleDelete(row)">删除</el-button>
+
+            <el-button v-if="reviewRow && hasAuth(reviewButtonAuth)" type="success" icon="SetUp" size="small" title="审批" link @click="openEditDialog(OperateEnum.reviewRow, row)">审批</el-button>
+            <el-button v-else-if="reviewRow && !reviewButtonAuth" type="success" icon="SetUp" size="small" title="审批" link @click="openEditDialog(OperateEnum.reviewRow, row)">审批</el-button>
             <slot name="actions" :row="row" />
           </div>
         </template>
@@ -135,12 +143,15 @@ const props = withDefaults(
     updateButtonAuth?: string // 修改按钮的权限标识 不传入表示不需要权限
     delButtonAuth?: string // 删除按钮的权限标识 不传入表示不需要权限
     detailsButtonAuth?: string // 详情按钮的权限标识 不传入表示不需要权限
+    reviewButtonAuth?: string // 审批按钮的权限标识 不传入表示不需要权限
     addBatchButton?: boolean // 无权限的新增按钮
     updateBatchButton?: boolean // 无权限的修改按钮
     delBatchButton?: boolean // 无权限的删除按钮
+    reviewBatchButton?: boolean // 无权限的审批按钮
     detailsButtonRow?: boolean //是否显示行内详情按钮
     updateButtonRow?: boolean // 是否显示行内修改按钮
     delButtonRow?: boolean // 是否显示行内删除按钮
+    reviewRow?: boolean // 是否显示行内审批按钮
     queryParams?: PageData // 查询参数
     kpTableQueryHeight?: string // 表格高度，默认值
     initList?: boolean // 是否初始化列表数据
@@ -150,10 +161,12 @@ const props = withDefaults(
     detailsButtonRow: false,
     checkbox: false,
     updateButtonRow: false,
+    reviewRow: false,
     delButtonRow: false,
     addBatchButton: false,
     updateBatchButton: false,
     delBatchButton: false,
+    reviewBatchButton: false,
     kpTableQueryHeight: "70px",
     queryParams: () => new PageData(),
     initList: true,
@@ -474,6 +487,13 @@ const isActionColumnShow = computed(() => {
     if (hasAuth(props.delButtonAuth)) return true
   }
 
+  // 如果有审批按钮并且不需要权限 直接显示
+  if (props.reviewRow && !props.reviewButtonAuth) {
+    return true
+  } else {
+    if (hasAuth(props.reviewButtonAuth)) return true
+  }
+
   return false
 })
 /**
@@ -617,9 +637,9 @@ const reCalculateHeaderWidth = async () => {
 
 .action-buttons {
   /*	display: flex;
-    flex-wrap: nowrap; // 防止换行
-    white-space: nowrap; // 防止内容换行
-    overflow: visible; // 确保内容不被隐藏 */
+	  flex-wrap: nowrap; // 防止换行
+	  white-space: nowrap; // 防止内容换行
+	  overflow: visible; // 确保内容不被隐藏 */
 
   display: flex;
   flex-wrap: nowrap; // 禁止换行

@@ -50,7 +50,7 @@ const props = withDefaults(
     rules?: any // 表单验证规则
   }>(),
   {
-    width: "50%",
+    width: "55%",
     labelWidth: "100px"
   }
 )
@@ -62,7 +62,7 @@ const { fromParams } = toReactive(props)
 // 定义 emits
 const emit = defineEmits<{
   (e: "update:modelValue", value: boolean): void
-  (e: "handleSave", value: {}): void
+  (e: "handleSave", value: {}, resolve: () => void): void
 }>()
 
 //模态框是否全屏
@@ -75,9 +75,19 @@ const editRef = ref(null)
 /**
  * 保存数据
  */
-const handleSave = async () => {
+const handleSave = async (editRef: any) => {
+  const isValid = await new Promise(resolve => {
+    editRef.validate((valid, fields) => {
+      resolve(valid)
+    })
+  })
+
+  if (!isValid) return
+
   dialogLoading.value = true
-  emit("handleSave", fromParams)
+  await new Promise<void>(resolve => {
+    emit("handleSave", fromParams, resolve)
+  })
   dialogLoading.value = false
 }
 

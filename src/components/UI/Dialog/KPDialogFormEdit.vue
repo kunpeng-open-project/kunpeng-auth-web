@@ -14,23 +14,23 @@
       </el-row>
     </template>
 
-    <!--		<el-scrollbar :max-height="dialogFulls?'calc(100vh - 130px)':'70vh'">-->
-    <div style="margin-top: 12px" v-loading="dialogLoading">
-      <el-card shadow="hover" class="custom-card" v-if="isBorder">
-        <el-form :model="editParams" :rules="rules" :inline="true" class="demo-form-inline" :label-width="labelWidth">
+    <el-scrollbar :max-height="dialogFulls ? 'calc(100vh - 130px)' : '70vh'">
+      <div style="margin-top: 12px" v-loading="dialogLoading">
+        <el-card shadow="hover" class="custom-card" v-if="isBorder">
+          <el-form :model="editParams" ref="editRef" :rules="rules" :inline="true" class="demo-form-inline" :label-width="labelWidth">
+            <el-row :gutter="30">
+              <slot />
+            </el-row>
+          </el-form>
+        </el-card>
+
+        <el-form :model="editParams" ref="editRef" :rules="rules" :inline="true" class="demo-form-inline" :label-width="labelWidth" v-else>
           <el-row :gutter="30">
             <slot />
           </el-row>
         </el-form>
-      </el-card>
-
-      <el-form :model="editParams" ref="editRef" :rules="rules" :inline="true" class="demo-form-inline" :label-width="labelWidth" v-else>
-        <el-row :gutter="30">
-          <slot />
-        </el-row>
-      </el-form>
-    </div>
-    <!--		</el-scrollbar>-->
+      </div>
+    </el-scrollbar>
 
     <template #footer>
       <div :class="dialogFulls ? 'dialog-footer-full' : 'dialog-footer'">
@@ -75,7 +75,7 @@ const props = withDefaults(
     apiPath?: string // 请求的api地址
   }>(),
   {
-    width: "50%",
+    width: "55%",
     isBorder: false,
     queryParams: () => ({ pageNum: 1, pageSize: 10 }),
     labelWidth: "100px",

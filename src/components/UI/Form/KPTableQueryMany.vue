@@ -1,6 +1,6 @@
 <template>
   <!--单行搜索-->
-  <el-card v-if="paramsIsShow && !isSenior" shadow="hover" class="custom-card-single">
+  <el-card v-if="paramsIsShow && !isSenior" shadow="hover" class="custom-card-single" :style="`border-radius: ${borderRadius}`">
     <el-form :model="queryParams" :inline="true" class="demo-form-inline">
       <el-container class="container-style">
         <el-main>
@@ -23,7 +23,7 @@
   </el-card>
 
   <!--多行搜索-->
-  <el-card v-if="paramsIsShow && isSenior" shadow="hover" class="custom-card">
+  <el-card v-if="paramsIsShow && isSenior" shadow="hover" class="custom-card" :style="`border-radius: ${borderRadius}`">
     <el-form :model="queryParams" :inline="true" class="demo-form-inline">
       <el-container class="container-style">
         <el-main>
@@ -59,10 +59,12 @@ const props = withDefaults(
     eventBus: Emitter<any> // 事件总线实例
     exclude?: string // 重置的时候保留的字段 多个用英文逗号分隔
     queryHeight?: string
+    borderRadius?: string // 新增圆角属性
   }>(),
   {
     exclude: null,
-    queryHeight: "70px"
+    queryHeight: "70px",
+    borderRadius: "5px" // 默认5px
   }
 )
 // 接收父组件的值 变成普通数据

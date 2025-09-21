@@ -2,7 +2,6 @@
   <el-form-item :label="label" :prop="prop" :rules="rules" v-if="label">
     <div class="avatar-container" @mouseenter="showOverlay = uploadable" @mouseleave="showOverlay = false">
       <el-avatar v-model="localValue" :size="size" :icon="icon" :shape="shape" :alt="alt" :fit="fit" :src="localSrc" :src-set="srcSet" @error="handleError" @click="handleClick" />
-
       <div v-if="showOverlay" class="avatar-overlay" :class="shape">
         <el-button v-if="uploadable" plain type="primary" class="upload-button" @click.stop="triggerUpload">
           <IconifyIconOnline icon="ri:upload-line" />
@@ -15,12 +14,19 @@
     <el-upload ref="uploadRef" accept="image/*" action="#" :limit="1" :auto-upload="false" :show-file-list="false" :on-change="onChange">
       <!-- 添加一个隐藏的上传按钮 -->
       <template #trigger>
-        <el-button style="display: none"></el-button>
+        <el-button style="display: none" />
       </template>
     </el-upload>
   </el-form-item>
 
-  <el-avatar v-else v-model="localValue" :size="size" :icon="icon" :shape="shape" :alt="alt" :fit="fit" :src="localSrc" :src-set="srcSet" @error="handleError" @click="handleClick" />
+  <div v-else>
+    <div v-if="avatarMessage" style="display: flex; align-items: center; gap: 10px">
+      <el-avatar v-model="localValue" :size="size" :icon="icon" :shape="shape" :alt="alt" :fit="fit" :src="localSrc" :src-set="srcSet" @error="handleError" @click="handleClick" />
+      {{ avatarMessage }}
+    </div>
+
+    <el-avatar v-if="!avatarMessage" v-model="localValue" :size="size" :icon="icon" :shape="shape" :alt="alt" :fit="fit" :src="localSrc" :src-set="srcSet" @error="handleError" @click="handleClick" />
+  </div>
 
   <el-dialog v-model="isShow" width="40%" title="编辑头像" destroy-on-close :closeOnClickModal="false" :before-close="handleClose" :fullscreen="deviceDetection()">
     <ReCropperPreview ref="cropRef" :imgSrc="imgSrc" @cropper="onCropper" />
@@ -34,7 +40,7 @@
 </template>
 
 <script lang="ts" setup name="KPAvatar">
-import { computed, defineEmits, defineProps, ref, watch } from "vue"
+import { computed, ref, watch } from "vue"
 import { createFormData, deviceDetection } from "@pureadmin/utils"
 import ReCropperPreview from "@/components/ReCropperPreview"
 import { uploadFile } from "@/api/system"
@@ -58,6 +64,7 @@ const props = withDefaults(
     uploadable?: boolean // 是否启用上传功能，默认为 false
     enableThumbnail?: boolean // 新增：是否启用缩略图生成
     thumbnailSize?: number // 新增：缩略图尺寸（仅enableThumbnail为true时生效）
+    avatarMessage?: string // 头像右侧提示信息  只在非上传模式下显示
   }>(),
   {
     size: "default",

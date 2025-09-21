@@ -41,7 +41,7 @@ const props = withDefaults(
     top?: string // top 对话框距离顶部的距离
   }>(),
   {
-    width: "50%",
+    width: "55%",
     top: "15vh"
   }
 )

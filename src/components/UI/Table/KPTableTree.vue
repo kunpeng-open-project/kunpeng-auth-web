@@ -551,12 +551,21 @@ const batchTranslate = async (column: TableColumn, ids: (string | number)[]) => 
   const { data } = await postJson(api, parameter, microService)
 
   const translateMap = new Map<string | number, string>()
-  data.list.forEach(respItem => {
-    const originalId = respItem[prop]
-    if (originalId != null) {
-      translateMap.set(originalId, respItem[responseLabelKey])
-    }
-  })
+  try {
+    data.forEach(respItem => {
+      const originalId = respItem[prop]
+      if (originalId != null) {
+        translateMap.set(originalId, respItem[responseLabelKey])
+      }
+    })
+  } catch (e) {
+    data.list.forEach(respItem => {
+      const originalId = respItem[prop]
+      if (originalId != null) {
+        translateMap.set(originalId, respItem[responseLabelKey])
+      }
+    })
+  }
   tableList.value.forEach(item => {
     item[prop] = translateMap.get(item[prop])
   })

@@ -30,8 +30,8 @@
                           </div>
                         </template>
                         -->
-            <KPButton v-if="item.ability && item.ability.includes('formatJson')" :content="formattedFieldTitles[item.prop]" type="success" :icon="formattedFieldTitles[item.prop] === '格式化' ? 'ri:code-box-fill' : 'ri:code-box-line'" link @click="handleFormatJson(item.prop)" />
-            <KPButton v-if="item.ability && item.ability.includes('copy')" content="复制" icon="ri:file-copy-2-line" link @click="handleCopy(detailsMessage[item.prop])" />
+            <KPButton v-if="item.ability && item.ability.includes('formatJson')" :content="formattedFieldTitles[item.prop]" :font-size="18" type="success" :icon="formattedFieldTitles[item.prop] === '格式化' ? 'ri:code-box-fill' : 'ri:code-box-line'" link :is-content="false" @click="handleFormatJson(item.prop)" />
+            <KPButton v-if="item.ability && item.ability.includes('copy')" content="复制" :font-size="18" icon="ri:file-copy-2-line" link :is-content="false" @click="handleCopy(detailsMessage[item.prop])" />
 
             <pre v-if="item.ability && item.ability.includes('formatJson') && formattedFieldTitles[item.prop] === '取消格式化'">{{ item.render ? item.render[detailsMessage[item.prop]] : item.isList ? (detailsMessage[item.prop] && detailsMessage[item.prop].length > 0 ? detailsMessage[item.prop].join(item.isList) : "") + "&nbsp;&nbsp;" + (item.suffix ? item.suffix : "") : (detailsMessage[item.prop] ? detailsMessage[item.prop] : "") + "&nbsp;&nbsp;" + (item.suffix ? item.suffix : "") }}</pre>
             <div v-else>
@@ -82,7 +82,7 @@ const props = withDefaults(
     border: true,
     column: 2,
     labelWidth: "100px",
-    width: "50%",
+    width: "55%",
     top: "15vh",
     apiPath: serverPath.authentication
   }

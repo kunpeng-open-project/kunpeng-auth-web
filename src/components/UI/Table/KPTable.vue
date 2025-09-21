@@ -57,7 +57,11 @@
         <template #default="{ row }">
           <slot :name="column.prop" :row="row">
             <template v-if="column.type === 'avatar'">
-              <KPAvatar :size="tableSize" w :src="row[column.prop] ? row[column.prop] : column.avatarIma" shape="circle" />
+              <KPAvatar :size="tableSize" :src="row[column.prop] ? row[column.prop] : column.avatarIma" shape="circle" />
+            </template>
+
+            <template v-else-if="column.type === 'progress'">
+              <el-progress :percentage="row[column.prop] ? row[column.prop] : 0" color="#165DFF" />
             </template>
             <template v-else>
               <el-tag v-if="column.tag" :type="column.tag[row[column.prop]]" :round="column.tagRound === undefined ? true : column.tagRound" :effect="column.tagEffect ? column.tagEffect : 'dark'">
@@ -156,6 +160,7 @@ const props = withDefaults(
     kpTableQueryHeight?: string // 表格高度，默认值
     initList?: boolean // 是否初始化列表数据
     apiPath?: string // 请求的api地址
+    tableSize?: TableSize // 表格大小
   }>(),
   {
     detailsButtonRow: false,
@@ -170,7 +175,8 @@ const props = withDefaults(
     kpTableQueryHeight: "70px",
     queryParams: () => new PageData(),
     initList: true,
-    apiPath: serverPath.authentication
+    apiPath: serverPath.authentication,
+    tableSize: "default"
   }
 )
 
@@ -188,7 +194,7 @@ const loading = ref(false)
 //搜索栏是否隐藏
 const paramsIsShow = ref(true)
 //表格大小
-const tableSize = ref<TableSize>("default")
+const tableSize = ref<TableSize>(props.tableSize)
 //多选选择值
 const multiSelectValue = ref<Array<any>>([])
 //分页每页显示条数集合
@@ -447,12 +453,21 @@ const batchTranslate = async (column: TableColumn, ids: (string | number)[]) => 
   const { data } = await postJson(api, parameter, microService)
 
   const translateMap = new Map<string | number, string>()
-  data.list.forEach(respItem => {
-    const originalId = respItem[prop]
-    if (originalId != null) {
-      translateMap.set(originalId, respItem[responseLabelKey])
-    }
-  })
+  try {
+    data.forEach(respItem => {
+      const originalId = respItem[prop]
+      if (originalId != null) {
+        translateMap.set(originalId, respItem[responseLabelKey])
+      }
+    })
+  } catch (e) {
+    data.list.forEach(respItem => {
+      const originalId = respItem[prop]
+      if (originalId != null) {
+        translateMap.set(originalId, respItem[responseLabelKey])
+      }
+    })
+  }
   tableList.value.list.forEach(item => {
     item[prop] = translateMap.get(item[prop])
   })
@@ -637,9 +652,9 @@ const reCalculateHeaderWidth = async () => {
 
 .action-buttons {
   /*	display: flex;
-	  flex-wrap: nowrap; // 防止换行
-	  white-space: nowrap; // 防止内容换行
-	  overflow: visible; // 确保内容不被隐藏 */
+    flex-wrap: nowrap; // 防止换行
+    white-space: nowrap; // 防止内容换行
+    overflow: visible; // 确保内容不被隐藏 */
 
   display: flex;
   flex-wrap: nowrap; // 禁止换行

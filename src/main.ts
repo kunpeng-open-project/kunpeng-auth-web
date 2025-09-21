@@ -57,14 +57,32 @@ app.component("Perms", Perms)
 app.use(VueTippy)
 
 // 异步导入所有组件
-const componentModules = import.meta.glob("@/components/UI/**/*.vue")
-Object.entries(componentModules).map(async ([path, loadModule]) => {
+// const componentModules = import.meta.glob("@/components/UI/**/*.vue")
+// Object.entries(componentModules).map(async ([path, loadModule]) => {
+//   const componentName = path
+//       .split("/")
+//       .pop()
+//       .replace(/\.\w+$/, "")
+//   const component = await loadModule()
+//   app.component(componentName, component.default)
+// })
+
+// 替换原有的异步批量导入代码
+// 同步导入所有组件（注意：仅适用于开发环境，生产环境可能需要调整）
+const componentModules = import.meta.glob("@/components/UI/**/*.vue", { eager: true })
+
+// 类型断言，帮助TypeScript识别模块类型
+Object.entries(componentModules as Record<string, { default: any }>).forEach(([path, module]) => {
+  // 提取组件名称，例如从"@/components/UI/Table/KPTable.vue"中提取"KPTable"
   const componentName = path
-    .split("/")
-    .pop()
-    .replace(/\.\w+$/, "")
-  const component = await loadModule()
-  app.component(componentName, component.default)
+      .split("/")
+      .pop()
+      .replace(/\.\w+$/, "")
+
+  // 注册组件
+  app.component(componentName, module.default)
+  // 可选：添加日志以便调试
+  // console.log(`Registered component: ${componentName}`)
 })
 
 //导入自定义ui

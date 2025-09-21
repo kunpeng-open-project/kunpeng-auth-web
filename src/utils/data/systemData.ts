@@ -39,13 +39,13 @@ export class PageData {
  */
 export interface TableDialogColumn {
   //  标题
-  title: string
+  title?: string
   // 表单主键
-  tableKey: string
+  tableKey?: string
   //请求地址路径 不传默认都是鉴权系统
   apiPath?: string
   // 列表接口地址
-  listApi: string
+  listApi?: string
   // 新增接口地址
   saveApi?: string
   // 新增按钮权限
@@ -81,7 +81,7 @@ export interface TableColumn {
   sort?: boolean //是否排序
   width?: number // 宽度 单位 px
   prefixIcon?: string
-  type?: string //类型 avatar 表示头像
+  type?: "avatar" | "progress" //类型 avatar 表示头像 progress 进度条
   avatarIma?: string // 头像的默认图片
   render?: { [key: string | number]: string } // 自定义渲染 翻译数字变成中文  例如 render: { M: "目录", C: "菜单", B: "按钮", I: "接口" }
   tag?: { [key: string | number]: "primary" | "success" | "info" | "warning" | "danger" }
@@ -127,4 +127,15 @@ export interface SelectColumn {
   label: string
   value: string
   children?: SelectColumn
+}
+
+/**
+ * 卡片内容
+ */
+export interface CardItem {
+  title: string // 卡片标题（必传）
+  icon: string // 卡片图标（必传）
+  iconColor: string // 卡片标题（必传）
+  iconBackgroundColor: string // 卡片标题（必传）
+  [key: string]: any // 扩展内容
 }

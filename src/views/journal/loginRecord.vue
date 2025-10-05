@@ -53,7 +53,7 @@ let tableColumn: TableColumn[] = [
   { prop: "projectId", label: "登录项目", sort: true },
   { prop: "userName", label: "用户账号", sort: true },
   { prop: "loginResult", label: "登录结果", sort: true },
-  { prop: "loginType", label: "登录类型", sort: true, render: { 1: "账号登录", 2: "授权登录", 3: "免密登录" }, tag: { 1: "success", 2: "primary", 3: "warning" }, tagEffect: "light", tagRound: false },
+  { prop: "loginType", label: "登录类型", sort: true, render: { 1: "账号登录", 2: "授权登录", 3: "免密登录", 4: "单点登录" }, tag: { 1: "success", 2: "primary", 3: "warning", 4: "info" }, tagEffect: "light", tagRound: false },
   { prop: "loginIp", label: "登录IP", sort: true },
   { prop: "loginIpAddress", label: "登录地址", sort: true },
   { prop: "userPlatForm", label: "代理平台", sort: true },

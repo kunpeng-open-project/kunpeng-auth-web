@@ -16,7 +16,7 @@ const elStyle = computed((): CSSProperties => {
   };
 });
 
-const username = ref(useUserStoreHook()?.username);
+const username = ref(useUserStoreHook()?.userName);
 
 const options = [
   {

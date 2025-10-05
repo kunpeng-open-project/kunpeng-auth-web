@@ -38,7 +38,7 @@
       <template v-if="editForm.menuType === 'C'">
         <KPInputText v-model="editForm.menuName" label="菜单名称" prop="menuName" :span="12" />
         <KPRadio v-model="editForm.isEnable" label="是否启用" prop="isEnable" :options="YesOrNo" :span="12" />
-        <KPIconSelect v-model="editForm.icon" label="菜单图标" prop="icon" :span="12"></KPIconSelect>
+        <KPIconSelect v-model="editForm.icon" label="菜单图标" prop="icon" :span="12" />
         <KPRadio v-model="editForm.frameStatus" label="链接类型" prop="frameStatus" :options="FrameStatus" :span="12" />
         <KPInputText v-model="editForm.routeName" label="路由名称" prop="routeName" :span="12" />
         <KPRadio v-model="editForm.isCache" label="是否缓存" prop="isCache" :options="YesOrNo" :span="12" />

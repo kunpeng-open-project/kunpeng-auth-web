@@ -1,5 +1,5 @@
 import { http } from "@/utils/http"
-import { Result, ResultTable } from "@/config/requestType"
+import type { Result, ResultTable } from "@/config/requestType"
 
 /**
  * 获取表格数据
@@ -55,7 +55,6 @@ export const delTableData = (microService: string, url: string, data?: object) =
 export const updateSort = (microService: string, url: string, data?: object) => {
   return http.request<Result>("post", microService + url, { data })
 }
-
 
 /**
  * 审核数据

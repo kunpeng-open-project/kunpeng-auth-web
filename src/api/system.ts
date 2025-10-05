@@ -1,10 +1,15 @@
 import { http } from "@/utils/http"
 import { projectCode, serverPath } from "@/utils/serverPath"
-import { Result, ResultList } from "@/config/requestType"
+import type { Result, ResultList } from "@/config/requestType"
 
 /** 登录 */
 export const getLogin = (data?: object) => {
   return http.request<Result>("post", serverPath.authentication + "/auth/user/login", { data })
+}
+
+/** 单点登录 */
+export const getSsoLogin = (data?: object) => {
+  return http.request<Result>("post", serverPath.authentication + "/auth/user/sso/login", { data })
 }
 
 /** 退出登录 */

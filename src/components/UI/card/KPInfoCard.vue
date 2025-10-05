@@ -2,7 +2,7 @@
   <!-- 外层行容器：控制卡片横向排列 -->
   <el-row :gutter="gutter">
     <!-- 循环渲染卡片：栅格属性、间距、高度均由props控制 -->
-    <el-col v-for="(card, index) in cardList" :key="index" :span="span" :xs="xs" :sm="sm" :md="md" :lg="lg" :xl="xl">
+    <el-col v-for="(card, index) in cardList" :key="index" :span="span" :xs="xs" :sm="sm" :md="md" :lg="lg" :xl="xl" style="margin-bottom: 10px">
       <el-card :shadow="cardShadow" :style="`height: ${cardHeight}; border-radius: ${borderRadius}`">
         <!-- 卡片标题+图标 -->
         <div class="cardTitle">
@@ -13,7 +13,7 @@
         </div>
 
         <!-- 卡片内容区：插槽传递卡片数据 -->
-        <el-col :span="24">
+        <el-col :span="24" style="margin-top: -10px">
           <slot name="cardContent" :card="card" :index="index" />
         </el-col>
       </el-card>
@@ -29,7 +29,7 @@ const props = withDefaults(
   defineProps<{
     cardList: CardItem[] // 核心配置：卡片数据数组（必传，无默认值）
     gutter?: number // 卡片之间间距
-    span: number // 栅格布局占比（可选，默认6）
+    span?: number // 栅格布局占比（可选，默认6）
     xs?: number | string // 超小屏幕占比
     sm?: number | string // 小屏幕占比
     md?: number | string // 中屏幕占比
@@ -43,7 +43,7 @@ const props = withDefaults(
   }>(),
   {
     gutter: 25,
-    span: 6,
+    // span: 5,
     borderRadius: "5px",
     colMarginBottom: "20px",
     cardShadow: "hover"
@@ -76,5 +76,11 @@ const props = withDefaults(
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+.el-col-5 {
+  width: 20%;
+  max-width: 20%;
+  flex: 0 0 20%;
 }
 </style>

@@ -1,6 +1,6 @@
 import { http } from "@/utils/http"
 import { serverPath } from "@/utils/serverPath"
-import { Result } from "@/config/requestType"
+import type { Result } from "@/config/requestType"
 
 /**
  * post 接口 并且入参是json

@@ -135,7 +135,7 @@ export interface SelectColumn {
 export interface CardItem {
   title: string // 卡片标题（必传）
   icon: string // 卡片图标（必传）
-  iconColor: string // 卡片标题（必传）
-  iconBackgroundColor: string // 卡片标题（必传）
+  iconColor: string // 卡片图标（必传）
+  iconBackgroundColor: string // 卡片图标背景色（必传）
   [key: string]: any // 扩展内容
 }

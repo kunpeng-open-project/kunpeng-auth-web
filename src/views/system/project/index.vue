@@ -19,10 +19,7 @@
           &nbsp;设置权限
         </el-button>
 
-        <el-button type="primary" size="small" :title="'打开' + row.projectName" link>
-          <IconifyIconOnline icon="ri:openai-fill" />
-          <a :href="row.projectUrl" target="_blank">&nbsp;进入系统</a>
-        </el-button>
+        <KPButton title="进入系统" :content="'打开' + row.projectName" link size="small" icon="ri:openai-fill" @click="handleOpenSystem(row.projectUrl)" />
       </template>
     </KPTable>
 
@@ -62,6 +59,7 @@ import { hasAuth } from "@/router/utils"
 import { getMenuSelect, getProjectSelect } from "@/api/system"
 import { message } from "@/utils/message"
 import { kpSelectChange } from "@/utils/list"
+import { getToken } from "@/utils/auth"
 
 let basic: TableDialogColumn = {
   title: "项目",
@@ -247,6 +245,24 @@ const drawerSave = async (title, resolve) => {
   drawerVisible.value = false
   resolve() // ✅ 调用 resolve 告诉子组件：我这边已经处理完了
   message("设置成功", { type: "success" })
+}
+
+/**
+ * sso登录后跳转到不同的系统
+ * @param url
+ */
+const handleOpenSystem = async (url: string) => {
+  if (!url) {
+    message("项目地址不存在，请联系管理员配置", { type: "warning" })
+    return
+  }
+
+  if (!url.endsWith("/")) url = url + "/"
+
+  url = url + "#/welcome?accessToken=" + getToken()
+
+  // 3. 新窗口打开地址（target="_blank" 等价效果）
+  window.open(url, "_blank")
 }
 </script>
 <style lang="scss" scoped></style>

@@ -158,7 +158,7 @@ export function barChartByGroups(id: string, colors: string[] = [], yAxisTitle: 
  * @param fontSize 标题字体大小
  * @param data  数据
  */
-export function doughnutChart(id: string, name: string, fontSize: number = 14, data: { value: number; name: string }[] = []) {
+export function doughnutChart(id: string, name: string, fontSize: number = 14, textWidth: number = 120, data: { value: number; name: string }[] = []) {
   // 获取dom，断言HTMLElement类型，否则会报错
   const chartEle: HTMLElement = document.getElementById(id) as HTMLElement
   const chart = init(chartEle)
@@ -180,7 +180,7 @@ export function doughnutChart(id: string, name: string, fontSize: number = 14, d
       right: 10, // 图例距离容器右侧10px
       top: "center", // 图例垂直居中
       textStyle: {
-        width: 120, // 限制图例文字宽度为120px
+        width: textWidth, // 限制图例文字宽度为120px
         overflow: "truncate" // 超出部分显示省略号
       },
       type: "scroll", // 图例过多时可滚动

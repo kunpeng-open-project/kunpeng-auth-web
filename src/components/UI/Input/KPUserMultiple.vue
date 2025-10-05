@@ -231,9 +231,10 @@ const handleRightArrow = async () => {
   // 从左侧数据中删除已移动的项
   if (dataListLeft.value?.list) {
     // 过滤掉左侧列表中已移动到右侧的项
-    dataListLeft.value.list = dataListLeft.value.list.filter(leftItem => !toAddItems.some(movedItem => movedItem.userId === leftItem.userId))
+    // dataListLeft.value.list = dataListLeft.value.list.filter(leftItem => !toAddItems.some(movedItem => movedItem.userId === leftItem.userId))
     // 更新左侧列表的总条数（保持与实际数据一致）
-    dataListLeft.value.total = dataListLeft.value.list.length
+    // dataListLeft.value.total = dataListLeft.value.list.length
+    await queryList()
   }
 
   // 清空左侧选中状态

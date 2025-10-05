@@ -1,6 +1,8 @@
-import { removeToken, type DataInfo } from "./auth";
-import { subBefore, getQueryMap } from "@pureadmin/utils";
-
+import { userKey } from "./auth"
+import { getQueryMap } from "@pureadmin/utils"
+import type { userType } from "@/store/types"
+import { getSsoLogin } from "@/api/system"
+import { projectCode } from "@/utils/serverPath"
 /**
  * 简版前端单点登录，根据实际业务自行编写，平台启动后本地可以跳后面这个链接进行测试 http://localhost:8848/#/permission/page/index?username=sso&roles=admin&accessToken=eyJhbGciOiJIUzUxMiJ9.admin
  * 划重点：
@@ -10,50 +12,36 @@ import { subBefore, getQueryMap } from "@pureadmin/utils";
  * 3.删除不需要显示在 url 的参数
  * 4.使用 window.location.replace 跳转正确页面
  */
-(function () {
+import { storageLocal } from "@/store/utils"
+
+void (async () => {
   // 获取 url 中的参数
-  const params = getQueryMap(location.href) as DataInfo<Date>;
-  const must = ["username", "roles", "accessToken"];
-  const mustLength = must.length;
-  if (Object.keys(params).length !== mustLength) return;
+  const params = getQueryMap(location.href) as userType
 
-  // url 参数满足 must 里的全部值，才判定为单点登录，避免非单点登录时刷新页面无限循环
-  let sso = [];
-  let start = 0;
+  if (!params.accessToken) return
 
-  while (start < mustLength) {
-    if (Object.keys(params).includes(must[start]) && sso.length <= mustLength) {
-      sso.push(must[start]);
-    } else {
-      sso = [];
+  // 递归执行函数
+  const run = async () => {
+    try {
+      const body = await getSsoLogin({
+        projectCode: projectCode,
+        accessToken: params.accessToken
+      })
+
+      if (body.code === 200) {
+        // 成功：保存数据并跳转
+        storageLocal().setItem(userKey, body.data)
+        const newUrl = `${location.origin}${location.pathname}`
+        window.location.replace(newUrl)
+        return // 终止递归
+      }
+    } catch (error) {
+      console.warn("SSO登录请求失败，将重试：", error)
     }
-    start++;
+
+    setTimeout(run, 30)
   }
 
-  if (sso.length === mustLength) {
-    // 判定为单点登录
-
-    // 清空本地旧信息
-    removeToken();
-
-    // 保存新信息到本地
-    // setToken(params);
-
-    // 删除不需要显示在 url 的参数
-    delete params.roles;
-    delete params.accessToken;
-
-    const newUrl = `${location.origin}${location.pathname}${subBefore(
-      location.hash,
-      "?"
-    )}?${JSON.stringify(params)
-      .replace(/["{}]/g, "")
-      .replace(/:/g, "=")
-      .replace(/,/g, "&")}`;
-
-    // 替换历史记录项
-    window.location.replace(newUrl);
-  } else {
-    return;
-  }
-})();
+  // 首次执行
+  run()
+})()

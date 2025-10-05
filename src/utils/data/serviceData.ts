@@ -82,7 +82,8 @@ export const JournalStatusEnum: { value: number; label: string }[] = [
 export const LoginTypeEnum: { value: number; label: string }[] = [
   { value: 1, label: "用户登录" },
   { value: 2, label: "授权登录" },
-  { value: 3, label: "免密登录" }
+  { value: 3, label: "免密登录" },
+  { value: 4, label: "单点登录" },
 ]
 
 export const PriorityEnum: { value: number; label: string }[] = [
@@ -100,21 +101,21 @@ export const WeelPriorityEnum: { value: number; label: string }[] = [
   { value: 4, label: "低" }
 ]
 
-export const SourceEnum: { value: string; label: string }[] = [
-  { value: "会议纪要", label: "会议纪要" },
-  { value: "领导交办任务", label: "领导交办任务" },
-  { value: "团队自主规划", label: "团队自主规划" },
-  { value: "未完成任务跟进", label: "未完成任务跟进" },
-  { value: "风险预警与应对", label: "风险预警与应对" },
-  { value: "突发应急事件", label: "突发应急事件" },
-  { value: "用户反馈", label: "用户反馈" },
-  { value: "规划分解", label: "规划分解" },
-  { value: "运营需求", label: "运营需求" },
-  { value: "创新试点项目", label: "创新试点项目" },
-  { value: "制度/流程规定", label: "制度/流程规定" },
-  { value: "政策响应", label: "政策响应" },
-  { value: "其他", label: "其他" }
-]
+// export const SourceEnum: { value: string; label: string }[] = [
+//   { value: "会议纪要", label: "会议纪要" },
+//   { value: "领导交办任务", label: "领导交办任务" },
+//   { value: "团队自主规划", label: "团队自主规划" },
+//   { value: "未完成任务跟进", label: "未完成任务跟进" },
+//   { value: "风险预警与应对", label: "风险预警与应对" },
+//   { value: "突发应急事件", label: "突发应急事件" },
+//   { value: "用户反馈", label: "用户反馈" },
+//   { value: "规划分解", label: "规划分解" },
+//   { value: "运营需求", label: "运营需求" },
+//   { value: "创新试点项目", label: "创新试点项目" },
+//   { value: "制度/流程规定", label: "制度/流程规定" },
+//   { value: "政策响应", label: "政策响应" },
+//   { value: "其他", label: "其他" }
+// ]
 
 export const PlanStatusEnum: { value: number; label: string }[] = [
   { value: 1, label: "草稿" },

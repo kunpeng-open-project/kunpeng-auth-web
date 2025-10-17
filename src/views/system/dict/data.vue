@@ -1,8 +1,8 @@
 <template>
   <div class="main">
     <KPTableQuery :event-bus="eventBus" :query-params="queryParams" exclude="dictTypeId">
-      <KPInputText v-model="queryParams.label" label="字典标签" :span="5" />
-      <KPSelect v-model="queryParams.status" label="状态" :span="5" :options="StartAndStopEnum" @change="kpSelectChange(eventBus, queryParams)" />
+      <KPInputText v-model="queryParams.label" label="字典标签" :span="6" />
+      <KPSelect v-model="queryParams.status" label="状态" :span="6" :options="StartAndStopEnum" @change="kpSelectChange(eventBus, queryParams)" />
     </KPTableQuery>
 
     <KPTable :event-bus="eventBus" :table-key="basic.tableKey" :table-column="tableColumn" :query-params="queryParams" :init-list="false" :list-api="basic.listApi" :del-api="basic.delApi" :add-button-auth="basic.addButtonAuth" :update-button-auth="basic.updateButtonAuth" :del-button-auth="basic.delButtonAuth" :details-button-auth="basic.detailsButtonAuth" details-button-row update-button-row del-button-row checkbox>

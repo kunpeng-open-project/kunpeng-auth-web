@@ -1,10 +1,10 @@
 <template>
   <div class="main">
     <KPTableQuery :event-bus="eventBus" :query-params="queryParams">
-      <KPSelect v-model="queryParams.projectId" label="项目名称" :span="5" :options="projectSelectValue" @change="kpSelectChange(eventBus, queryParams)" />
-      <KPInputText v-model="queryParams.roleName" label="角色名称" :span="5" />
-      <KPInputText v-model="queryParams.roleCode" label="角色编号" :span="5" />
-      <KPSelect v-model="queryParams.status" label="状态" :span="5" :options="StartAndStopEnum" @change="kpSelectChange(eventBus, queryParams)" />
+      <KPSelect v-model="queryParams.projectId" label="项目名称" :span="6" :options="projectSelectValue" @change="kpSelectChange(eventBus, queryParams)" />
+      <KPInputText v-model="queryParams.roleName" label="角色名称" :span="6" />
+      <KPInputText v-model="queryParams.roleCode" label="角色编号" :span="6" />
+      <KPSelect v-model="queryParams.status" label="状态" :span="6" :options="StartAndStopEnum" @change="kpSelectChange(eventBus, queryParams)" />
     </KPTableQuery>
 
     <KPTable ref="tableTreeRef" :event-bus="eventBus" :query-params="queryParams" :table-key="basic.tableKey" :table-column="tableColumn" :list-api="basic.listApi" :del-api="basic.delApi" :add-button-auth="basic.addButtonAuth" :update-button-auth="basic.updateButtonAuth" :del-button-auth="basic.delButtonAuth" :details-button-auth="basic.detailsButtonAuth" details-button-row update-button-row del-button-row checkbox>

@@ -1,9 +1,9 @@
 <template>
   <div class="main">
     <KPTableQuery :event-bus="eventBus" :query-params="queryParams" exclude="orderBy,isTree">
-      <KPInputText v-model="queryParams.deptName" label="部门名称" :span="5" />
-      <KPInputText v-model="queryParams.source" label="数据来源" :span="5" />
-      <KPSelect v-model="queryParams.status" label="状态" :span="5" :options="StartAndStopEnum" @change="kpSelectChange(eventBus, queryParams)" />
+      <KPInputText v-model="queryParams.deptName" label="部门名称" :span="6" />
+      <KPInputText v-model="queryParams.source" label="数据来源" :span="6" />
+      <KPSelect v-model="queryParams.status" label="状态" :span="6" :options="StartAndStopEnum" @change="kpSelectChange(eventBus, queryParams)" />
     </KPTableQuery>
 
     <KPTableTree :event-bus="eventBus" :query-params="queryParams" :table-key="basic.tableKey" :table-column="tableColumn" :list-api="basic.listApi" :del-api="basic.delApi" :sort-api="basic.sortApi" :add-button-auth="basic.addButtonAuth" :update-button-auth="basic.updateButtonAuth" :del-button-auth="basic.delButtonAuth" :details-button-auth="basic.detailsButtonAuth" @open-edit-dialog="openEditDialog" update-button-row del-button-row details-button-row isExpand checkbox>

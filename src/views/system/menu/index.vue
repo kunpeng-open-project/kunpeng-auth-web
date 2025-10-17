@@ -1,11 +1,11 @@
 <template>
   <div class="main">
     <KPTableQuery :event-bus="eventBus" :query-params="queryParams" exclude="projectId,orderBy,isTree">
-      <KPSelect v-model="queryParams.projectId" label="项目名称" :span="4" :options="projectSelectValue" @change="kpSelectChange(eventBus, queryParams)" />
-      <KPInputText v-model="queryParams.menuName" label="菜单名称" :span="4" />
-      <KPInputText v-model="queryParams.perms" label="权限标识" :span="4" />
-      <KPSelect v-model="queryParams.visible" label="是否显示" :span="4" :options="VisibleEnum" @change="kpSelectChange(eventBus, queryParams)" />
-      <KPSelect v-model="queryParams.isEnable" label="是否启用" :span="4" :options="StartAndStopEnum" @change="kpSelectChange(eventBus, queryParams)" />
+      <KPSelect v-model="queryParams.projectId" label="项目名称" :span="5" :options="projectSelectValue" @change="kpSelectChange(eventBus, queryParams)" />
+      <KPInputText v-model="queryParams.menuName" label="菜单名称" :span="5" />
+      <KPInputText v-model="queryParams.perms" label="权限标识" :span="5" />
+      <KPSelect v-model="queryParams.visible" label="是否显示" :span="5" :options="VisibleEnum" @change="kpSelectChange(eventBus, queryParams)" />
+      <KPSelect v-model="queryParams.isEnable" label="是否启用" :span="5" :options="StartAndStopEnum" @change="kpSelectChange(eventBus, queryParams)" />
     </KPTableQuery>
 
     <KPTableTree ref="tableTreeRef" :event-bus="eventBus" :query-params="queryParams" :table-key="basic.tableKey" :table-column="tableColumn" :init-list="false" :list-api="basic.listApi" :sort-api="basic.sortApi" :del-api="basic.delApi" :add-button-auth="basic.addButtonAuth" :update-button-auth="basic.updateButtonAuth" :del-button-auth="basic.delButtonAuth" :details-button-auth="basic.detailsButtonAuth" @open-edit-dialog="openEditDialog" details-button-row update-button-row del-button-row checkbox>

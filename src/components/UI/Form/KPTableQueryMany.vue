@@ -5,7 +5,7 @@
       <el-container class="container-style">
         <el-main>
           <el-row :gutter="24" class="slot">
-            <slot :queryParams="queryParams"></slot>
+            <slot :queryParams="queryParams" />
           </el-row>
         </el-main>
         <el-aside width="300px">
@@ -24,11 +24,11 @@
 
   <!--多行搜索-->
   <el-card v-if="paramsIsShow && isSenior" shadow="hover" class="custom-card" :style="`border-radius: ${borderRadius}`">
-    <el-form :model="queryParams" :inline="true" class="demo-form-inline">
+    <el-form :model="queryParams" :inline="true" class="demo-form-inline" :label-width="labelWidth">
       <el-container class="container-style">
         <el-main>
           <el-row :gutter="24" class="slot">
-            <slot :queryParams="queryParams"></slot>
+            <slot :queryParams="queryParams" />
             <el-col :span="24" class="buttons">
               <el-button icon="Search" :loading="loading" type="primary" round @click="handleQuery">查 询</el-button>
               <el-button-group style="margin-left: 30px">
@@ -60,11 +60,13 @@ const props = withDefaults(
     exclude?: string // 重置的时候保留的字段 多个用英文逗号分隔
     queryHeight?: string
     borderRadius?: string // 新增圆角属性
+    labelWidth?: string // 表单项标签宽度
   }>(),
   {
     exclude: null,
     queryHeight: "70px",
-    borderRadius: "5px" // 默认5px
+    borderRadius: "5px", // 默认5px
+    labelWidth: "100px" // 默认标签宽度
   }
 )
 // 接收父组件的值 变成普通数据
@@ -171,5 +173,11 @@ eventBus.on("updateParamsIsShow", (isShow: boolean) => {
 .custom-card .buttons {
   text-align: center;
   margin-bottom: -10px;
+}
+
+:deep(.el-col-5) {
+  width: 20%;
+  max-width: 20%;
+  flex: 0 0 20%;
 }
 </style>

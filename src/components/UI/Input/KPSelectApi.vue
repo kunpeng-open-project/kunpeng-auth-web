@@ -53,22 +53,22 @@ onMounted(() => {
       loading.value = false
 
       if (props.defaultNumber) {
-        localValue.value = options.value[props.defaultNumber - 1].value
-        firstDefaultChange(localValue.value) // 触发方法
+        firstDefaultChange(options.value[props.defaultNumber - 1].value) // 触发方法
+        emit("update:modelValue", options.value[props.defaultNumber - 1].value)
       }
       if (props.defaultValue) {
         options.value.forEach(item => {
           if (item.value == props.defaultValue) {
-            localValue.value = item.value
-            firstDefaultChange(localValue.value) // 触发方法
+            firstDefaultChange(item.value) // 触发方法
+            emit("update:modelValue", item.value)
           }
         })
       }
       if (props.defaultLabel) {
         options.value.forEach(item => {
           if (item.label == props.defaultLabel) {
-            localValue.value = item.value
-            firstDefaultChange(localValue.value) // 触发方法
+            firstDefaultChange(item.value) // 触发方法
+            emit("update:modelValue", item.value)
           }
         })
       }

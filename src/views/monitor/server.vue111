@@ -1,0 +1,156 @@
+<template>
+  <div class="main">
+	  <el-tabs
+			  v-model="tabsName"
+			  type="card"
+			  style="background-color: white"
+			  @tab-click="handleClick"
+	  >
+		  <el-tab-pane label="User" name="first">User</el-tab-pane>
+		  <el-tab-pane label="Config" name="second">Config</el-tab-pane>
+		  <el-tab-pane label="Role" name="third">Role</el-tab-pane>
+		  <el-tab-pane label="Task" name="fourth">Task</el-tab-pane>
+	  </el-tabs>
+	  
+    <el-row :gutter="25" style="margin-top: -10px">
+      <el-col :span="12">
+        <el-card class="myCard" shadow="hover">
+          <template #header>
+            <div class="card-header">
+              <IconifyIconOnline icon="ri:cpu-line" class="title" />
+              <span>CPU</span>
+            </div>
+          </template>
+
+          <el-descriptions :column="3" style="height: 80px" class="t_detail" v-loading="systemMessageLoading">
+            <el-descriptions-item label="核心数">{{ systemMessageValue.cpu.cpuNum }}</el-descriptions-item>
+            <el-descriptions-item label="总使用率">{{ systemMessageValue.cpu.all }}</el-descriptions-item>
+            <el-descriptions-item label="系统使用率">{{ systemMessageValue.cpu.sys }}</el-descriptions-item>
+            <el-descriptions-item label="用户使用率">{{ systemMessageValue.cpu.used }}</el-descriptions-item>
+            <el-descriptions-item label="当前等待率">{{ systemMessageValue.cpu.wait }}</el-descriptions-item>
+            <el-descriptions-item label="当前空闲率">{{ systemMessageValue.cpu.free }}</el-descriptions-item>
+          </el-descriptions>
+        </el-card>
+      </el-col>
+
+      <el-col :span="12">
+        <el-card class="myCard" shadow="hover">
+          <template #header>
+            <div class="card-header">
+              <IconifyIconOnline icon="fa-solid:memory" class="title" />
+              <span>内存</span>
+            </div>
+          </template>
+
+          <el-descriptions style="height: 80px" :column="2" class="t_detail" v-loading="systemMessageLoading">
+            <el-descriptions-item label="总内存">{{ systemMessageValue.mem.total }}</el-descriptions-item>
+            <el-descriptions-item label="已用内存">{{ systemMessageValue.mem.used }}</el-descriptions-item>
+            <el-descriptions-item label="剩余内存">{{ systemMessageValue.mem.free }}</el-descriptions-item>
+            <el-descriptions-item label="使用率">{{ systemMessageValue.mem.usedRate }}</el-descriptions-item>
+          </el-descriptions>
+        </el-card>
+      </el-col>
+    </el-row>
+
+    <el-card class="myCard" shadow="hover">
+      <template #header>
+        <div class="card-header">
+          <IconifyIconOnline icon="fa-solid:server" class="title" />
+          <span>服务器信息</span>
+        </div>
+      </template>
+
+      <el-descriptions :column="4" style="height: 40px" v-loading="systemMessageLoading">
+        <el-descriptions-item label="服务器名称">{{ systemMessageValue.sys.computerName }}</el-descriptions-item>
+        <el-descriptions-item label="操作系统">{{ systemMessageValue.sys.osName }}</el-descriptions-item>
+        <el-descriptions-item label="服务器IP">{{ systemMessageValue.sys.computerIp }}</el-descriptions-item>
+        <el-descriptions-item label="系统架构">{{ systemMessageValue.sys.osArch }}</el-descriptions-item>
+      </el-descriptions>
+    </el-card>
+
+    <el-card class="myCard" shadow="hover">
+      <template #header>
+        <div class="card-header">
+          <IconifyIconOnline icon="ri:archive-drawer-fill" class="title" />
+          <span>java虚拟机信息</span>
+        </div>
+      </template>
+
+      <el-descriptions :column="4" style="height: 108px" v-loading="systemMessageLoading">
+        <el-descriptions-item label="总内存">{{ systemMessageValue.jvm.total }}</el-descriptions-item>
+        <el-descriptions-item label="已用内存">{{ systemMessageValue.jvm.used }}</el-descriptions-item>
+        <el-descriptions-item label="剩余内存">{{ systemMessageValue.jvm.free }}</el-descriptions-item>
+        <el-descriptions-item label="使用率">{{ systemMessageValue.jvm.usedRate }}</el-descriptions-item>
+        <el-descriptions-item label="java名称">{{ systemMessageValue.jvm.javaName }}</el-descriptions-item>
+        <el-descriptions-item label="java版本">{{ systemMessageValue.jvm.javaVersion }}</el-descriptions-item>
+        <el-descriptions-item label="启动时间">{{ systemMessageValue.jvm.javaStartTime }}</el-descriptions-item>
+        <el-descriptions-item label="运行时间">{{ systemMessageValue.jvm.javaRunTime }}</el-descriptions-item>
+        <el-descriptions-item label="安装路径">{{ systemMessageValue.jvm.javaPath }}</el-descriptions-item>
+      </el-descriptions>
+    </el-card>
+
+    <el-card class="myCard" shadow="hover">
+      <template #header>
+        <div class="card-header">
+          <IconifyIconOnline icon="ri:u-disk-line" class="title" />
+          <span>磁盘信息</span>
+        </div>
+      </template>
+
+      <el-table :data="systemMessageValue.sysFiles" :header-cell-style="{ 'text-align': 'center' }" :cell-style="{ 'text-align': 'center' }" v-loading="systemMessageLoading">
+        <el-table-column prop="dirName" label="盘符路径" />
+        <el-table-column prop="sysTypeName" label="盘符类型" />
+        <el-table-column prop="typeName" label="文件类型" />
+        <el-table-column prop="total" label="总大小" />
+        <el-table-column prop="free" label="剩余大小" />
+        <el-table-column prop="used" label="已经使用量" />
+        <el-table-column prop="usage" label="资源的使用率" />
+      </el-table>
+    </el-card>
+  </div>
+</template>
+
+<script setup lang="ts">
+import { onMounted, ref } from "vue"
+import { postJson } from "@/api/common"
+
+// 定义系统信息接口
+interface SystemMessage {
+  cpu: Record<string, string>
+  mem: Record<string, string>
+  sysFiles: Record<string, string>[]
+  sys: Record<string, string>
+  jvm: Record<string, string>
+}
+
+//系统信息查询等待框
+const systemMessageLoading = ref(true)
+//系统信息
+const systemMessageValue = ref<SystemMessage>({
+  cpu: { cpuNum: "", all: "", sys: "", used: "", wait: "", free: "" },
+  mem: { total: "", used: "", free: "", usedRate: "" },
+  sysFiles: [{ dirName: "", sysTypeName: "", typeName: "", total: "", free: "", used: "", usage: "" }],
+  sys: { computerName: "", computerIp: "", osName: "", osArch: "", osVersion: "", osTime: "", osUser: "", osUserDir: "" },
+  jvm: { total: "", used: "", free: "", usedRate: "", javaName: "", javaVersion: "", javaStartTime: "", javaRunTime: "", javaPath: "" }
+})
+
+onMounted(async () => {
+  systemMessageLoading.value = true
+  const { data } = await postJson("/open/server/system/message", {})
+  systemMessageValue.value = data
+  systemMessageLoading.value = false
+})
+</script>
+
+<style lang="scss" scoped>
+.myCard {
+  margin-top: 20px;
+}
+
+.myCard .title {
+  color: #41b6ff;
+  float: left;
+  font-size: 22px;
+  margin-right: 10px;
+}
+</style>

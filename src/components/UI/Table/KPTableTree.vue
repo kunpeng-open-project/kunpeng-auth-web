@@ -329,21 +329,36 @@ const openEditDialog = (edit: string, row: any) => {
 /**
  * 折叠和打开折叠
  */
-const handleTableIsFold = () => {
-  if (tableIsFold.value) {
-    tableShow.value = false
-    tableIsFold.value = false
-    nextTick(() => {
-      tableShow.value = true
-    })
-  } else {
-    tableShow.value = false
-    tableIsFold.value = true
-    nextTick(() => {
-      tableShow.value = true
-    })
-  }
-  refresh()
+const handleTableIsFold = async () => {
+  // if (tableIsFold.value) {
+  //   tableShow.value = false
+  //   tableIsFold.value = false
+  //   nextTick(() => {
+  //     tableShow.value = true
+  //   })
+  // } else {
+  //   tableShow.value = false
+  //   tableIsFold.value = true
+  //   nextTick(() => {
+  //     tableShow.value = true
+  //   })
+  // }
+  // refresh()
+  //切换折叠状态
+  tableIsFold.value = !tableIsFold.value
+  //强制表格重新渲染
+  tableShow.value = false
+  await nextTick() // 等待 v-if 为 false 的 DOM 更新完成
+  tableShow.value = true
+  await nextTick() // 等待 v-if 为 true 的 DOM 更新完成
+  // 重新计算表头宽度，解决换行问题
+  await reCalculateHeaderWidth()
+  // 重新初始化拖拽排序
+  // 注意：必须在表格完全渲染后再初始化 Sortable
+  // 一个 nextTick 可能不够，因为 el-table 内部可能还有异步渲染
+  setTimeout(() => {
+    initSort()
+  }, 200) // 一个小的延时通常足以确保 el-table 内部布局完成
 }
 
 /**
@@ -750,9 +765,9 @@ const reCalculateHeaderWidth = async () => {
 
 .action-buttons {
   /*	display: flex;
-	  flex-wrap: nowrap; // 防止换行
-	  white-space: nowrap; // 防止内容换行
-	  overflow: visible; // 确保内容不被隐藏 */
+		flex-wrap: nowrap; // 防止换行
+		white-space: nowrap; // 防止内容换行
+		overflow: visible; // 确保内容不被隐藏 */
 
   display: flex;
   flex-wrap: nowrap; // 禁止换行

@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import { useRouter } from "vue-router";
-import noServer from "@/assets/status/500.svg?component";
+import { useRouter } from "vue-router"
+import noServer from "@/assets/status/500.svg?component"
 
 defineOptions({
   name: "500"
-});
+})
 
-const router = useRouter();
+const router = useRouter()
 </script>
 
 <template>

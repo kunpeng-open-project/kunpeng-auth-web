@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import { useRouter } from "vue-router";
-import noExist from "@/assets/status/404.svg?component";
+import { useRouter } from "vue-router"
+import noExist from "@/assets/status/404.svg?component"
 
 defineOptions({
   name: "404"
-});
+})
 
-const router = useRouter();
+const router = useRouter()
 </script>
 
 <template>

@@ -4,10 +4,10 @@
       <el-container class="container-style">
         <el-main>
           <el-row :gutter="24" class="slot">
-            <slot :queryParams="queryParams"></slot>
+            <slot :queryParams="queryParams" />
           </el-row>
         </el-main>
-        <el-aside width="190px">
+        <el-aside v-if="isButton" width="190px">
           <el-button icon="Search" :loading="loading" type="primary" round @click="handleQuery">查 询</el-button>
           <el-button icon="Refresh" :loading="loading" round @click="resetQuery">重 置</el-button>
         </el-aside>
@@ -28,9 +28,11 @@ const props = withDefaults(
     queryParams: any // 查询参数
     eventBus: Emitter<any> // 事件总线实例
     exclude?: string // 重置的时候保留的字段 多个用英文逗号分隔
+    isButton?: boolean // 是否显示功能按钮
   }>(),
   {
-    exclude: null
+    exclude: null,
+    isButton: true
   }
 )
 // 接收父组件的值 变成普通数据
@@ -126,5 +128,11 @@ eventBus.on("updateParamsIsShow", (isShow: boolean) => {
 .custom-card .buttons {
   text-align: center;
   margin-bottom: -10px;
+}
+
+:deep(.el-col-5) {
+  width: 20%;
+  max-width: 20%;
+  flex: 0 0 20%;
 }
 </style>

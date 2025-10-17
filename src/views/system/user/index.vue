@@ -1,45 +1,47 @@
 <template>
   <div class="main">
-    <el-row :gutter="10">
-      <el-col :span="3">
-        <KPCardTree placeholder="部门名称" :tree-value="deptSelectValue" :expanded-keys="defaultDeptSelectValue" @click="handleTreeClick" />
-      </el-col>
-      <el-col :span="21">
-        <KPTableQuery :event-bus="eventBus" :query-params="queryParams">
-          <KPInputText v-model="queryParams.name" label="姓名或昵称" :span="5" />
-          <KPInputText v-model="queryParams.phoneNumber" label="手机号" :span="5" />
-          <KPInputText v-model="queryParams.jobNumber" label="工号" :span="5" />
-          <KPSelect v-model="queryParams.sex" label="性别" :span="4" :options="UserSexEnum" @change="kpSelectChange(eventBus, queryParams)" />
-          <KPSelect v-model="queryParams.status" label="状态" :span="4" :options="UserAccountNumberStatusEnum" @change="kpSelectChange(eventBus, queryParams)" />
-        </KPTableQuery>
+    <div class="common-layout">
+      <el-container>
+        <el-aside width="250px">
+          <KPCardTree placeholder="部门名称" :tree-value="deptSelectValue" :expanded-keys="defaultDeptSelectValue" @click="handleTreeClick" />
+        </el-aside>
+        <el-main style="padding: 0 0 0 10px">
+          <KPTableQueryMany :event-bus="eventBus" :query-params="queryParams" label-width="85px" query-height="181px">
+            <KPInputText v-model="queryParams.name" label="姓名或昵称" :span="8" />
+            <KPInputText v-model="queryParams.jobNumber" label="工号" :span="8" />
+            <KPSelect v-model="queryParams.sex" label="性别" :span="8" :options="UserSexEnum" @change="kpSelectChange(eventBus, queryParams)" />
+            <KPSelect v-model="queryParams.status" label="状态" :span="8" :options="UserAccountNumberStatusEnum" @change="kpSelectChange(eventBus, queryParams)" />
+            <KPInputText v-model="queryParams.phoneNumber" label="手机号" :span="8" />
+          </KPTableQueryMany>
 
-        <KPTable ref="tableTreeRef" :event-bus="eventBus" :query-params="queryParams" :table-key="basic.tableKey" :table-column="tableColumn" :list-api="basic.listApi" :del-api="basic.delApi" :add-button-auth="basic.addButtonAuth" :update-button-auth="basic.updateButtonAuth" :del-button-auth="basic.delButtonAuth" :details-button-auth="basic.detailsButtonAuth" details-button-row checkbox>
-          <template #toolbar>
-            <Auth value="auth:user:batch:cancel">
-              <el-button class="operate_button" type="danger" title="注销" circle @click="handleLogout">
-                <IconifyIconOnline icon="ri:shut-down-line" />
-              </el-button>
-            </Auth>
+          <KPTable ref="tableTreeRef" :event-bus="eventBus" :query-params="queryParams" :table-key="basic.tableKey" :table-column="tableColumn" :list-api="basic.listApi" :del-api="basic.delApi" :add-button-auth="basic.addButtonAuth" :update-button-auth="basic.updateButtonAuth" :del-button-auth="basic.delButtonAuth" :details-button-auth="basic.detailsButtonAuth" details-button-row checkbox>
+            <template #toolbar>
+              <Auth value="auth:user:batch:cancel">
+                <el-button class="operate_button" type="danger" title="注销" circle @click="handleLogout">
+                  <IconifyIconOnline icon="ri:shut-down-line" />
+                </el-button>
+              </Auth>
 
-            <Auth value="auth:user:unlock">
-              <el-button class="operate_button" icon="Unlock" type="success" title="解锁" circle @click="handleUnlock" />
-            </Auth>
+              <Auth value="auth:user:unlock">
+                <el-button class="operate_button" icon="Unlock" type="success" title="解锁" circle @click="handleUnlock" />
+              </Auth>
 
-            <Auth value="auth:user:reset">
-              <el-button class="operate_button" icon="SetUp" type="warning" title="重置密码" circle @click="handleResetPassword" />
-            </Auth>
-          </template>
+              <Auth value="auth:user:reset">
+                <el-button class="operate_button" icon="SetUp" type="warning" title="重置密码" circle @click="handleResetPassword" />
+              </Auth>
+            </template>
 
-          <template #status="{ row }">
-            <el-switch v-if="hasAuth('auth:user:forbidden') && (row.status == 1 || row.status == 2)" v-model="row.status" inline-prompt :active-value="1" active-text="正常" :inactive-value="2" inactive-text="禁用" @click="handleSwitchStatus(row)" />
-            <el-tag v-if="!hasAuth('auth:user:forbidden') && row.status == 1" type="success" round effect="dark">正常</el-tag>
-            <el-tag v-if="!hasAuth('auth:user:forbidden') && row.status == 2" type="danger" round effect="dark">禁用</el-tag>
-            <el-tag v-if="row.status == 3" type="warning" round effect="dark">锁定</el-tag>
-            <el-tag v-if="row.status == 4" type="info" round effect="dark">注销</el-tag>
-          </template>
-        </KPTable>
-      </el-col>
-    </el-row>
+            <template #status="{ row }">
+              <el-switch v-if="hasAuth('auth:user:forbidden') && (row.status == 1 || row.status == 2)" v-model="row.status" inline-prompt :active-value="1" active-text="正常" :inactive-value="2" inactive-text="禁用" @click="handleSwitchStatus(row)" />
+              <el-tag v-if="!hasAuth('auth:user:forbidden') && row.status == 1" type="success" round effect="dark">正常</el-tag>
+              <el-tag v-if="!hasAuth('auth:user:forbidden') && row.status == 2" type="danger" round effect="dark">禁用</el-tag>
+              <el-tag v-if="row.status == 3" type="warning" round effect="dark">锁定</el-tag>
+              <el-tag v-if="row.status == 4" type="info" round effect="dark">注销</el-tag>
+            </template>
+          </KPTable>
+        </el-main>
+      </el-container>
+    </div>
 
     <KPDialogFormEdit v-model="dialogVisible" :event-bus="eventBus" :query-params="queryParams" :rules="rules" :title="basic.title" :edit-params="editForm" :date-structure="EditData" :save-api="basic.saveApi" :details-api="basic.detailsApi" :table-key="basic.tableKey" :update-api="basic.updateApi" label-width="100px">
       <KPInputText v-model="editForm.userName" label="用户账号" prop="userName" :span="12" />
@@ -91,6 +93,7 @@ import { message, numberMessageBox, selectMessageBox } from "@/utils/message"
 import Avatar from "@/assets/user.png"
 import { kpSelectChange } from "@/utils/list"
 import { hasAuth } from "@/router/utils"
+import KPTableQueryMany from "@/components/UI/Form/KPTableQueryMany.vue";
 
 let basic: TableDialogColumn = {
   title: "用户",
@@ -124,7 +127,7 @@ const queryParams = reactive({
  * table 列表 定义显示列
  */
 let tableColumn: TableColumn[] = [
-  { prop: "avatar", label: "头像", type: "avatar", avatarIma: Avatar},
+  { prop: "avatar", label: "头像", type: "avatar", avatarIma: Avatar },
   { prop: "userName", label: "账号", width: 100 },
   { prop: "jobNumber", label: "工号", sort: true },
   { prop: "realName", label: "姓名", sort: true },

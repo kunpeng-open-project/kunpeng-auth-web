@@ -172,6 +172,7 @@ class PureHttp {
             }
           } catch (ex) {
             message("网络链接错误，请稍后再试！", { type: "error" })
+            reject(ex)
           }
         })
     })

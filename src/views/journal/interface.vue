@@ -1,20 +1,20 @@
 <template>
   <div class="main">
-    <KPTableQueryMany :event-bus="eventBus" :query-params="queryParams" exclude="level,projectName" query-height="231px">
-      <KPSelect v-model="queryParams.level" label="日志级别" :span="4" :options="JournalStatusEnum" @change="kpSelectChange(eventBus, queryParams)" />
-      <KPSelect v-model="queryParams.projectName" label="项目名称" :span="4" :options="projectNameSelectValue" @change="kpSelectChange(eventBus, queryParams)" />
-      <KPSelect v-model="queryParams.name" label="接口名称" :span="4" :options="nameSelectValue" @change="kpSelectChange(eventBus, queryParams)" />
-      <KPInputText v-model="queryParams.uri" label="url" :span="4" />
-      <KPInputText v-model="queryParams.parameters" label="入参" :span="4" />
-      <KPInputText v-model="queryParams.result" label="出参" :span="4" />
-      <KPInputText v-model="queryParams.identification" label="人ID|项目code" :span="4" />
-      <KPInputText v-model="queryParams.identificationName" label="姓名|项目名称" :span="4" />
-      <KPInputText v-model="queryParams.serial" label="工号" :span="4" />
-      <KPInputText v-model="queryParams.phone" label="手机号" :span="4" />
-      <KPInputText v-model="queryParams.clinetIp" label="访问者IP" :span="4" />
-      <KPDatePicker v-model="queryParams.callTime" label="访问时间" :span="4" />
-      <KPInputText v-model="queryParams.status" label="状态码" :span="4" />
-      <KPInputText v-model="queryParams.message" label="返回结果" :span="4" />
+    <KPTableQueryMany :event-bus="eventBus" :query-params="queryParams" exclude="level,projectName" query-height="231px" label-width="110px">
+      <KPSelect v-model="queryParams.level" label="日志级别" :span="5" :options="JournalStatusEnum" @change="kpSelectChange(eventBus, queryParams)" />
+      <KPSelect v-model="queryParams.projectName" label="项目名称" :span="5" :options="projectNameSelectValue" @change="kpSelectChange(eventBus, queryParams)" />
+      <KPSelect v-model="queryParams.name" label="接口名称" :span="5" :options="nameSelectValue" @change="kpSelectChange(eventBus, queryParams)" />
+      <KPInputText v-model="queryParams.uri" label="url" :span="5" />
+      <KPInputText v-model="queryParams.parameters" label="入参" :span="5" />
+      <KPInputText v-model="queryParams.result" label="出参" :span="5" />
+      <KPInputText v-model="queryParams.identification" label="人ID|项目code" :span="5" />
+      <KPInputText v-model="queryParams.identificationName" label="姓名|项目名称" :span="5" />
+      <KPInputText v-model="queryParams.serial" label="工号" :span="5" />
+      <KPInputText v-model="queryParams.phone" label="手机号" :span="5" />
+      <KPInputText v-model="queryParams.clinetIp" label="访问者IP" :span="5" />
+      <KPDatePicker v-model="queryParams.callTime" label="访问时间" :span="5" />
+      <KPInputText v-model="queryParams.status" label="状态码" :span="5" />
+      <KPInputText v-model="queryParams.message" label="返回结果" :span="5" />
     </KPTableQueryMany>
 
     <KPTable :event-bus="eventBus" :init-list="false" :table-key="basic.tableKey" :query-params="queryParams" :list-api="basic.listApi" :table-column="tableColumn" :details-button-auth="basic.detailsButtonAuth" details-button-row>

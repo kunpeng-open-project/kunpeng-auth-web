@@ -20,7 +20,7 @@ import { ref } from "vue"
 // 定义组件接收的参数
 const props = withDefaults(
   defineProps<{
-    formParams: any // 表单数据对象
+    formParams?: any // 表单数据对象
     rules?: any // 表单验证规则
     labelWidth?: string // 表单项标签宽度
     isBorder?: boolean // 是否显示边框卡片

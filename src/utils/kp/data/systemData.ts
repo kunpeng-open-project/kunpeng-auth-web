@@ -1,4 +1,5 @@
-import type { TableSize } from "@/utils/data/systemType"
+import type { TableSize } from "@/utils/kp/data/systemType"
+import { UploadUserFile } from "element-plus"
 
 /**
  * 搜索条件选项
@@ -17,12 +18,15 @@ export const OperateEnum = {
   add: "新增",
   update: "修改",
   review: "审批",
+  record: "修改记录",
   updateRow: "行内修改",
   reviewRow: "行内审批",
+  recordRow: "行内修改记录",
   reset: "重置",
   setMenuAuthority: "设置菜单权限",
   setDataAuthority: "设置数据权限",
-  setRoleUser: "设置角色用户"
+  setRoleUser: "设置角色用户",
+  del: "删除"
 }
 
 /**
@@ -62,6 +66,8 @@ export interface TableDialogColumn {
   detailsApi?: string
   // 详情按钮权限
   detailsButtonAuth?: string
+  // 修改记录按钮权限
+  recordButtonAuth?: string
   // 审批接口地址
   reviewApi?: string
   // 审批按钮权限
@@ -91,14 +97,10 @@ export interface TableColumn {
     // 新增：翻译配置（需要翻译时才配置）
     api: string // 翻译接口地址（如 /user/translate）
     responseLabelKey: string // 接口返回数据中的中文名称字段（如 userName）
+    identifier?: string // 唯一表示 用于key 的比较 默认是当前字段的 prop  如何 prop和接口返回的不一致 可加入该字段
     microService?: string //请求的服务  如果不传默认请求鉴权系统
   }
 }
-
-// interface Translate {
-//     api: string; // 翻译接口地址
-//     responseLabelKey: string; // 接口返回的中文名称字段
-// }
 
 /**
  * 详情页面显示的内容
@@ -135,7 +137,17 @@ export interface SelectColumn {
 export interface CardItem {
   title: string // 卡片标题（必传）
   icon: string // 卡片图标（必传）
-  iconColor: string // 卡片图标（必传）
-  iconBackgroundColor: string // 卡片图标背景色（必传）
+  iconColor: string // 卡片标题（必传）
+  iconBackgroundColor: string // 卡片标题（必传）
   [key: string]: any // 扩展内容
+}
+
+/**
+ * 上传控件显示内容
+ */
+export interface FileData extends UploadUserFile {
+  fileName: string
+  fileSize: number
+  fileType: string
+  filePath: string
 }

@@ -1,5 +1,5 @@
 <template>
-  <el-dialog v-model="dialogVisible" :title="dialogTitle" :modal="true" center draggable :width="width" :destroy-on-close="true" close-on-press-escape="false" :show-close="false" :close-on-click-modal="false" :fullscreen="dialogFulls" :top="top">
+  <el-dialog v-model="dialogVisible" :title="dialogTitle" :modal="true" center draggable :width="width" :destroy-on-close="true" :close-on-press-escape="false" :show-close="false" :close-on-click-modal="false" :fullscreen="dialogFulls" :top="top">
     <template #header>
       <el-row :gutter="20">
         <el-col :span="12" style="text-align: left">
@@ -58,7 +58,7 @@
 import { computed, ref } from "vue"
 import { queryTableDetails } from "@/api/table"
 import { Emitter } from "mitt"
-import { DetailsColumn } from "@/utils/data/systemData"
+import { DetailsColumn } from "@/utils/kp/data/systemData"
 import { message } from "@/utils/message"
 import { serverPath } from "@/utils/serverPath"
 

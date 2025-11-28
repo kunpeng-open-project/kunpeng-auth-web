@@ -6,7 +6,7 @@
       <KPSelect v-model="queryParams.status" label="状态" :span="6" :options="StartAndStopEnum" @change="kpSelectChange(eventBus, queryParams)" />
     </KPTableQuery>
 
-    <KPTable :event-bus="eventBus" :query-params="queryParams" :table-key="basic.tableKey" :table-column="tableColumn" :list-api="basic.listApi" :del-api="basic.delApi" :add-button-auth="basic.addButtonAuth" :update-button-auth="basic.updateButtonAuth" :del-button-auth="basic.delButtonAuth" :details-button-auth="basic.detailsButtonAuth" details-button-row update-button-row del-button-row checkbox>
+    <KPTable :event-bus="eventBus" :query-params="queryParams" :table-key="basic.tableKey" :table-column="tableColumn" :list-api="basic.listApi" :del-api="basic.delApi" :add-button-auth="basic.addButtonAuth" :update-button-auth="basic.updateButtonAuth" :del-button-auth="basic.delButtonAuth" :details-button-auth="basic.detailsButtonAuth" :record-button-auth="basic.recordButtonAuth" details-button-row update-button-row del-button-row record-button-row checkbox>
       <template #status="{ row }">
         <el-switch v-if="hasAuth('auth:project:do:status')" v-model="row.status" inline-prompt :active-value="1" active-text="正常" :inactive-value="0" inactive-text="停用" @click="handleSwitchStatus(row)" />
         <el-tag v-if="!hasAuth('auth:project:do:status') && row.status == 1" type="success" round effect="dark">正常</el-tag>
@@ -23,12 +23,14 @@
       </template>
     </KPTable>
 
-    <KPDialogFormEdit :event-bus="eventBus" v-model="dialogVisible" :query-params="queryParams" :rules="rules" :title="basic.title" :edit-params="editForm" :date-structure="EditData" :save-api="basic.saveApi" :details-api="basic.detailsApi" :table-key="basic.tableKey" :update-api="basic.updateApi" label-width="100px">
+    <KPDialogFormEdit #default="{ isUpdate }" v-model="dialogVisible" :event-bus="eventBus" :query-params="queryParams" :rules="rules" :title="basic.title" :edit-params="editForm" :date-structure="EditData" :save-api="basic.saveApi" :details-api="basic.detailsApi" :table-key="basic.tableKey" :update-api="basic.updateApi" label-width="135px">
       <KPInputText v-model="editForm.projectName" label="项目名称" prop="projectName" />
       <KPInputText v-model="editForm.projectCode" label="项目编号" prop="projectCode" />
+      <KPInputText v-if="isUpdate" v-model="editForm.tokenFailure" type="number" label="token过期时间" tip-body="授权token有效时长,单位小时" prop="tokenFailure" />
+      <KPInputText v-if="isUpdate" v-model="editForm.tokenGainMaxNum" type="number" label="token获取次数" tip-body="每日获取token的最大次数" prop="tokenGainMaxNum" />
       <KPInputText v-model="editForm.projectUrl" label="项目地址" />
-      <KPRadio v-model="editForm.status" label="项目状态" prop="status" :options="StartAndStopEnum" />
-      <KPRadio v-model="editForm.manage" label="管理状态" prop="manage" :options="ManageEnum" />
+      <KPRadio v-model="editForm.status" label="项目状态" prop="status" :options="StartAndStopEnum" :span="12" />
+      <KPRadio v-model="editForm.manage" label="管理状态" prop="manage" :options="ManageEnum" :span="12" />
       <KPInputText v-model="editForm.remark" label="备注" type="textarea" />
     </KPDialogFormEdit>
 
@@ -44,21 +46,23 @@
         </KPGroupForm>
       </el-form>
     </KPDrawer>
+
+    <KPDialogRecord v-model="recordDialogVisible" :event-bus="eventBus" :tabs="[{ label: '项目信息' }]" :tableKey="basic.tableKey" />
   </div>
 </template>
 
 <script setup lang="ts">
 import { reactive, ref } from "vue"
 import mitt from "mitt"
-import { ManageEnum, StartAndStopEnum } from "@/utils/data/serviceData"
-import { removeEmptyAndNull } from "@/utils/json"
+import { ManageEnum, StartAndStopEnum } from "@/utils/kp/data/serviceData"
+import { removeEmptyAndNull } from "@/utils/kp/tool/json"
 import { TreeKey } from "element-plus/es/components/tree/src/tree.type"
-import { DetailsColumn, PageData, SelectColumn, TableColumn, TableDialogColumn } from "@/utils/data/systemData"
+import { DetailsColumn, PageData, SelectColumn, TableColumn, TableDialogColumn } from "@/utils/kp/data/systemData"
 import { postJson } from "@/api/common"
 import { hasAuth } from "@/router/utils"
 import { getMenuSelect, getProjectSelect } from "@/api/system"
 import { message } from "@/utils/message"
-import { kpSelectChange } from "@/utils/list"
+import { kpSelectChange } from "@/utils/kp/tool/list"
 import { getToken } from "@/utils/auth"
 
 let basic: TableDialogColumn = {
@@ -72,7 +76,8 @@ let basic: TableDialogColumn = {
   delApi: "/auth/project/batch/remove",
   delButtonAuth: "auth:project:batch:remove",
   detailsApi: "/auth/project/details",
-  detailsButtonAuth: "auth:project:details"
+  detailsButtonAuth: "auth:project:details",
+  recordButtonAuth: "auth:object:change:log:page:list"
 }
 
 /**
@@ -129,7 +134,9 @@ const rules = reactive({
   projectName: [{ required: true, message: "请输入项目名称", trigger: "blur" }],
   projectCode: [{ required: true, message: "请输入项目编号", trigger: "blur" }],
   status: [{ required: true, message: "请选择项目状态", trigger: "blur" }],
-  manage: [{ required: true, message: "请选择管理状态", trigger: "blur" }]
+  manage: [{ required: true, message: "请选择管理状态", trigger: "blur" }],
+  tokenFailure: [{ required: true, message: "请输入token过期时间", trigger: "blur" }],
+  tokenGainMaxNum: [{ required: true, message: "请输入token获取次数", trigger: "blur" }]
 })
 
 /**
@@ -173,6 +180,8 @@ const defaultProjectMenuSelectValue = ref<Array<string>>([])
 const defaultCheckedMenuSelectValue = ref<Array<string>>([])
 //KPTree的 菜单ref
 const treeMenuRef = ref(null)
+// 修改记录模态框
+const recordDialogVisible = ref<boolean>(false)
 
 /**
  * 设置项目状态

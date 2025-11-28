@@ -1,7 +1,14 @@
 <template>
   <el-col :span="span">
-    <el-form-item :label="label" :style="{ width: width }" :prop="prop" :rules="rules" v-loading="loading">
-      <el-select v-model="localValue" :placeholder="'请选择' + label" @change="handleChange" clearable :multiple="multiple" :disabled="disabled" :empty-values="[null, undefined]" :value-on-clear="null" filterable>
+    <el-form-item v-loading="loading" :label="label" :style="{ width: width }" :prop="prop" :rules="rules">
+      <template v-if="tipBody" v-slot:label>
+        <span>{{ label }}</span>
+        <el-tooltip class="box-item" effect="dark" :content="tipBody" :placement="tipPlacement">
+          <IconifyIconOnline icon="ep:question-filled" />
+        </el-tooltip>
+      </template>
+
+      <el-select v-model="localValue" :placeholder="'请选择' + label" clearable :multiple="multiple" :disabled="disabled" :empty-values="[null, undefined]" :value-on-clear="null" filterable @change="handleChange">
         <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value" />
       </el-select>
     </el-form-item>
@@ -16,7 +23,7 @@ import { serverPath } from "@/utils/serverPath"
 // 接收父组件的值
 const props = withDefaults(
   defineProps<{
-    modelValue: string | number | Array<string> // 绑定的值
+    modelValue: string | number | Array<string> | null // 绑定的值
     label: string // 表单项的标签
     width?: string // 整个表单项的宽度，默认为 '17%'
     prop?: string // 表单验证的属性
@@ -30,13 +37,16 @@ const props = withDefaults(
     defaultLabel?: string | number // 设置默认值lable
     defaultNumber?: number //设置地几个为默认值 从 1 开始
     apiPath?: string // 请求的api地址
+    tipBody?: string // 新增：输入框的提示信息
+    tipPlacement?: "top" | "top-start" | "top-end" | "bottom" | "bottom-start" | "bottom-end" | "left" | "left-start" | "left-end" | "right" | "right-start" | "right-end"
   }>(),
   {
     width: "100%",
     disabled: false,
     span: 24,
-    apiParams: () => {},
-    apiPath: serverPath.authentication
+    apiParams: () => ({}),
+    apiPath: serverPath.authentication,
+    tipPlacement: "right"
   }
 )
 
@@ -80,9 +90,9 @@ onMounted(() => {
 
 // 定义 emit 事件
 const emit = defineEmits<{
-  (e: "update:modelValue", value: string | number): void
-  (e: "change", value: string | number): void
-  (e: "firstDefaultChange", value: string | number): void // 新增：默认值设置事件
+  (e: "update:modelValue", value: string | number | Array<string> | null): void
+  (e: "change", value: string | number | Array<string> | null): void
+  (e: "firstDefaultChange", value: string | number | Array<string> | null): void // 新增：默认值设置事件
 }>()
 
 // 使用计算属性实现双向绑定
@@ -90,18 +100,18 @@ const localValue = computed({
   get() {
     return props.modelValue
   },
-  set(value: string | number) {
+  set(value: string | number | Array<string> | null) {
     emit("update:modelValue", value)
   }
 })
 
 // 处理 change 事件
-const handleChange = (value: string | number) => {
+const handleChange = (value: string | number | Array<string> | null) => {
   emit("change", value)
 }
 
 // 处理 触发默认值设置事件的方法
-const firstDefaultChange = (value: string | number) => {
+const firstDefaultChange = (value: string | number | Array<string> | null) => {
   emit("firstDefaultChange", value) // 触发自定义事件
 }
 </script>

@@ -1,11 +1,9 @@
 <template>
   <el-dropdown :placement="placement" :size="size" :trigger="trigger" @command="handleCommand" @visible-change="handleVisibleChange">
-    <span class="el-dropdown-link" :style="{ color: textColor, fontSize: fontSize + 'px' }">
-      <IconifyIconOnline v-if="icon" :icon="icon" />
-      <span :style="{ color: contentColor }">{{ content }}</span>
-      &nbsp; {{ isSelectValue ? selectValue : "" }}
-      <el-icon v-if="rightIcon" class="el-icon--right"><arrow-down /></el-icon>
-    </span>
+    <el-button :type="type" :style="buttonClass" :title="title" :circle="circle" :color="buttonColor">
+      <IconifyIconOnline :icon="icon" />
+    </el-button>
+
     <!--    按钮样式待实现-->
     <template #dropdown>
       <el-dropdown-menu>
@@ -18,20 +16,18 @@
   </el-dropdown>
 </template>
 
-<script lang="ts" setup name="KPDropdown">
-import { ref, watch } from "vue"
+<script lang="ts" setup name="KPButtonDropdown">
+import { ref } from "vue"
 
 const props = withDefaults(
   defineProps<{
-    content?: string // 主按钮文本内容
+    title?: string // 主按钮文本内容
     placement?: "top" | "top-start" | "top-end" | "bottom" | "bottom-start" | "bottom-end" | "left" | "left-start" | "left-end" | "right" | "right-start" | "right-end" // 下拉框出现的位置
     size?: "large" | "default" | "small" // 尺寸
+    circle?: boolean // 是否为圆形按钮
+    type?: "default" | "primary" | "success" | "warning" | "danger" | "info" | "" | "text" // 按钮类型
     icon?: string // 图标
-    textColor?: string // 其他文字和图标的颜色
-    contentColor?: string // content 文字颜色
-    fontSize?: number // 文字大小
-    rightIcon?: boolean // 是否显示右侧图标
-    isSelectValue?: boolean // 是否显示选中值
+    buttonColor?: string
     // 下拉项数据
     items: Array<{
       label: string
@@ -41,17 +37,16 @@ const props = withDefaults(
       disabled?: boolean
       divided?: boolean
     }>
-    defaultValue?: string | number // 默认选中的值
     trigger?: "hover" | "click" // 触发方式
+    buttonClass?: string
   }>(),
   {
     placement: "bottom",
     size: "large",
-    textColor: "var(--el-color-primary)",
+    circle: false,
+    type: "primary",
     items: () => [],
-    trigger: "hover",
-    rightIcon: false,
-    isSelectValue: false
+    trigger: "hover"
   }
 )
 
@@ -81,28 +76,6 @@ const handleCommand = (value: string | number) => {
 const handleVisibleChange = (visible: boolean) => {
   emit("visible-change", visible)
 }
-
-watch(
-  () => props.defaultValue,
-  newValue => {
-    if (newValue !== null) {
-      selectValue.value = newValue
-    }
-  },
-  { immediate: true }
-) // immediate: true 确保初始值生效
 </script>
 
-<style scoped>
-.el-dropdown-link {
-  display: flex;
-  align-items: center;
-  cursor: pointer;
-  border: none !important;
-}
-
-.el-dropdown-link:focus {
-  border: none !important; /* 确保边框也被移除，加 !important 提高优先级 */
-  outline: none; /* 移除焦点时的外边框 */
-}
-</style>
+<style scoped></style>

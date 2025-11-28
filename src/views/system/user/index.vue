@@ -3,10 +3,10 @@
     <div class="common-layout">
       <el-container>
         <el-aside width="250px">
-          <KPCardTree placeholder="部门名称" :tree-value="deptSelectValue" :expanded-keys="defaultDeptSelectValue" @click="handleTreeClick" />
+          <KPCardTree placeholder="部门名称" :tree-value="deptSelectValue" :expanded-keys="defaultDeptSelectValue" @nodeClick="handleTreeClick" />
         </el-aside>
         <el-main style="padding: 0 0 0 10px">
-          <KPTableQueryMany :event-bus="eventBus" :query-params="queryParams" label-width="85px" query-height="181px">
+          <KPTableQueryMany :event-bus="eventBus" :query-params="queryParams" label-width="85px" query-height="175px">
             <KPInputText v-model="queryParams.name" label="姓名或昵称" :span="8" />
             <KPInputText v-model="queryParams.jobNumber" label="工号" :span="8" />
             <KPSelect v-model="queryParams.sex" label="性别" :span="8" :options="UserSexEnum" @change="kpSelectChange(eventBus, queryParams)" />
@@ -14,7 +14,7 @@
             <KPInputText v-model="queryParams.phoneNumber" label="手机号" :span="8" />
           </KPTableQueryMany>
 
-          <KPTable ref="tableTreeRef" :event-bus="eventBus" :query-params="queryParams" :table-key="basic.tableKey" :table-column="tableColumn" :list-api="basic.listApi" :del-api="basic.delApi" :add-button-auth="basic.addButtonAuth" :update-button-auth="basic.updateButtonAuth" :del-button-auth="basic.delButtonAuth" :details-button-auth="basic.detailsButtonAuth" details-button-row checkbox>
+          <KPTable ref="tableTreeRef" :event-bus="eventBus" :query-params="queryParams" :table-key="basic.tableKey" :table-column="tableColumn" :list-api="basic.listApi" :del-api="basic.delApi" :add-button-auth="basic.addButtonAuth" :update-button-auth="basic.updateButtonAuth" :del-button-auth="basic.delButtonAuth" :details-button-auth="basic.detailsButtonAuth" :record-button-auth="basic.recordButtonAuth" details-button-row checkbox>
             <template #toolbar>
               <Auth value="auth:user:batch:cancel">
                 <el-button class="operate_button" type="danger" title="注销" circle @click="handleLogout">
@@ -43,9 +43,9 @@
       </el-container>
     </div>
 
-    <KPDialogFormEdit v-model="dialogVisible" :event-bus="eventBus" :query-params="queryParams" :rules="rules" :title="basic.title" :edit-params="editForm" :date-structure="EditData" :save-api="basic.saveApi" :details-api="basic.detailsApi" :table-key="basic.tableKey" :update-api="basic.updateApi" label-width="100px">
-      <KPInputText v-model="editForm.userName" label="用户账号" prop="userName" :span="12" />
-      <KPInputText v-model="editForm.jobNumber" label="工号" prop="jobNumber" :span="12" />
+    <KPDialogFormEdit #default="{ isUpdate }" v-model="dialogVisible" :event-bus="eventBus" :query-params="queryParams" :rules="rules" :title="basic.title" :edit-params="editForm" :date-structure="EditData" :save-api="basic.saveApi" :details-api="basic.detailsApi" :table-key="basic.tableKey" :update-api="basic.updateApi" label-width="100px">
+      <KPInputText v-model="editForm.userName" label="用户账号" prop="userName" :span="12" :disabled="isUpdate" />
+      <KPInputText v-model="editForm.jobNumber" label="工号" prop="jobNumber" :span="12" :disabled="isUpdate" />
       <KPInputText v-model="editForm.realName" label="真实姓名" prop="realName" :span="12" />
       <KPInputText v-model="editForm.nickName" label="用户昵称" prop="nickName" :span="12" />
       <KPInputText v-model="editForm.phoneNumber" label="手机号" prop="phoneNumber" :span="12" />
@@ -55,8 +55,8 @@
       <KPDatePicker v-model="editForm.entryDate" label="入职时间" :span="12" />
       <KPDatePicker v-model="editForm.officialDate" label="转正时间" :span="12" />
       <KPInputText v-model="editForm.idCard" label="身份证" :span="12" />
-      <KPSelect v-model="editForm.projectIds" label="可操作项目" :options="projectSelectValue" multiple :span="12" />
-      <KPSelect v-model="editForm.roleIds" label="角色" prop="roleIds" :options="roleSelectValue" multiple :span="12" />
+      <KPSelect v-model="editForm.projectIds" label="可操作项目" :options="projectSelectValue" tip-body="该用户拥有对指定项目的管理员权限" multiple :span="12" />
+      <KPSelect v-model="editForm.roleIds" label="角色" prop="roleIds" :options="roleSelectValue" tip-body="当用户拥有多个角色时，其最终权限是这些角色权限的并集" multiple :span="12" />
       <KPSelect v-model="editForm.postIds" label="岗位" prop="postIds" :options="postSelectValue" multiple :span="12" />
       <KPGroupForm label="归属部门">
         <template v-for="(userDept, index) in editForm.userDepts" :key="index">
@@ -78,22 +78,23 @@
     </KPDialogFormEdit>
 
     <KPDialogDetails :event-bus="eventBus" v-model="detailsDialogVisible" :title="basic.title + '详情'" top="10vh" :column="3" width="70%" :details-api="basic.detailsApi" :table-key="basic.tableKey" :details-column="detailsColumn" label-width="140px" />
+
+    <KPDialogRecord v-model="recordDialogVisible" :event-bus="eventBus" :tabs="[{ label: '用户信息' }, { label: '用户所属部门' }, { label: '用户所属角色' }, { label: '用户所属岗位' }, { label: '用户可操作项目' }]" :tableKey="basic.tableKey" />
   </div>
 </template>
 
 <script setup lang="ts">
 import { onMounted, reactive, ref } from "vue"
 import mitt from "mitt"
-import { removeEmptyAndNull } from "@/utils/json"
-import { DetailsColumn, PageData, SelectColumn, TableColumn, TableDialogColumn } from "@/utils/data/systemData"
-import { UserAccountNumberStatusEnum, UserSexEnum, UserStatusEnum, YesOrNo } from "@/utils/data/serviceData"
+import { removeEmptyAndNull } from "@/utils/kp/tool/json"
+import { DetailsColumn, PageData, SelectColumn, TableColumn, TableDialogColumn } from "@/utils/kp/data/systemData"
+import { UserAccountNumberStatusEnum, UserSexEnum, UserStatusEnum, YesOrNo } from "@/utils/kp/data/serviceData"
 import { getDeptSelect, getPostSelect, getProjectSelect, getRoleSelect } from "@/api/system"
 import { postJson } from "@/api/common"
 import { message, numberMessageBox, selectMessageBox } from "@/utils/message"
 import Avatar from "@/assets/user.png"
-import { kpSelectChange } from "@/utils/list"
+import { kpSelectChange } from "@/utils/kp/tool/list"
 import { hasAuth } from "@/router/utils"
-import KPTableQueryMany from "@/components/UI/Form/KPTableQueryMany.vue";
 
 let basic: TableDialogColumn = {
   title: "用户",
@@ -106,7 +107,8 @@ let basic: TableDialogColumn = {
   delApi: "/auth/user/batch/remove",
   delButtonAuth: "auth:user:batch:remove",
   detailsApi: "/auth/user/details",
-  detailsButtonAuth: "auth:user:details"
+  detailsButtonAuth: "auth:user:details",
+  recordButtonAuth: "auth:object:change:log:page:list"
 }
 
 /**
@@ -240,6 +242,8 @@ const postSelectValue = ref<Array<SelectColumn>>([])
 const deptSelectValue = ref<Array<SelectColumn>>([])
 //部门默认展开行
 const defaultDeptSelectValue = ref<Array<string>>()
+// 修改记录模态框
+const recordDialogVisible = ref<boolean>(false)
 
 onMounted(() => {
   queryProjectSelect()

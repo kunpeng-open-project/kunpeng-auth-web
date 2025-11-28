@@ -18,10 +18,10 @@
 <script setup lang="ts">
 import { onMounted, reactive, ref } from "vue"
 import mitt from "mitt"
-import { DetailsColumn, SelectColumn, TableColumn, TableDialogColumn } from "@/utils/data/systemData"
-import { LoginTypeEnum } from "@/utils/data/serviceData"
+import { DetailsColumn, SelectColumn, TableColumn, TableDialogColumn } from "@/utils/kp/data/systemData"
+import { LoginTypeEnum } from "@/utils/kp/data/serviceData"
 import { getProjectSelect } from "@/api/system"
-import { kpSelectChange } from "@/utils/list"
+import { kpSelectChange } from "@/utils/kp/tool/list"
 
 let basic: TableDialogColumn = {
   title: "登录日志",

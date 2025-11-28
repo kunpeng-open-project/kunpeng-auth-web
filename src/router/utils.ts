@@ -4,7 +4,7 @@ import { isProxy, toRaw } from "vue";
 import { useTimeoutFn } from "@vueuse/core";
 import { cloneDeep, intersection, isAllEmpty, isIncludeAllChildren, isString, storageLocal } from "@pureadmin/utils";
 import { getConfig } from "@/config";
-import { buildHierarchyTree } from "@/utils/tree";
+import { buildHierarchyTree } from "@/utils/kp/tool/tree";
 import { userKey } from "@/utils/auth";
 import { type menuType, routerArrays } from "@/layout/types";
 import { useMultiTagsStoreHook } from "@/store/modules/multiTags";

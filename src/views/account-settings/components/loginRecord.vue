@@ -7,7 +7,7 @@
 <script setup lang="ts">
 import { reactive } from "vue"
 import { projectCode } from "@/utils/serverPath"
-import { TableColumn } from "@/utils/data/systemData"
+import { TableColumn } from "@/utils/kp/data/systemData"
 
 /**
  * 搜索内容

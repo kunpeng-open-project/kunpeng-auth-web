@@ -3,7 +3,7 @@
     <!-- 搜索框 -->
     <el-input v-model="filterText" prefix-icon="Search" clearable :placeholder="placeholder" style="margin-bottom: 20px" />
     <el-scrollbar :height="treeHeight">
-      <el-tree ref="treeRef" node-key="value" class="filter-tree" :expand-on-click-node="false" :auto-expand-parent="false" :data="treeValue" :default-expanded-keys="expandedKeys" :props="defaultProps" :filter-node-method="filterNode" @node-click="click">
+      <el-tree ref="treeRef" node-key="value" class="filter-tree" :expand-on-click-node="false" :auto-expand-parent="false" :data="treeValue" :default-expanded-keys="expandedKeys" :props="defaultProps" :filter-node-method="filterNode" @node-click="handleNodeClick">
         <template #default="{ node }">
           <!-- 为自定义节点添加类名 -->
           <span class="custom-tree-label" :title="node.label">{{ node.label }}</span>
@@ -13,17 +13,17 @@
   </el-card>
 </template>
 
-<script lang="ts" setup name="KPTree">
+<script lang="ts" setup name="KPCardTree">
 import { computed, ref, watch } from "vue"
 import { ElTree } from "element-plus"
-import { SelectColumn } from "@/utils/data/systemData"
+import { SelectColumn } from "@/utils/kp/data/systemData"
 
 // 接收父组件的值
 const props = withDefaults(
   defineProps<{
     placeholder: string // 搜索框提示信息
     treeValue: Array<SelectColumn> // 树形下拉选项的值
-    expandedKeys: Array<string> // 默认展开项
+    expandedKeys?: Array<string> // 默认展开项
     defaultProps?: {} // 树形下拉选项的属性
     occupyHeight?: string // 最大高度
   }>(),
@@ -58,12 +58,12 @@ const filterNode = (value: string, data) => {
  * 节点点击事件
  * @param node
  */
-const click = (node: any) => {
-  emit("click", node)
+const handleNodeClick = (node: any) => {
+  emit("nodeClick", node)
 }
 
 const emit = defineEmits<{
-  (e: "click", node: any): void
+  (e: "nodeClick", node: any): void
 }>()
 
 /**

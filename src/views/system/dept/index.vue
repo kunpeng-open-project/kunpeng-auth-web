@@ -6,7 +6,7 @@
       <KPSelect v-model="queryParams.status" label="状态" :span="6" :options="StartAndStopEnum" @change="kpSelectChange(eventBus, queryParams)" />
     </KPTableQuery>
 
-    <KPTableTree :event-bus="eventBus" :query-params="queryParams" :table-key="basic.tableKey" :table-column="tableColumn" :list-api="basic.listApi" :del-api="basic.delApi" :sort-api="basic.sortApi" :add-button-auth="basic.addButtonAuth" :update-button-auth="basic.updateButtonAuth" :del-button-auth="basic.delButtonAuth" :details-button-auth="basic.detailsButtonAuth" @open-edit-dialog="openEditDialog" update-button-row del-button-row details-button-row isExpand checkbox>
+    <KPTableTree :event-bus="eventBus" :query-params="queryParams" :table-key="basic.tableKey" :table-column="tableColumn" :list-api="basic.listApi" :del-api="basic.delApi" :sort-api="basic.sortApi" :add-button-auth="basic.addButtonAuth" :update-button-auth="basic.updateButtonAuth" :del-button-auth="basic.delButtonAuth" :details-button-auth="basic.detailsButtonAuth" :record-button-auth="basic.recordButtonAuth" update-button-row del-button-row details-button-row record-button-row isExpand checkbox>
       <template #status="{ row }">
         <el-switch v-if="hasAuth('auth:dept:do:status')" v-model="row.status" inline-prompt :active-value="1" active-text="正常" :inactive-value="0" inactive-text="停用" @click="handleSwitchStatus(row)" />
         <el-tag v-if="!hasAuth('auth:dept:do:status') && row.status == 1" type="success" round effect="dark">正常</el-tag>
@@ -15,25 +15,26 @@
     </KPTableTree>
 
     <KPDialogFormEdit v-model="dialogVisible" :title="basic.title" :event-bus="eventBus" :query-params="queryParams" :table-key="basic.tableKey" :date-structure="EditData" :edit-params="editForm" :rules="rules" :save-api="basic.saveApi" :details-api="basic.detailsApi" :update-api="basic.updateApi" label-width="100px">
-      <KPTreeSelect v-model="editForm.parentId" :options="deptSelectValue" label="上级部门" prop="parentId" />
+      <KPTreeSelectApi v-model="editForm.parentId" api="/dept/select" :api-params="{ isTree: 1 }" label="上级部门" prop="parentId" />
       <KPInputText v-model="editForm.deptName" label="部门名称" prop="deptName" />
       <KPRadio v-model="editForm.status" label="部门状态" prop="status" :options="StartAndStopEnum" />
-      <KPInputText v-model="editForm.remark" label="备注" type="textarea" rows="4" />
+      <KPInputText v-model="editForm.remark" label="备注" type="textarea" :rows="4" />
     </KPDialogFormEdit>
 
     <KPDialogDetails v-model="detailsDialogVisible" :title="basic.title + '详情'" :event-bus="eventBus" :table-key="basic.tableKey" :details-column="detailsColumn" :details-api="basic.detailsApi" label-width="120px" />
+
+    <KPDialogRecord v-model="recordDialogVisible" :event-bus="eventBus" :tabs="[{ label: '部门信息' }]" :tableKey="basic.tableKey" />
   </div>
 </template>
 
 <script setup lang="ts">
 import { reactive, ref } from "vue"
 import mitt from "mitt"
-import { removeEmptyAndNull } from "@/utils/json"
-import { DetailsColumn, PageData, SelectColumn, TableColumn, TableDialogColumn } from "@/utils/data/systemData"
-import { StartAndStopEnum } from "@/utils/data/serviceData"
-import { getDeptSelect } from "@/api/system"
+import { removeEmptyAndNull } from "@/utils/kp/tool/json"
+import { DetailsColumn, PageData, TableColumn, TableDialogColumn } from "@/utils/kp/data/systemData"
+import { StartAndStopEnum } from "@/utils/kp/data/serviceData"
 import { postJson } from "@/api/common"
-import { kpSelectChange } from "@/utils/list"
+import { kpSelectChange } from "@/utils/kp/tool/list"
 import { hasAuth } from "@/router/utils"
 
 let basic: TableDialogColumn = {
@@ -48,7 +49,8 @@ let basic: TableDialogColumn = {
   delButtonAuth: "auth:dept:batch:remove",
   detailsApi: "/auth/dept/details",
   detailsButtonAuth: "auth:dept:details",
-  sortApi: "/auth/dept/do/set/sort"
+  sortApi: "/auth/dept/do/set/sort",
+  recordButtonAuth: "auth:object:change:log:page:list"
 }
 
 /**
@@ -127,8 +129,8 @@ const eventBus = mitt()
 const dialogVisible = ref<boolean>(false)
 //详情模态框
 const detailsDialogVisible = ref<boolean>(false)
-//部门下拉框
-const deptSelectValue = ref<Array<SelectColumn>>()
+// 修改记录模态框
+const recordDialogVisible = ref<boolean>(false)
 
 /**
  * 设置项目状态
@@ -137,17 +139,6 @@ const deptSelectValue = ref<Array<SelectColumn>>()
 const handleSwitchStatus = async val => {
   await postJson("/auth/dept/do/status", { deptId: val.deptId })
   eventBus.emit("queryList", removeEmptyAndNull(queryParams))
-}
-
-/**
- * 打开编辑框
- * @param edit
- * @param row
- */
-const openEditDialog = async (edit: string, row: any) => {
-  const body = await getDeptSelect({ isTree: 1 })
-  if (!body.success) return
-  deptSelectValue.value = body.data
 }
 </script>
 

@@ -23,7 +23,7 @@
 
 <script lang="ts" setup name="KPInfoCard">
 // 2. 按要求格式定义props + 默认值（与搜索组件风格一致）
-import { CardItem } from "@/utils/data/systemData"
+import { CardItem } from "@/utils/kp/data/systemData"
 
 const props = withDefaults(
   defineProps<{

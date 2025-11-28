@@ -19,7 +19,7 @@
 <script lang="ts" setup name="KPTableQuery">
 import { ref } from "vue"
 import { Emitter } from "mitt"
-import { removeEmptyAndNull } from "@/utils/json"
+import { removeEmptyAndNull } from "@/utils/kp/tool/json"
 import { toReactive } from "@vueuse/core"
 
 // 接收父组件的值
@@ -61,11 +61,13 @@ const resetQuery = () => {
 
   if (exclude == null) {
     Object.keys(queryParams).map(key => delete queryParams[key])
+    // Object.keys(queryParams).forEach(key => (queryParams[key] = null))
   } else {
     const excludeList = exclude.split(",").map(item => item.trim())
     for (const key in queryParams) {
       if (!excludeList.includes(key)) {
         delete queryParams[key]
+        // queryParams[key] = null
       }
     }
   }

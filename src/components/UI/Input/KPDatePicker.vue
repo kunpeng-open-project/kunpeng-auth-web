@@ -1,6 +1,13 @@
 <template>
   <el-col :span="span">
     <el-form-item :label="label" :style="{ width: width }" :prop="prop" :rules="rules">
+      <template v-if="tipBody" v-slot:label>
+        <span>{{ label }}</span>
+        <el-tooltip class="box-item" effect="dark" :content="tipBody" :placement="tipPlacement">
+          <IconifyIconOnline icon="ep:question-filled" />
+        </el-tooltip>
+      </template>
+
       <el-date-picker v-model="localValue" :type="type" :placeholder="'请选择' + label" :style="{ width: '100%' }" :value-format="valueFormat" :disabled="disabled" :range-separator="rangeSeparator" :start-placeholder="startPlaceholder" :end-placeholder="endPlaceholder" @change="handleChange" />
     </el-form-item>
   </el-col>
@@ -8,14 +15,14 @@
 
 <script lang="ts" setup name="KPDatePicker">
 import { computed } from "vue"
-import type { DateValue } from "@/utils/data/systemType"
+import type { DateValue } from "@/utils/kp/data/systemType"
 
 type typeEnum = "year" | "years" | "month" | "months" | "date" | "dates" | "datetime" | "week" | "datetimerange" | "daterange" | "monthrange" | "yearrange"
 
 // 接收父组件的值
 const props = withDefaults(
   defineProps<{
-    modelValue: DateValue // 绑定的值
+    modelValue: DateValue | null // 绑定的值
     label: string // 表单项的标签
     width?: string // 输入框的宽度，默认为 '100%'
     prop?: string // 表单验证的属性
@@ -27,6 +34,8 @@ const props = withDefaults(
     startPlaceholder?: string // 范围选择时开始日期的占位内容
     endPlaceholder?: string // 范围选择时结束日期的占位内容
     disabled?: boolean // 新增：是否禁用输入框，默认为 false
+    tipBody?: string // 新增：输入框的提示信息
+    tipPlacement?: "top" | "top-start" | "top-end" | "bottom" | "bottom-start" | "bottom-end" | "left" | "left-start" | "left-end" | "right" | "right-start" | "right-end"
   }>(),
   {
     width: "100%",
@@ -36,18 +45,19 @@ const props = withDefaults(
     rangeSeparator: "-",
     startPlaceholder: "开始日期",
     endPlaceholder: "结束日期",
-    disabled: false // 设置默认值
+    disabled: false,
+    tipPlacement: "right"
   }
 )
 
 // 处理 change 事件
-const handleChange = (value: DateValue) => {
+const handleChange = (value: DateValue | null) => {
   emit("change", value)
 }
 
 // 定义 emit 事件
 const emit = defineEmits<{
-  (e: "update:modelValue", value: DateValue): void
+  (e: "update:modelValue", value: DateValue | null): void
   (e: "change", value: DateValue): void // 新增 change 事件
 }>()
 
@@ -56,7 +66,7 @@ const localValue = computed({
   get() {
     return props.modelValue
   },
-  set(value: DateValue) {
+  set(value: DateValue | null) {
     emit("update:modelValue", value)
   }
 })

@@ -7,7 +7,7 @@
       <el-checkbox v-model="isSelectAllChecked" @change="toggleSelectAll" v-if="checkbox">全选/全不选</el-checkbox>
     </div>
     <el-scrollbar :max-height="treeHeight">
-      <el-tree ref="treeRef" node-key="value" class="filter-tree" :expand-on-click-node="false" :auto-expand-parent="false" :data="treeValue" :default-expanded-keys="expandedKeys" :default-checked-keys="checkedKeys" :props="defaultProps" :filter-node-method="filterNode" @node-click="click" :show-checkbox="checkbox" :check-strictly="checkStrictly">
+      <el-tree ref="treeRef" node-key="value" class="filter-tree" :expand-on-click-node="false" :auto-expand-parent="false" :data="treeValue" :default-expanded-keys="expandedKeys" :default-checked-keys="checkedKeys" :props="defaultProps" :filter-node-method="filterNode" @node-click="handleNodeClick" :show-checkbox="checkbox" :check-strictly="checkStrictly">
         <template #default="{ node }">
           <!-- 为自定义节点添加类名 -->
           <span class="custom-tree-label" :title="node.label">{{ node.label }}</span>
@@ -20,7 +20,7 @@
 <script lang="ts" setup name="KPTree">
 import { computed, nextTick, ref, watch } from "vue"
 import { ElTree } from "element-plus"
-import { SelectColumn } from "@/utils/data/systemData"
+import { SelectColumn } from "@/utils/kp/data/systemData"
 
 // 接收父组件的值
 const props = withDefaults(
@@ -102,8 +102,8 @@ const filterNode = (value: string, data) => {
  * 节点点击事件
  * @param node
  */
-const click = (node: any) => {
-  emit("click", node)
+const handleNodeClick = (node: any) => {
+  emit("nodeClick", node)
 }
 
 /**
@@ -176,7 +176,7 @@ const treeHeight = computed(() => {
  * 暴露方法
  */
 const emit = defineEmits<{
-  (e: "click", node: any): void
+  (e: "nodeClick", node: any): void
 }>()
 
 /**

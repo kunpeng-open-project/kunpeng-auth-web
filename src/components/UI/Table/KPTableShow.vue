@@ -44,8 +44,8 @@ import { useLayout } from "@/layout/hooks/useLayout"
 import { computed, onMounted, ref, toRefs } from "vue"
 import { getTableList } from "@/api/table"
 import { Result, ResultTable } from "@/config/requestType"
-import { PageData, TableColumn } from "@/utils/data/systemData"
-import { removeEmptyAndNull } from "@/utils/json"
+import { PageData, TableColumn } from "@/utils/kp/data/systemData"
+import { removeEmptyAndNull } from "@/utils/kp/tool/json"
 import { serverPath } from "@/utils/serverPath"
 
 type TableSize = "" | "large" | "default" | "small"
@@ -96,7 +96,7 @@ const pageSizes = ref([])
 onMounted(() => {
   setPageSizes()
   if (!props.initList) return
-  queryList(removeEmptyAndNull(queryParams))
+  queryList(queryParams)
 })
 
 /**
@@ -105,7 +105,7 @@ onMounted(() => {
  */
 const queryList = async (queryParams: any) => {
   loading.value = true
-  const { data } = await getTableList(props.apiPath, listApi, queryParams)
+  const { data } = await getTableList(props.apiPath, listApi, removeEmptyAndNull(queryParams))
   if (data.list) {
     tableList.value = data ?? tableList.value
     isPage.value = true
@@ -122,7 +122,7 @@ const queryList = async (queryParams: any) => {
  */
 const handlePaginationChange = async (currentPage: number) => {
   queryParams.pageNum = currentPage
-  await queryList(removeEmptyAndNull(queryParams))
+  await queryList(queryParams)
 }
 
 /**
@@ -131,7 +131,7 @@ const handlePaginationChange = async (currentPage: number) => {
  */
 const handlePaginationSize = async (pageSize: number) => {
   queryParams.pageSize = pageSize
-  await queryList(removeEmptyAndNull(queryParams))
+  await queryList(queryParams)
 }
 
 /**
@@ -142,7 +142,7 @@ const sortChangeOrderBy = async column => {
   if (column.order == null) return
   let order = column.order == "ascending" ? " asc" : " desc"
   queryParams.orderBy = column.prop + order
-  await queryList(removeEmptyAndNull(queryParams))
+  await queryList(queryParams)
 }
 
 /**

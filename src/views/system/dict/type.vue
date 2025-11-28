@@ -37,12 +37,12 @@
 <script setup lang="ts">
 import { reactive, ref } from "vue"
 import mitt from "mitt"
-import { removeEmptyAndNull } from "@/utils/json"
-import { DetailsColumn, PageData, TableColumn, TableDialogColumn } from "@/utils/data/systemData"
-import { StartAndStopEnum } from "@/utils/data/serviceData"
+import { removeEmptyAndNull } from "@/utils/kp/tool/json"
+import { DetailsColumn, PageData, TableColumn, TableDialogColumn } from "@/utils/kp/data/systemData"
+import { StartAndStopEnum } from "@/utils/kp/data/serviceData"
 import { postJson } from "@/api/common"
 import { routeUtil } from "@/utils/routeUtil"
-import { kpSelectChange } from "@/utils/list"
+import { kpSelectChange } from "@/utils/kp/tool/list"
 import KPSelectApi from "@/components/UI/Input/KPSelectApi.vue"
 import { hasAuth } from "@/router/utils"
 

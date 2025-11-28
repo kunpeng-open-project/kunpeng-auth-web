@@ -18,6 +18,11 @@
           </Auth>
           <el-button v-else-if="!delButtonAuth && delBatchButton" class="operate_button" icon="Delete" type="danger" size="small" title="删除" circle @click="handleDelete(null)" />
 
+          <Auth v-if="recordButtonAuth" :value="recordButtonAuth">
+            <el-button class="operate_button" icon="Memo" type="info" title="修改记录" circle @click="openRecordDialog(OperateEnum.record, null)" />
+          </Auth>
+          <el-button v-else-if="!recordButtonAuth && recordBatchButton" class="operate_button" icon="Memo" type="info" title="修改记录" circle @click="openRecordDialog(OperateEnum.record, null)" />
+
           <Auth v-if="reviewButtonAuth" :value="reviewButtonAuth">
             <el-button class="operate_button" icon="SetUp" type="success" size="small" title="审批" circle @click="openEditDialog(OperateEnum.review, null)" />
           </Auth>
@@ -105,8 +110,11 @@
             <el-button v-if="delButtonRow && hasAuth(delButtonAuth)" type="danger" icon="Delete" size="small" title="删除" link @click="handleDelete(row)">删除</el-button>
             <el-button v-else-if="delButtonRow && !delButtonAuth" type="danger" icon="Delete" size="small" title="删除" link @click="handleDelete(row)">删除</el-button>
 
-            <el-button v-if="reviewRow && hasAuth(reviewButtonAuth)" type="success" icon="SetUp" size="small" title="审批" link @click="openEditDialog(OperateEnum.reviewRow, row)">审批</el-button>
-            <el-button v-else-if="reviewRow && !reviewButtonAuth" type="success" icon="SetUp" size="small" title="审批" link @click="openEditDialog(OperateEnum.reviewRow, row)">审批</el-button>
+            <el-button v-if="recordButtonRow && hasAuth(recordButtonAuth)" style="color: #606266" icon="Memo" size="small" title="修改记录" link @click="openRecordDialog(OperateEnum.recordRow, row)">修改记录</el-button>
+            <el-button v-else-if="recordButtonRow && !recordButtonAuth" style="color: #606266" icon="Memo" size="small" title="修改记录" link @click="openRecordDialog(OperateEnum.recordRow, row)">修改记录</el-button>
+
+            <el-button v-if="reviewButtonRow && hasAuth(reviewButtonAuth)" type="success" icon="SetUp" size="small" title="审批" link @click="openEditDialog(OperateEnum.reviewRow, row)">审批</el-button>
+            <el-button v-else-if="reviewButtonRow && !reviewButtonAuth" type="success" icon="SetUp" size="small" title="审批" link @click="openEditDialog(OperateEnum.reviewRow, row)">审批</el-button>
             <slot name="actions" :row="row" />
           </div>
         </template>
@@ -124,15 +132,15 @@ import { useLayout } from "@/layout/hooks/useLayout"
 import { computed, h, nextTick, onMounted, ref, toRefs, useSlots, watch } from "vue"
 import { delTableData, getTableList } from "@/api/table"
 import { ResultTable } from "@/config/requestType"
-import { OperateEnum, PageData, TableColumn, TableSizeEnum } from "@/utils/data/systemData"
+import { OperateEnum, PageData, TableColumn, TableSizeEnum } from "@/utils/kp/data/systemData"
 import { Emitter } from "mitt"
-import { removeEmptyAndNull } from "@/utils/json"
+import { removeEmptyAndNull } from "@/utils/kp/tool/json"
 import { message, numberMessageBox, selectMessageBox } from "@/utils/message"
 import { hasAuth } from "@/router/utils"
 import KPAvatar from "@/components/UI/Input/KPAvatar.vue"
 import { serverPath } from "@/utils/serverPath"
 import { postJson } from "@/api/common"
-import type { TableSize } from "@/utils/data/systemType"
+import type { TableSize } from "@/utils/kp/data/systemType"
 
 //接收父组件的值
 const props = withDefaults(
@@ -148,14 +156,17 @@ const props = withDefaults(
     delButtonAuth?: string // 删除按钮的权限标识 不传入表示不需要权限
     detailsButtonAuth?: string // 详情按钮的权限标识 不传入表示不需要权限
     reviewButtonAuth?: string // 审批按钮的权限标识 不传入表示不需要权限
+    recordButtonAuth?: string // 修改记录按钮的权限标识 不传入表示不需要权限
     addBatchButton?: boolean // 无权限的新增按钮
     updateBatchButton?: boolean // 无权限的修改按钮
     delBatchButton?: boolean // 无权限的删除按钮
     reviewBatchButton?: boolean // 无权限的审批按钮
+    recordBatchButton?: boolean // 无权限的修改记录按钮
     detailsButtonRow?: boolean //是否显示行内详情按钮
     updateButtonRow?: boolean // 是否显示行内修改按钮
     delButtonRow?: boolean // 是否显示行内删除按钮
-    reviewRow?: boolean // 是否显示行内审批按钮
+    reviewButtonRow?: boolean // 是否显示行内审批按钮
+    recordButtonRow?: boolean // 是否显示行内修改记录按钮
     queryParams?: PageData // 查询参数
     kpTableQueryHeight?: string // 表格高度，默认值
     initList?: boolean // 是否初始化列表数据
@@ -166,13 +177,13 @@ const props = withDefaults(
     detailsButtonRow: false,
     checkbox: false,
     updateButtonRow: false,
-    reviewRow: false,
+    reviewButtonRow: false,
     delButtonRow: false,
     addBatchButton: false,
     updateBatchButton: false,
     delBatchButton: false,
     reviewBatchButton: false,
-    kpTableQueryHeight: "70px",
+    kpTableQueryHeight: "65px",
     queryParams: () => new PageData(),
     initList: true,
     apiPath: serverPath.authentication,
@@ -207,7 +218,7 @@ const tableRef = ref()
 onMounted(async () => {
   setPageSizes()
   if (!initList) return
-  queryList(removeEmptyAndNull(queryParams))
+  queryList(queryParams)
 })
 
 /**
@@ -217,11 +228,11 @@ onMounted(async () => {
 const queryList = async (queryParams: any) => {
   eventBus.emit("tableQueryList")
   loading.value = true
-  const { data } = await getTableList(props.apiPath, listApi, queryParams)
+  const { data } = await getTableList(props.apiPath, listApi, removeEmptyAndNull(queryParams))
   tableList.value = data ?? tableList.value
   loading.value = false
   eventBus.emit("queryListSuccess")
-
+  emit("queryListSuccess")
   await initActionWidthObserver()
 
   // 遍历所有列，对需要翻译的列执行批量翻译
@@ -273,7 +284,7 @@ const handleDelete = (row: any) => {
  * 刷新
  */
 const handleQuery = () => {
-  queryList(removeEmptyAndNull(queryParams))
+  queryList(queryParams)
 }
 
 /**
@@ -299,7 +310,7 @@ const handleParamsIsShow = () => {
  */
 const handlePaginationChange = async (currentPage: number) => {
   queryParams.pageNum = currentPage
-  await queryList(removeEmptyAndNull(queryParams))
+  await queryList(queryParams)
 }
 
 /**
@@ -308,7 +319,7 @@ const handlePaginationChange = async (currentPage: number) => {
  */
 const handlePaginationSize = async (pageSize: number) => {
   queryParams.pageSize = pageSize
-  await queryList(removeEmptyAndNull(queryParams))
+  await queryList(queryParams)
 }
 
 /**
@@ -319,7 +330,7 @@ const sortChangeOrderBy = async column => {
   if (column.order == null) return
   let order = column.order == "ascending" ? " asc" : " desc"
   queryParams.orderBy = column.prop + order
-  await queryList(removeEmptyAndNull(queryParams))
+  await queryList(queryParams)
 }
 
 /**
@@ -339,6 +350,19 @@ const multiSelect = val => {
 const openEditDialog = (edit: string, row: any) => {
   eventBus.emit("openEditDialog", { edit, row })
   emit("openEditDialog", edit, row)
+}
+
+/**
+ * 打开修改记录模态框
+ * @param row
+ */
+const openRecordDialog = (edit: string, row: any) => {
+  if (edit === OperateEnum.record) {
+    if (numberMessageBox(multiSelectValue.value.length, 1)) return
+    row = multiSelectValue.value[0]
+  }
+
+  eventBus.emit("openRecordDialog", row)
 }
 
 /**
@@ -439,7 +463,7 @@ const initActionWidthObserver = async () => {
  */
 const batchTranslate = async (column: TableColumn, ids: (string | number)[]) => {
   const { api, responseLabelKey, microService } = column.translate
-  const prop = column.prop
+  const identifier = column.translate.identifier ? column.translate.identifier : column.prop
 
   if (!api || !responseLabelKey) {
     message(`[${column.label}]列翻译配置缺失：需指定 api 和 responseLabelKey`)
@@ -455,21 +479,22 @@ const batchTranslate = async (column: TableColumn, ids: (string | number)[]) => 
   const translateMap = new Map<string | number, string>()
   try {
     data.forEach(respItem => {
-      const originalId = respItem[prop]
+      const originalId = respItem[identifier]
       if (originalId != null) {
         translateMap.set(originalId, respItem[responseLabelKey])
       }
     })
   } catch (e) {
     data.list.forEach(respItem => {
-      const originalId = respItem[prop]
+      const originalId = respItem[identifier]
       if (originalId != null) {
         translateMap.set(originalId, respItem[responseLabelKey])
       }
     })
   }
+
   tableList.value.list.forEach(item => {
-    item[prop] = translateMap.get(item[prop])
+    item[column.prop] = translateMap.get(item[column.prop])
   })
 }
 
@@ -502,8 +527,15 @@ const isActionColumnShow = computed(() => {
     if (hasAuth(props.delButtonAuth)) return true
   }
 
+  // 如果有修改记录按钮并且不需要权限 直接显示
+  if (props.recordButtonRow && !props.recordButtonAuth) {
+    return true
+  } else {
+    if (hasAuth(props.recordButtonAuth)) return true
+  }
+
   // 如果有审批按钮并且不需要权限 直接显示
-  if (props.reviewRow && !props.reviewButtonAuth) {
+  if (props.reviewButtonRow && !props.reviewButtonAuth) {
     return true
   } else {
     if (hasAuth(props.reviewButtonAuth)) return true
@@ -516,6 +548,7 @@ const isActionColumnShow = computed(() => {
  */
 const emit = defineEmits<{
   (e: "openEditDialog", edit: string, row: any): void
+  (e: "queryListSuccess"): void
 }>()
 
 /**
@@ -669,11 +702,16 @@ const reCalculateHeaderWidth = async () => {
 
 .pagination {
   float: right;
-  padding-bottom: 22px;
+  /* padding-bottom: 22px;*/
 }
 
 .operate_button {
   width: 28px;
   height: 28px;
+}
+:deep(.el-card__footer) {
+  height: 60px;
+  /*//padding-top: 18px;*/
+  /*box-sizing: border-box;*/
 }
 </style>

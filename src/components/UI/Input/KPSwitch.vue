@@ -1,6 +1,13 @@
 <template>
   <el-col :span="span">
     <el-form-item :label="label" :style="{ width: width }" :prop="prop" :rules="rules">
+      <template v-if="tipBody" v-slot:label>
+        <span>{{ label }}</span>
+        <el-tooltip class="box-item" effect="dark" :content="tipBody" :placement="tipPlacement">
+          <IconifyIconOnline icon="ep:question-filled" />
+        </el-tooltip>
+      </template>
+
       <el-switch v-model="localValue" inline-prompt :disabled="disabled" :active-text="activeText" :inactive-text="inactiveText" @change="change" />
     </el-form-item>
   </el-col>
@@ -26,6 +33,8 @@ const props = withDefaults(
     apiPath?: string // 请求基础路径
     activeText?: string // 开启时的文本
     inactiveText?: string // 关闭时的文本
+    tipBody?: string // 新增：输入框的提示信息
+    tipPlacement?: "top" | "top-start" | "top-end" | "bottom" | "bottom-start" | "bottom-end" | "left" | "left-start" | "left-end" | "right" | "right-start" | "right-end"
   }>(),
   {
     width: "100%",
@@ -34,7 +43,8 @@ const props = withDefaults(
     apiParams: () => ({}),
     apiPath: serverPath.authentication,
     activeText: "",
-    inactiveText: ""
+    inactiveText: "",
+    tipPlacement: "right"
   }
 )
 

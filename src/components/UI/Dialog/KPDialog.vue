@@ -1,5 +1,5 @@
 <template>
-  <el-dialog v-model="dialogVisible" :title="title" :modal="true" center draggable :width="width" :destroy-on-close="true" close-on-press-escape="false" :show-close="false" :close-on-click-modal="false" :fullscreen="dialogFulls" :top="top">
+  <el-dialog v-model="dialogVisible" :title="title" :modal="true" center draggable :width="width" :destroy-on-close="true" :close-on-press-escape="false" :show-close="false" :close-on-click-modal="false" :fullscreen="dialogFulls" :top="top">
     <template #header>
       <el-row :gutter="20">
         <el-col :span="12" style="text-align: left">
@@ -22,7 +22,7 @@
 
     <template #footer>
       <div :class="dialogFulls ? 'dialog-footer-full' : 'dialog-footer'">
-        <el-button type="primary" :loading="dialogLoading" @click="handleSave(editRef)">保 存</el-button>
+        <el-button v-if="isSave" type="primary" :loading="dialogLoading" @click="handleSave(editRef)">保 存</el-button>
         <el-button @click="dialogVisible = false">关 闭</el-button>
       </div>
     </template>
@@ -39,10 +39,12 @@ const props = withDefaults(
     title: string // 对话框标题
     width?: string // 对话框宽度
     top?: string // top 对话框距离顶部的距离
+    isSave?: boolean // 是否保存按钮
   }>(),
   {
     width: "55%",
-    top: "15vh"
+    top: "15vh",
+    isSave: true
   }
 )
 

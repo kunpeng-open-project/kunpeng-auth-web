@@ -19,14 +19,14 @@
         <el-card shadow="hover" class="custom-card" v-if="isBorder">
           <el-form :model="editParams" ref="editRef" :rules="rules" :inline="true" class="demo-form-inline" :label-width="labelWidth">
             <el-row :gutter="30">
-              <slot :type="useType" :isAdd="useType === OperateEnum.add" :isUpdate="useType === OperateEnum.update" />
+              <slot />
             </el-row>
           </el-form>
         </el-card>
 
         <el-form :model="editParams" ref="editRef" :rules="rules" :inline="true" class="demo-form-inline" :label-width="labelWidth" v-else>
           <el-row :gutter="30">
-            <slot :type="useType" :isAdd="useType === OperateEnum.add" :isUpdate="useType === OperateEnum.update" />
+            <slot />
           </el-row>
         </el-form>
       </div>
@@ -43,15 +43,16 @@
   </el-dialog>
 </template>
 
-<script lang="ts" setup name="KPDialogFormEdit">
+<script lang="ts" setup name="KPDialogCardThreeEdit">
 import { computed, ref, watch } from "vue"
 import { toReactive } from "@vueuse/core"
-import { addTableData, queryTableDetails, reviewTableData, updateTableData } from "@/api/table"
-import { message, numberMessageBox } from "@/utils/message"
+import { addTableData, updateTableData } from "@/api/table"
+import { message } from "@/utils/message"
 import { Emitter } from "mitt"
 import { removeEmptyAndNull } from "@/utils/kp/tool/json"
 import { OperateEnum } from "@/utils/kp/data/systemData"
 import { serverPath } from "@/utils/serverPath"
+import { postJson } from "@/api/common"
 
 // 接收父组件的值
 const props = withDefaults(
@@ -64,7 +65,6 @@ const props = withDefaults(
     saveApi?: string //保存接口地址
     updateApi?: string //修改接口地址
     detailsApi?: string //详情接口地址
-    reviewApi?: string //审批接口地址
     width?: string // 对话框宽度
     labelWidth?: string //文本框说明文字宽度
     isBorder?: boolean //是否加边框
@@ -77,17 +77,17 @@ const props = withDefaults(
   }>(),
   {
     width: "55%",
+    top: "15vh",
     isBorder: false,
     queryParams: () => ({ pageNum: 1, pageSize: 10 }),
     labelWidth: "100px",
     afterSaveOpenEditDialog: editParams => editParams, // 默认不做修改
-    apiPath: serverPath.authentication,
-    top: "15vh"
+    apiPath: serverPath.authentication
   }
 )
 
 // 接收父组件的值 变成普通数据
-let { eventBus, saveApi, updateApi, detailsApi, reviewApi, tableKey } = props
+let { eventBus, saveApi, updateApi, detailsApi, tableKey } = props
 // 接收父组件的值 变成 reactive 对象
 const { editParams } = toReactive(props)
 //接收父组件的值 变成 ref数据
@@ -103,10 +103,8 @@ const dialogFulls = ref<boolean>(false)
 const dialogLoading = ref<boolean>(false)
 //操作类型
 const useType = ref<string>()
-//table 选中的值
-let multiSelectValue = []
 //主键的值
-let ketValue: string = ""
+let keyValue: string = ""
 // 表单验证ref
 const editRef = ref(null)
 
@@ -115,45 +113,20 @@ const editRef = ref(null)
  * @param edit  操作类型
  * @param row 行内数据
  */
-const openEditDialog = async (event: { edit: string; row: any }) => {
-  const { edit, row } = event
+const openCardThreeDialog = async (event: { edit: string; selectedNode: any }) => {
+  const { edit, selectedNode } = event
   Object.keys(editParams).map(key => delete editParams[key])
   Object.assign(editParams, new props.dateStructure())
   switch (edit) {
     case OperateEnum.add:
       dialogTitle.value = "新增" + props.title
       useType.value = OperateEnum.add
-
       props.afterSaveOpenEditDialog(editParams)
-      // const modifiedParams = props.afterSaveOpenEditDialog(editParams);
-      // alert(modifiedParams)
-      // if (modifiedParams !== editParams) {
-      // 	// 如果返回了新对象，替换原对象
-      // 	Object.assign(editParams, modifiedParams);
-      // }
-
       break
     case OperateEnum.update:
       dialogTitle.value = "修改" + props.title
-      if (numberMessageBox(multiSelectValue.length, 1)) return
-      ketValue = multiSelectValue[0][tableKey]
+      keyValue = selectedNode.value
       useType.value = OperateEnum.update
-      break
-    case OperateEnum.updateRow:
-      dialogTitle.value = "修改" + props.title
-      ketValue = row[tableKey]
-      useType.value = OperateEnum.update
-      break
-    case OperateEnum.reviewRow:
-      dialogTitle.value = "审批" + props.title
-      ketValue = row[tableKey]
-      useType.value = OperateEnum.review
-      break
-    case OperateEnum.review:
-      dialogTitle.value = "审批" + props.title
-      if (numberMessageBox(multiSelectValue.length, 1)) return
-      ketValue = multiSelectValue[0][tableKey]
-      useType.value = OperateEnum.review
       break
   }
   dialogVisible.value = true
@@ -175,7 +148,7 @@ const handleSave = async (editRef, status: number) => {
   switch (useType.value) {
     case OperateEnum.add:
       if (!saveApi) {
-        message("请在 KPDialogFormEdit 标签中配置saveApi或save-api属性", { type: "error" })
+        message("请在 KPDialogCardThreeEdit 标签中配置saveApi或save-api属性", { type: "error" })
         dialogLoading.value = false
         return
       }
@@ -183,38 +156,20 @@ const handleSave = async (editRef, status: number) => {
       const addBody = await addTableData(props.apiPath, saveApi, removeEmptyAndNull(editParams))
       if (addBody.success) {
         dialogVisible.value = false
-        eventBus.emit("queryList", removeEmptyAndNull(props.queryParams))
+        eventBus.emit("queryThree")
         message("操作成功", { type: "success" })
       }
       break
     case OperateEnum.update:
       if (!updateApi) {
-        message("请在 KPDialogFormEdit 标签中配置updateApi或update-api属性", { type: "error" })
+        message("请在 KPDialogCardThreeEdit 标签中配置updateApi或update-api属性", { type: "error" })
         dialogLoading.value = false
         return
       }
       const updateBody = await updateTableData(props.apiPath, updateApi, removeEmptyAndNull(editParams))
       if (updateBody.success) {
         dialogVisible.value = false
-        eventBus.emit("queryList", removeEmptyAndNull(props.queryParams))
-        message("操作成功", { type: "success" })
-      }
-      break
-    case OperateEnum.review:
-      if (!reviewApi) {
-        message("请在 KPDialogFormEdit 标签中配置reviewApi或review-api属性", { type: "error" })
-        dialogLoading.value = false
-        return
-      }
-      // let id = editParams[tableKey]
-      // delete editParams[tableKey]
-      editParams.ids = [editParams[tableKey]]
-      editParams.status = status
-
-      const reviewBody = await reviewTableData(props.apiPath, reviewApi, removeEmptyAndNull(editParams))
-      if (reviewBody.success) {
-        dialogVisible.value = false
-        eventBus.emit("queryList", removeEmptyAndNull(props.queryParams))
+        eventBus.emit("queryThree")
         message("操作成功", { type: "success" })
       }
       break
@@ -241,23 +196,22 @@ watch(
   async newValue => {
     if (!newValue) return
 
-    if (useType.value === OperateEnum.update || useType.value === OperateEnum.review) {
+    if (useType.value === OperateEnum.update) {
       if (!detailsApi) {
-        message("请在 KPDialogFormEdit 标签中配置detailsApi或details-api属性", { type: "error" })
+        message("请在 KPDialogCardThreeEdit 标签中配置detailsApi或details-api属性", { type: "error" })
         dialogLoading.value = false
         return
       }
 
       if (!tableKey) {
-        message("请在 KPDialogFormEdit 标签中配置tableKey或table-key属性", { type: "error" })
+        message("请在 KPDialogCardThreeEdit 标签中配置tableKey或table-key属性", { type: "error" })
         dialogLoading.value = false
         return
       }
 
       dialogLoading.value = true
 
-      const body = await queryTableDetails(props.apiPath, detailsApi, { [tableKey]: ketValue })
-      // if (body.success) Object.assign(editParams, body.data);
+      const body = await postJson(detailsApi, { [tableKey]: keyValue }, props.apiPath)
       if (body.success) for (let key in editParams) editParams[key] = body.data[key]
       dialogLoading.value = false
     }
@@ -268,14 +222,7 @@ watch(
  * 生产者 对外授权
  */
 
-eventBus.on("openEditDialog", openEditDialog)
-
-/**
- * 接收表格选择内容
- */
-eventBus.on("receiveMultiSelectValue", (value: any) => {
-  multiSelectValue = value
-})
+eventBus.on("openCardThreeDialog", openCardThreeDialog)
 </script>
 
 <style lang="scss" scoped>

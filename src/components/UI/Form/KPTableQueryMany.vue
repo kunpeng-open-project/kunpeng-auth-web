@@ -49,7 +49,7 @@
 <script lang="ts" setup name="KPTableQueryMany">
 import { ref } from "vue"
 import { Emitter } from "mitt"
-import { removeEmptyAndNull } from "@/utils/json"
+import { removeEmptyAndNull } from "@/utils/kp/tool/json"
 import { toReactive } from "@vueuse/core"
 
 // 接收父组件的值
@@ -58,13 +58,15 @@ const props = withDefaults(
     queryParams: any // 查询参数
     eventBus: Emitter<any> // 事件总线实例
     exclude?: string // 重置的时候保留的字段 多个用英文逗号分隔
-    queryHeight?: string
+    queryHeight?: string // 打开高级搜索的时候的表格高度
+    kpTableQueryHeight?: string // 关闭高级搜索的时候的表格高度
     borderRadius?: string // 新增圆角属性
     labelWidth?: string // 表单项标签宽度
   }>(),
   {
     exclude: null,
     queryHeight: "70px",
+    kpTableQueryHeight: "65px",
     borderRadius: "5px", // 默认5px
     labelWidth: "100px" // 默认标签宽度
   }
@@ -98,11 +100,13 @@ const resetQuery = () => {
 
   if (exclude == null) {
     Object.keys(queryParams).map(key => delete queryParams[key])
+    // Object.keys(queryParams).forEach(key => (queryParams[key] = null))
   } else {
     const excludeList = exclude.split(",").map(item => item.trim())
     for (const key in queryParams) {
       if (!excludeList.includes(key)) {
         delete queryParams[key]
+        // queryParams[key] = null
       }
     }
   }
@@ -116,7 +120,7 @@ const resetQuery = () => {
  */
 const handleSenior = () => {
   isSenior.value = !isSenior.value
-  eventBus.emit("setTableHeight", isSenior.value ? props.queryHeight : "70px")
+  eventBus.emit("setTableHeight", isSenior.value ? props.queryHeight : props.kpTableQueryHeight)
 }
 
 /**

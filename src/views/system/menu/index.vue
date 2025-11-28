@@ -8,7 +8,7 @@
       <KPSelect v-model="queryParams.isEnable" label="是否启用" :span="5" :options="StartAndStopEnum" @change="kpSelectChange(eventBus, queryParams)" />
     </KPTableQuery>
 
-    <KPTableTree ref="tableTreeRef" :event-bus="eventBus" :query-params="queryParams" :table-key="basic.tableKey" :table-column="tableColumn" :init-list="false" :list-api="basic.listApi" :sort-api="basic.sortApi" :del-api="basic.delApi" :add-button-auth="basic.addButtonAuth" :update-button-auth="basic.updateButtonAuth" :del-button-auth="basic.delButtonAuth" :details-button-auth="basic.detailsButtonAuth" @open-edit-dialog="openEditDialog" details-button-row update-button-row del-button-row checkbox>
+    <KPTableTree ref="tableTreeRef" :event-bus="eventBus" :query-params="queryParams" :table-key="basic.tableKey" :table-column="tableColumn" :init-list="false" :list-api="basic.listApi" :sort-api="basic.sortApi" :del-api="basic.delApi" :add-button-auth="basic.addButtonAuth" :update-button-auth="basic.updateButtonAuth" :del-button-auth="basic.delButtonAuth" :details-button-auth="basic.detailsButtonAuth" :record-button-auth="basic.recordButtonAuth" details-button-row update-button-row del-button-row record-button-row checkbox>
       <template #toolbar>
         <Auth value="auth:menu:do:copy">
           <el-button class="operate_button" icon="Document-copy" type="warning" size="small" title="复制" circle @click="handleCopy" />
@@ -24,14 +24,14 @@
 
     <KPDialogFormEdit :event-bus="eventBus" v-model="dialogVisible" :query-params="queryParams" :rules="rules" :title="basic.title" :edit-params="editForm" :date-structure="EditData" :save-api="basic.saveApi" :details-api="basic.detailsApi" :table-key="basic.tableKey" :update-api="basic.updateApi" label-width="100px">
       <KPSelect v-model="editForm.projectId" label="所属系统" :options="projectSelectValue" prop="projectId" disabled />
-      <KPTreeSelect v-model="editForm.parentId" :options="menuSelectValue" label="上级菜单" />
+      <KPTreeSelectApi v-model="editForm.parentId" api="/menu/select" :api-params="{ projectId: queryParams.projectId, isTree: 1 }" label="上级菜单" />
       <KPRadioButton v-model="editForm.menuType" :options="MenuEnum" label="菜单类型" prop="menuType" />
       <template v-if="editForm.menuType === 'M'">
         <KPInputText v-model="editForm.menuName" label="目录名称" prop="menuName" :span="12" />
         <KPRadio v-model="editForm.isEnable" label="是否启用" prop="isEnable" :options="YesOrNo" :span="12" />
         <KPIconSelect v-model="editForm.icon" label="菜单图标" prop="icon" :span="12" />
         <KPRadio v-model="editForm.frameStatus" label="链接类型" prop="frameStatus" :options="FrameStatus" :span="12" />
-        <KPInputText v-model="editForm.routePath" label="路由地址" prop="routePath" :span="12" />
+        <KPInputText v-model="editForm.routePath" label="路由地址" prop="routePath" tip-body="对应Vue Router中的path配置项" :span="12" />
         <KPRadio v-model="editForm.visible" label="是否显示" prop="visible" :options="YesOrNo" :span="12" />
       </template>
 
@@ -40,41 +40,43 @@
         <KPRadio v-model="editForm.isEnable" label="是否启用" prop="isEnable" :options="YesOrNo" :span="12" />
         <KPIconSelect v-model="editForm.icon" label="菜单图标" prop="icon" :span="12" />
         <KPRadio v-model="editForm.frameStatus" label="链接类型" prop="frameStatus" :options="FrameStatus" :span="12" />
-        <KPInputText v-model="editForm.routeName" label="路由名称" prop="routeName" :span="12" />
+        <KPInputText v-model="editForm.routeName" label="路由名称" prop="routeName" tip-body="对应Vue Router中的name配置项" :span="12" />
         <KPRadio v-model="editForm.isCache" label="是否缓存" prop="isCache" :options="YesOrNo" :span="12" />
-        <KPInputText v-model="editForm.routePath" label="路由地址" prop="routePath" :span="12" @input="handleRoutePath" />
+        <KPInputText v-model="editForm.routePath" label="路由地址" prop="routePath" tip-body="对应Vue Router中的path配置项" :span="12" @input="handleRoutePath" />
         <KPRadio v-model="editForm.visible" label="是否显示" prop="visible" :options="YesOrNo" :span="12" />
-        <KPInputText v-model="editForm.routeComponent" label="组件路径" prop="routeComponent" :span="12" />
-        <KPInputText v-model="editForm.perms" label="权限标识" prop="perms" :span="12" />
+        <KPInputText v-model="editForm.routeComponent" label="组件路径" prop="routeComponent" tip-body="对应Vue Router中的component配置项" :span="12" />
+        <KPInputText v-model="editForm.perms" label="权限标识" prop="perms" tip-body="后端接口调用需要的权限标识" :span="12" />
       </template>
 
       <template v-if="editForm.menuType === 'B'">
         <KPInputText v-model="editForm.menuName" label="按钮名称" prop="menuName" />
-        <KPInputText v-model="editForm.perms" label="权限标识" prop="perms" :rules="[{ required: true, message: '请输入权限标识', trigger: 'blur' }]" />
+        <KPInputText v-model="editForm.perms" label="权限标识" prop="perms" tip-body="后端接口调用需要的权限标识" :rules="[{ required: true, message: '请输入权限标识', trigger: 'blur' }]" />
       </template>
 
       <template v-if="editForm.menuType === 'I'">
         <KPInputText v-model="editForm.menuName" label="接口名称" prop="menuName" />
-        <KPInputText v-model="editForm.perms" label="权限标识" prop="perms" :rules="[{ required: true, message: '请输入权限标识', trigger: 'blur' }]" />
+        <KPInputText v-model="editForm.perms" label="权限标识" prop="perms" tip-body="后端接口调用需要的权限标识" :rules="[{ required: true, message: '请输入权限标识', trigger: 'blur' }]" />
       </template>
 
-      <KPInputText v-model="editForm.remark" label="备注" type="textarea" rows="4" />
+      <KPInputText v-model="editForm.remark" label="备注" type="textarea" :rows="4" />
     </KPDialogFormEdit>
 
     <KPDialogDetails :event-bus="eventBus" v-model="detailsDialogVisible" :title="basic.title + '详情'" :details-api="basic.detailsApi" :table-key="basic.tableKey" :details-column="detailsColumn" label-width="120px" />
+
+    <KPDialogRecord v-model="recordDialogVisible" :event-bus="eventBus" :tabs="[{ label: '菜单信息' }]" :tableKey="basic.tableKey" />
   </div>
 </template>
 
 <script setup lang="ts">
 import { onMounted, reactive, ref } from "vue"
 import mitt from "mitt"
-import { removeEmptyAndNull } from "@/utils/json"
-import { DetailsColumn, PageData, SelectColumn, TableColumn, TableDialogColumn } from "@/utils/data/systemData"
-import { FrameStatus, MenuEnum, StartAndStopEnum, VisibleEnum, YesOrNo } from "@/utils/data/serviceData"
-import { getMenuSelect, getProjectSelect } from "@/api/system"
+import { removeEmptyAndNull } from "@/utils/kp/tool/json"
+import { DetailsColumn, PageData, SelectColumn, TableColumn, TableDialogColumn } from "@/utils/kp/data/systemData"
+import { FrameStatus, MenuEnum, StartAndStopEnum, VisibleEnum, YesOrNo } from "@/utils/kp/data/serviceData"
+import { getProjectSelect } from "@/api/system"
 import { postJson } from "@/api/common"
 import { message, numberMessageBox } from "@/utils/message"
-import { kpSelectChange } from "@/utils/list"
+import { kpSelectChange } from "@/utils/kp/tool/list"
 import { hasAuth } from "@/router/utils"
 
 let basic: TableDialogColumn = {
@@ -89,7 +91,8 @@ let basic: TableDialogColumn = {
   delButtonAuth: "auth:menu:batch:remove",
   detailsApi: "/auth/menu/details",
   detailsButtonAuth: "auth:menu:details",
-  sortApi: "/auth/menu/do/set/sort"
+  sortApi: "/auth/menu/do/set/sort",
+  recordButtonAuth: "auth:object:change:log:page:list"
 }
 
 /**
@@ -110,17 +113,17 @@ const queryParams = reactive({
  * table 列表 定义显示列
  */
 let tableColumn: TableColumn[] = [
-  { prop: "menuName", label: "菜单名称", sort: true, width: 200, prefixIcon: "icon" },
-  { prop: "sort", label: "顺序" },
-  { prop: "perms", label: "权限标识", sort: true },
-  { prop: "menuType", label: "菜单类型", sort: true, render: { M: "目录", C: "菜单", B: "按钮", I: "接口" }, tag: { M: "primary", C: "success", B: "warning", I: "danger" }, tagEffect: "light", tagRound: false },
-  { prop: "isEnable", label: "是否启用", sort: true },
-  { prop: "visible", label: "是否显示", sort: true, render: { 1: "显示", 0: "不显示" }, tag: { 1: "success", 0: "danger" }, tagEffect: "light", tagRound: false },
-  { prop: "routeName", label: "路由名称" },
-  { prop: "routePath", label: "路由地址" },
-  { prop: "routeComponent", label: "路由组件路径" },
-  { prop: "createDate", label: "创建时间", sort: true },
-  { prop: "updateDate", label: "修改时间", sort: true }
+  { prop: "menuName", label: "菜单名称", sort: true, width: 260, prefixIcon: "icon" },
+  { prop: "sort", label: "顺序", width: 80 },
+  { prop: "perms", label: "权限标识", sort: true, width: 130 },
+  { prop: "menuType", label: "菜单类型", sort: true, render: { M: "目录", C: "菜单", B: "按钮", I: "接口" }, tag: { M: "primary", C: "success", B: "warning", I: "danger" }, tagEffect: "light", tagRound: false, width: 110 },
+  { prop: "isEnable", label: "是否启用", sort: true, width: 110 },
+  { prop: "visible", label: "是否显示", sort: true, render: { 1: "显示", 0: "不显示" }, tag: { 1: "success", 0: "danger" }, tagEffect: "light", tagRound: false, width: 110 },
+  { prop: "routeName", label: "路由名称", width: 150 },
+  { prop: "routePath", label: "路由地址", width: 150 },
+  { prop: "routeComponent", label: "路由组件路径", width: 150 },
+  { prop: "createDate", label: "创建时间", sort: true, width: 160 },
+  { prop: "updateDate", label: "修改时间", sort: true, width: 160 }
 ]
 
 /**
@@ -170,10 +173,10 @@ const rules = reactive({
  * 需要编辑的对象内容定义
  */
 class EditData {
-  projectId: string = null
+  projectId: string = queryParams.projectId
   parentId: string = null
   menuId: string = null
-  menuType: string = null
+  menuType: string = "M"
   menuName: string = null
   isEnable: number = 1
   icon: string = null
@@ -197,10 +200,10 @@ const dialogVisible = ref<boolean>(false)
 const detailsDialogVisible = ref<boolean>(false)
 //项目下拉框
 const projectSelectValue = ref<Array<SelectColumn>>([])
-//菜单下拉框
-const menuSelectValue = ref<Array<SelectColumn>>()
 //KPtableTreeRef 的 ref
 const tableTreeRef = ref(null)
+// 修改记录模态框
+const recordDialogVisible = ref<boolean>(false)
 
 onMounted(() => {
   querySelect()
@@ -229,14 +232,6 @@ const handleRoutePath = async value => {
 const handleSwitchStatus = async val => {
   await postJson("/auth/menu/do/enable", { menuId: val.menuId })
   eventBus.emit("queryList", removeEmptyAndNull(queryParams))
-}
-
-const openEditDialog = async (edit: string, row: any) => {
-  editForm.projectId = queryParams.projectId
-  editForm.menuType = "M"
-  const body = await getMenuSelect({ projectId: queryParams.projectId, isTree: 1 })
-  if (!body.success) return
-  menuSelectValue.value = body.data
 }
 
 const handleCopy = async () => {

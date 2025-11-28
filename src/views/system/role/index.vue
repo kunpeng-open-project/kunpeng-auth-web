@@ -7,7 +7,7 @@
       <KPSelect v-model="queryParams.status" label="状态" :span="6" :options="StartAndStopEnum" @change="kpSelectChange(eventBus, queryParams)" />
     </KPTableQuery>
 
-    <KPTable ref="tableTreeRef" :event-bus="eventBus" :query-params="queryParams" :table-key="basic.tableKey" :table-column="tableColumn" :list-api="basic.listApi" :del-api="basic.delApi" :add-button-auth="basic.addButtonAuth" :update-button-auth="basic.updateButtonAuth" :del-button-auth="basic.delButtonAuth" :details-button-auth="basic.detailsButtonAuth" details-button-row update-button-row del-button-row checkbox>
+    <KPTable ref="tableTreeRef" :event-bus="eventBus" :query-params="queryParams" :table-key="basic.tableKey" :table-column="tableColumn" :list-api="basic.listApi" :del-api="basic.delApi" :add-button-auth="basic.addButtonAuth" :update-button-auth="basic.updateButtonAuth" :del-button-auth="basic.delButtonAuth" :details-button-auth="basic.detailsButtonAuth" :record-button-auth="basic.recordButtonAuth" details-button-row update-button-row del-button-row record-button-row checkbox>
       <template #toolbar>
         <Auth value="auth:role:add:user">
           <el-button class="operate_button" icon="Setting" type="primary" title="设置用户" circle @click="openRoleUserDialog(OperateEnum.setRoleUser)" />
@@ -121,20 +121,22 @@
         </template>
       </el-form>
     </KPDrawer>
+
+    <KPDialogRecord v-model="recordDialogVisible" :event-bus="eventBus" :tabs="[{ label: '角色信息' }, { label: '角色关联项目信息' }]" :tableKey="basic.tableKey" />
   </div>
 </template>
 
 <script setup lang="ts">
 import { nextTick, onMounted, reactive, ref } from "vue"
 import mitt from "mitt"
-import { removeEmptyAndNull } from "@/utils/json"
-import { DetailsColumn, OperateEnum, PageData, SelectColumn, TableColumn, TableDialogColumn } from "@/utils/data/systemData"
-import { DataAuthorityTypeEnum, StartAndStopEnum } from "@/utils/data/serviceData"
+import { removeEmptyAndNull } from "@/utils/kp/tool/json"
+import { DetailsColumn, OperateEnum, PageData, SelectColumn, TableColumn, TableDialogColumn } from "@/utils/kp/data/systemData"
+import { DataAuthorityTypeEnum, StartAndStopEnum } from "@/utils/kp/data/serviceData"
 import { getDeptSelect, getProjectSelect } from "@/api/system"
 import { postJson } from "@/api/common"
 import { hasAuth } from "@/router/utils"
 import { message, numberMessageBox } from "@/utils/message"
-import { kpSelectChange } from "@/utils/list"
+import { kpSelectChange } from "@/utils/kp/tool/list"
 import { TreeKey } from "element-plus/es/components/tree/src/tree.type"
 
 let basic: TableDialogColumn = {
@@ -148,7 +150,8 @@ let basic: TableDialogColumn = {
   delApi: "/auth/role/batch/remove",
   delButtonAuth: "auth:role:batch:remove",
   detailsApi: "/auth/role/details",
-  detailsButtonAuth: "auth:role:details"
+  detailsButtonAuth: "auth:role:details",
+  recordButtonAuth: "auth:object:change:log:page:list"
 }
 
 /**
@@ -269,6 +272,9 @@ const tableShowRef = ref(null)
 const tableTreeRef = ref(null)
 //KPtableTreeRef 的 入参
 const tableShowRefQueryParams = reactive<any>({})
+// 修改记录模态框
+const recordDialogVisible = ref<boolean>(false)
+
 onMounted(() => {
   querySelect()
 })

@@ -1,5 +1,5 @@
 <template>
-  <el-dialog v-model="dialogVisible" :title="title" :modal="true" center draggable :width="width" :destroy-on-close="true" close-on-press-escape="false" :show-close="false" :close-on-click-modal="false" :fullscreen="dialogFulls">
+  <el-dialog v-model="dialogVisible" :title="title" :modal="true" center draggable :width="width" :destroy-on-close="true" :close-on-press-escape="false" :show-close="false" :close-on-click-modal="false" :fullscreen="dialogFulls" :top="top">
     <template #header>
       <el-row :gutter="20">
         <el-col :span="12" style="text-align: left">
@@ -36,27 +36,25 @@
 <script lang="ts" setup name="KPDialogForm">
 import { computed, ref } from "vue"
 import { toReactive } from "@vueuse/core"
-import { Emitter } from "mitt"
 
 // 接收父组件的值
 const props = withDefaults(
   defineProps<{
-    eventBus: Emitter<any> // 事件总线实例
     modelValue: boolean // 通过 v-model 传递的值
     title: string // 对话框标题
     fromParams: any //表单对象
     width?: string // 对话框宽度
     labelWidth?: string //文本框说明文字宽度
     rules?: any // 表单验证规则
+    top?: string // top 对话框距离顶部的距离
   }>(),
   {
     width: "55%",
+    top: "15vh",
     labelWidth: "100px"
   }
 )
 
-// 接收父组件的值 变成普通数据
-let { eventBus } = props
 // 接收父组件的值 变成 reactive 对象
 const { fromParams } = toReactive(props)
 // 定义 emits

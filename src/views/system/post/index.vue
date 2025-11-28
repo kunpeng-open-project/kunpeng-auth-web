@@ -6,7 +6,7 @@
       <KPSelect v-model="queryParams.status" label="状态" :span="6" :options="StartAndStopEnum" @change="kpSelectChange(eventBus, queryParams)" />
     </KPTableQuery>
 
-    <KPTable :event-bus="eventBus" :query-params="queryParams" :table-key="basic.tableKey" :table-column="tableColumn" :list-api="basic.listApi" :del-api="basic.delApi" :add-button-auth="basic.addButtonAuth" :update-button-auth="basic.updateButtonAuth" :del-button-auth="basic.delButtonAuth" :details-button-auth="basic.detailsButtonAuth" details-button-row update-button-row del-button-row checkbox>
+    <KPTable :event-bus="eventBus" :query-params="queryParams" :table-key="basic.tableKey" :table-column="tableColumn" :list-api="basic.listApi" :del-api="basic.delApi" :add-button-auth="basic.addButtonAuth" :update-button-auth="basic.updateButtonAuth" :del-button-auth="basic.delButtonAuth" :details-button-auth="basic.detailsButtonAuth" :record-button-auth="basic.recordButtonAuth" details-button-row update-button-row del-button-row record-button-row checkbox>
       <template #status="{ row }">
         <el-switch v-if="hasAuth('auth:post:do:status')" v-model="row.status" inline-prompt :active-value="1" active-text="正常" :inactive-value="0" inactive-text="停用" @click="handleSwitchStatus(row)" />
         <el-tag v-if="!hasAuth('auth:post:do:status') && row.status == 1" type="success" round effect="dark">正常</el-tag>
@@ -22,17 +22,19 @@
     </KPDialogFormEdit>
 
     <KPDialogDetails v-model="detailsDialogVisible" :title="basic.title + '详情'" :event-bus="eventBus" :table-key="basic.tableKey" :details-column="detailsColumn" :details-api="basic.detailsApi" label-width="120px" />
+
+    <KPDialogRecord v-model="recordDialogVisible" :event-bus="eventBus" :tabs="[{ label: '岗位信息' }]" :tableKey="basic.tableKey" />
   </div>
 </template>
 
 <script setup lang="ts">
 import { reactive, ref } from "vue"
 import mitt from "mitt"
-import { removeEmptyAndNull } from "@/utils/json"
-import { DetailsColumn, PageData, TableColumn, TableDialogColumn } from "@/utils/data/systemData"
-import { StartAndStopEnum } from "@/utils/data/serviceData"
+import { removeEmptyAndNull } from "@/utils/kp/tool/json"
+import { DetailsColumn, PageData, TableColumn, TableDialogColumn } from "@/utils/kp/data/systemData"
+import { StartAndStopEnum } from "@/utils/kp/data/serviceData"
 import { postJson } from "@/api/common"
-import { kpSelectChange } from "@/utils/list"
+import { kpSelectChange } from "@/utils/kp/tool/list"
 import { hasAuth } from "@/router/utils"
 
 let basic: TableDialogColumn = {
@@ -46,7 +48,8 @@ let basic: TableDialogColumn = {
   delApi: "/auth/post/batch/remove",
   delButtonAuth: "auth:post:batch:remove",
   detailsApi: "/auth/post/details",
-  detailsButtonAuth: "auth:post:details"
+  detailsButtonAuth: "auth:post:details",
+  recordButtonAuth: "auth:object:change:log:page:list"
 }
 
 /**
@@ -117,6 +120,8 @@ const eventBus = mitt()
 const dialogVisible = ref<boolean>(false)
 //详情模态框
 const detailsDialogVisible = ref<boolean>(false)
+// 修改记录模态框
+const recordDialogVisible = ref<boolean>(false)
 
 /**
  * 设置项目状态

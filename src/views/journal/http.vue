@@ -1,6 +1,6 @@
 <template>
   <div class="main">
-    <KPTableQueryMany :event-bus="eventBus" :query-params="queryParams" exclude="level,projectName" query-height="231px" label-width="110px">
+    <KPTableQueryMany :event-bus="eventBus" :query-params="queryParams" exclude="level,projectName" query-height="225px" label-width="110px">
       <KPSelect v-model="queryParams.level" label="日志级别" :span="5" :options="JournalStatusEnum" @change="kpSelectChange(eventBus, queryParams)" />
       <KPSelect v-model="queryParams.projectName" label="项目名称" :span="5" :options="projectNameSelectValue" @change="kpSelectChange(eventBus, queryParams)" />
       <KPSelect v-model="queryParams.name" label="接口名称" :span="5" :options="nameSelectValue" @change="kpSelectChange(eventBus, queryParams)" />
@@ -32,12 +32,12 @@
 <script setup lang="ts">
 import { onMounted, reactive, ref } from "vue"
 import mitt from "mitt"
-import { removeEmptyAndNull } from "@/utils/json"
-import { DetailsColumn, SelectColumn, TableColumn, TableDialogColumn } from "@/utils/data/systemData"
-import { JournalStatusEnum } from "@/utils/data/serviceData"
+import { removeEmptyAndNull } from "@/utils/kp/tool/json"
+import { DetailsColumn, SelectColumn, TableColumn, TableDialogColumn } from "@/utils/kp/data/systemData"
+import { JournalStatusEnum } from "@/utils/kp/data/serviceData"
 import { postJson } from "@/api/common"
 import { message } from "@/utils/message"
-import { kpSelectChange } from "@/utils/list"
+import { kpSelectChange } from "@/utils/kp/tool/list"
 
 let basic: TableDialogColumn = {
   title: "Http调用记录",

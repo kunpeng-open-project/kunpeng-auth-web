@@ -21,7 +21,7 @@
 </template>
 <script setup lang="ts">
 import { onMounted, reactive, ref } from "vue"
-import { UserSexEnum } from "@/utils/data/serviceData"
+import { UserSexEnum } from "@/utils/kp/data/serviceData"
 import { postJson } from "@/api/common"
 import { useUserStoreHook } from "@/store/modules/user"
 import KPAvatar from "@/components/UI/Input/KPAvatar.vue"

@@ -1,5 +1,12 @@
 <template>
-  <el-form-item :label="label" :prop="prop" :rules="rules" v-if="label">
+  <el-form-item v-if="label" :label="label" :prop="prop" :rules="rules">
+    <template v-if="tipBody" v-slot:label>
+      <span>{{ label }}</span>
+      <el-tooltip class="box-item" effect="dark" :content="tipBody" :placement="tipPlacement">
+        <IconifyIconOnline icon="ep:question-filled" />
+      </el-tooltip>
+    </template>
+
     <div class="avatar-container" @mouseenter="showOverlay = uploadable" @mouseleave="showOverlay = false">
       <el-avatar v-model="localValue" :size="size" :icon="icon" :shape="shape" :alt="alt" :fit="fit" :src="localSrc" :src-set="srcSet" @error="handleError" @click="handleClick" />
       <div v-if="showOverlay" class="avatar-overlay" :class="shape">
@@ -50,7 +57,7 @@ import { minioUrl } from "@/utils/serverPath"
 // 接收父组件的值
 const props = withDefaults(
   defineProps<{
-    modelValue?: string // 绑定的值
+    modelValue?: string | null // 绑定的值
     label?: string // 表单项的标签
     size?: number | "large" | "default" | "small" // 头像大小
     shape?: "circle" | "square" // 头像形状 Avatar 形状
@@ -65,13 +72,16 @@ const props = withDefaults(
     enableThumbnail?: boolean // 新增：是否启用缩略图生成
     thumbnailSize?: number // 新增：缩略图尺寸（仅enableThumbnail为true时生效）
     avatarMessage?: string // 头像右侧提示信息  只在非上传模式下显示
+    tipBody?: string // 新增：输入框的提示信息
+    tipPlacement?: "top" | "top-start" | "top-end" | "bottom" | "bottom-start" | "bottom-end" | "left" | "left-start" | "left-end" | "right" | "right-start" | "right-end" // 新增：提示信息的位置，默认为 'top'
   }>(),
   {
     size: "default",
     shape: "square",
     uploadable: false,
     enableThumbnail: false, // 默认不启用
-    thumbnailSize: 100 // 默认100px
+    thumbnailSize: 100, // 默认100px
+    tipPlacement: "right"
   }
 )
 // 本地维护的图片地址（替代直接使用 props.src）
@@ -152,7 +162,7 @@ const handleSubmitImage = async () => {
     message("上传失败！" + body.message, { type: "error" })
     return
   }
-  localSrc.value = minioUrl + "/temporary-upload-file/" + body.data.filePath
+  localSrc.value = minioUrl + "/" + body.data.filePath
   // 新增：通过 emit 更新 v-model 的值
   emit("update:modelValue", body.data.filePath) // 或者 filePath，根据您需要存储的格式
   handleClose()
@@ -244,7 +254,7 @@ const handleClick = (e: MouseEvent) => {
 
 // 定义 emit 事件
 const emit = defineEmits<{
-  (e: "update:modelValue", value: string): void
+  (e: "update:modelValue", value: string | null): void
   (e: "error", Event: Event): void
   (e: "click", MouseEvent: MouseEvent): void
   (e: "upload-success", url: string): void
@@ -255,7 +265,7 @@ const localValue = computed({
   get() {
     return props.modelValue
   },
-  set(value: string) {
+  set(value: string | null) {
     emit("update:modelValue", value)
   }
 })

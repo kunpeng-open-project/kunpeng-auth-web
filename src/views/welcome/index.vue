@@ -126,11 +126,11 @@
 <script setup lang="ts">
 import { onMounted, onUnmounted, ref } from "vue"
 import { postJson } from "@/api/common"
-import { now, queryWeekChinese } from "@/utils/date"
-import { generateRandomColor } from "@/utils/color"
+import { now, queryWeekChinese } from "@/utils/kp/tool/date"
+import { generateRandomColor } from "@/utils/kp/tool/color"
 import { storageLocal } from "@/store/utils"
 import { userKey } from "@/utils/auth"
-import { barChartByGroups, barChartBySingle } from "@/utils/echarts"
+import { barChartByGroups, barChartBySingle } from "@/utils/kp/tool/echarts"
 
 // 当前时间
 const formattedTime = ref(now())

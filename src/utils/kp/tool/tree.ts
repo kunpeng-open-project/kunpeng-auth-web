@@ -252,3 +252,37 @@ export function selectUniteChild (checkedNodes, checked, menuRef) {
     }
   }
 };
+
+
+
+/**
+ * 递归查询树形结构中所有指定字段的值（默认取 value 字段）
+ * @param treeData 树形数据源（单层数组或嵌套对象）
+ * @param valueKey 要查询的字段名（默认：'value'）
+ * @returns 所有字段值组成的数组
+ */
+export const getTreeAllValues = (treeData: Array<Record<string, any>> | Record<string, any>, valueKey: string = 'value'): Array<string | number> => {
+  // 初始化结果数组
+  const values: Array<string | number> = [];
+
+  // 处理单个节点（递归核心逻辑）
+  const traverseNode = (node: Record<string, any>) => {
+    // 若节点存在目标字段，添加到结果中
+    if (node.hasOwnProperty(valueKey)) {
+      values.push(node[valueKey]);
+    }
+    // 若存在子节点，递归处理（兼容 children 为 null/undefined 的情况）
+    if (Array.isArray(node.children) && node.children.length > 0) {
+      node.children.forEach(child => traverseNode(child));
+    }
+  };
+
+  // 兼容输入为单个节点对象或节点数组的场景
+  if (Array.isArray(treeData)) {
+    treeData.forEach(node => traverseNode(node));
+  } else if (typeof treeData === 'object' && treeData !== null) {
+    traverseNode(treeData);
+  }
+
+  return values;
+};

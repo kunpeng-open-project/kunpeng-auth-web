@@ -156,7 +156,7 @@ const handleSave = async (editRef, status: number) => {
       const addBody = await addTableData(props.apiPath, saveApi, removeEmptyAndNull(editParams))
       if (addBody.success) {
         dialogVisible.value = false
-        eventBus.emit("queryThree")
+        eventBus.emit("queryThree", removeEmptyAndNull(props.queryParams))
         message("操作成功", { type: "success" })
       }
       break
@@ -169,7 +169,7 @@ const handleSave = async (editRef, status: number) => {
       const updateBody = await updateTableData(props.apiPath, updateApi, removeEmptyAndNull(editParams))
       if (updateBody.success) {
         dialogVisible.value = false
-        eventBus.emit("queryThree")
+        eventBus.emit("queryThree", removeEmptyAndNull(props.queryParams))
         message("操作成功", { type: "success" })
       }
       break

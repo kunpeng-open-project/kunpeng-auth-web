@@ -24,7 +24,7 @@
       </el-container>
     </div>
 
-    <KPDialogCardThreeEdit v-model="typeVisible" :event-bus="eventBus" title="字典分类" table-key="dictTypeId" :edit-params="typeEditForm" :dateStructure="TypeEditData" label-width="110px" save-api="/auth/dict/type/save" details-api="/auth/dict/type/details" update-api="/auth/dict/type/update">
+    <KPDialogCardThreeEdit v-model="typeVisible" :event-bus="eventBus" :query-params="{ projectId: projectId }" title="字典分类" table-key="dictTypeId" :edit-params="typeEditForm" :dateStructure="TypeEditData" label-width="110px" save-api="/auth/dict/type/save" details-api="/auth/dict/type/details" update-api="/auth/dict/type/update" :afterSaveOpenEditDialog="afterSaveOpenThreeEditDialog">
       <KPSelectApi v-model="typeEditForm.projectIds" label="所属项目" prop="projectIds" api="/project/select" :api-params="{ manageType: 1 }" multiple :rules="[{ required: true, message: '请选择所属项目', trigger: 'blur' }]" />
       <KPInputText v-model="typeEditForm.dictName" label="字典名称" prop="dictName" :rules="[{ required: true, message: '请输入字典名称', trigger: 'blur' }]" />
       <KPInputText v-model="typeEditForm.dictType" label="字典类型" prop="dictType" :rules="[{ required: true, message: '请输入字典类型', trigger: 'blur' }]" />
@@ -180,6 +180,14 @@ const handleTreeClick = async (node: SelectColumn) => {
  */
 const afterSaveOpenEditDialog = async editParams => {
   editParams.dictTypeId = clickDictType.value
+}
+
+/**
+ * 打开字典类型编辑模态框保存功能后执行
+ * @param editParams
+ */
+const afterSaveOpenThreeEditDialog = async editParams => {
+  typeEditForm.projectIds.push(projectId.value)
 }
 
 /**

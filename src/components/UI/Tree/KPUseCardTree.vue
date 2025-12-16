@@ -55,6 +55,7 @@ import { serverPath } from "@/utils/serverPath"
 import { Emitter } from "mitt"
 import { getTreeAllValues } from "@/utils/kp/tool/tree"
 import { hasAuth } from "@/router/utils"
+import { removeEmptyAndNull } from "../../../utils/kp/tool/json"
 
 const props = withDefaults(
   defineProps<{
@@ -104,12 +105,12 @@ const position = ref({ top: 0, left: 0, bottom: 0, right: 0 } as DOMRect)
 const selectedNode = reactive<any>({})
 
 onMounted(async () => {
-  await queryThree()
+  await queryThree(queryParams)
   emit("treeDataLoaded", treeValue)
 })
 
-const queryThree = async () => {
-  let body = await postJson(queryApi, queryParams, apiPath)
+const queryThree = async (queryParams: any) => {
+  let body = await postJson(queryApi, removeEmptyAndNull(queryParams), apiPath)
   Object.keys(treeValue).map(key => delete treeValue[key])
   Object.assign(treeValue, body.data || [])
 }
@@ -162,7 +163,7 @@ const handleDropdownNodeClick = (edit: string) => {
         const delBody = await postJson(delApi, getTreeAllValues(selectedNode), apiPath)
         if (!delBody.success) return
         message("删除成功", { type: "success" })
-        await queryThree()
+        await queryThree(queryParams)
         emit("treeContextClick", edit, selectedNode)
       })
       break
@@ -217,9 +218,9 @@ const treeHeight = computed(() => {
  * 生产者 对外授权
  */
 // 查询列表
-eventBus.on("queryThree", (params: any) => {
-  queryParams = params || {}
-  queryThree()
+eventBus.on("queryThree", (queryParams: any) => {
+  // queryParams = params || po
+  queryThree(queryParams)
 })
 </script>
 

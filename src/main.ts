@@ -23,7 +23,7 @@ import "element-plus/dist/index.css"
 import "./assets/iconfont/iconfont.js"
 import "./assets/iconfont/iconfont.css"
 
-import "./assets/styles/ global.scss" // 引入全局样式
+import "./assets/styles/global.scss" // 引入全局样式
 // 自定义指令
 import * as directives from "@/directives"
 // 全局注册@iconify/vue图标库

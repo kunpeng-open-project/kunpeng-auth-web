@@ -75,9 +75,9 @@ const componentModules = import.meta.glob("@/components/UI/**/*.vue", { eager: t
 Object.entries(componentModules as Record<string, { default: any }>).forEach(([path, module]) => {
   // 提取组件名称，例如从"@/components/UI/Table/KPTable.vue"中提取"KPTable"
   const componentName = path
-      .split("/")
-      .pop()
-      .replace(/\.\w+$/, "")
+    .split("/")
+    .pop()
+    .replace(/\.\w+$/, "")
 
   // 注册组件
   app.component(componentName, module.default)

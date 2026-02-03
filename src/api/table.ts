@@ -2,13 +2,23 @@ import { http } from "@/utils/http"
 import type { Result, ResultTable } from "@/config/requestType"
 
 /**
- * 获取表格数据
+ * 获取表格数据-带分页
  * @param microService 微服务请求路径 http://xxx
  * @param url 请求地址
  * @param data
  */
 export const getTableList = (microService: string, url: string, data?: object) => {
   return http.request<ResultTable>("post", microService + url, { data })
+}
+
+/**
+ * 获取表格数据-不带分页
+ * @param microService 微服务请求路径 http://xxx
+ * @param url 请求地址
+ * @param data
+ */
+export const getList = (microService: string, url: string, data?: object) => {
+  return http.request<Result>("post", microService + url, { data })
 }
 
 /**

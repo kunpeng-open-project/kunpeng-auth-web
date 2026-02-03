@@ -120,8 +120,8 @@
 <script lang="ts" setup name="KPTableTree">
 import { useLayout } from "@/layout/hooks/useLayout"
 import { computed, h, nextTick, onMounted, ref, toRefs, useSlots, watch } from "vue"
-import { delTableData, getTableList, updateSort } from "@/api/table"
-import { ResultTable } from "@/config/requestType"
+import { delTableData, getList, updateSort } from "@/api/table"
+import { Result } from "@/config/requestType"
 import { OperateEnum, PageData, TableColumn, TableSizeEnum } from "@/utils/kp/data/systemData"
 import { Emitter } from "mitt"
 import { removeEmptyAndNull } from "@/utils/kp/tool/json"
@@ -187,7 +187,7 @@ const { tableColumn } = toRefs(props)
 // 接收父组件的值 变成普通数据
 let { listApi, delApi, queryParams, eventBus, kpTableQueryHeight, tableKey, sortApi, initList } = props
 //table列表数据
-const tableList = ref<ResultTable["data"]["list"]>([])
+const tableList = ref<Result["data"]>([])
 //table 等待框
 const loading = ref(false)
 //搜索栏是否隐藏
@@ -231,8 +231,8 @@ const init = (queryParams: any) => {
 const queryList = async (queryParams: any) => {
   eventBus.emit("tableQueryList")
   loading.value = true
-  const { data } = await getTableList(props.apiPath, listApi, removeEmptyAndNull(queryParams))
-  tableList.value = data.list ?? tableList.value
+  const { data } = await getList(props.apiPath, listApi, removeEmptyAndNull(queryParams))
+  tableList.value = data ?? tableList.value
   loading.value = false
   eventBus.emit("queryListSuccess")
 
@@ -300,7 +300,6 @@ const handleTableHeight = (type: TableSize) => {
 
 /**
  * 设置是否隐藏搜索栏
- * @param type
  */
 const handleParamsIsShow = () => {
   paramsIsShow.value = !paramsIsShow.value
@@ -382,7 +381,8 @@ const openDetailsDialog = (row: any) => {
 
 /**
  * 打开修改记录模态框
- * @param row
+ * @param edit 操作类型
+ * @param row 操作数据
  */
 const openRecordDialog = (edit: string, row: any) => {
   if (edit === OperateEnum.record) {
@@ -588,7 +588,6 @@ const batchTranslate = async (column: TableColumn, ids: (string | number)[]) => 
   if (parameter.length === 0) return
 
   const { data } = await postJson(api, parameter, microService)
-
   const translateMap = new Map<string | number, string>()
   try {
     data.forEach(respItem => {
